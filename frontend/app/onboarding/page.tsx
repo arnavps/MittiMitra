@@ -269,13 +269,13 @@ export default function OnboardingPage() {
             if (affirmations.some(word => lowerText.includes(word))) {
                 console.log("[Onboarding] Local Heuristic triggered: Consent Granted.");
                 setConsentGranted(true);
+                setCurrentStep('CropDetails');
                 const confirmMsg = activeLang === "Marathi" ? "धन्यवाद. आता तुमच्या पिकाचे नाव सांगा." : activeLang === "Hindi" ? "धन्यवाद। अब अपनी फसल का नाम बताएं।" : "Thank you. Now, please tell me your crop name.";
                 setAiReply(confirmMsg);
+                setIsThinking(false);
                 speakResponse(confirmMsg, activeLang, () => {
-                    setCurrentStep('CropDetails');
                     startRecognitionInternal();
                 });
-                setIsThinking(false);
                 return;
             }
         }
@@ -310,59 +310,67 @@ export default function OnboardingPage() {
             // Stateful Auto-Transitions
             const isConsentTrue = data.consent_granted === true || String(data.consent_granted).toLowerCase() === 'true';
 
-            // Function to handle step transition AFTER speech
-            const finishTurn = (nextStep?: Step) => {
-                if (nextStep) {
-                    setTimeout(() => setCurrentStep(nextStep), 500);
-                } else if (currentStepRef.current !== 'Verdict') {
-                    startRecognitionInternal();
-                }
-                setIsThinking(false);
-            };
+            setIsThinking(false);
 
             if (data.ai_reply) {
                 setAiReply(data.ai_reply);
 
-                // Prepare context for post-speech transition
-                let targetStep: Step | undefined = undefined;
+                // Perform State Transitions IMMEDIATELY so new inputs are evaluated in the correct context
                 if (activeStep === 'Consent' && isConsentTrue) {
                     setConsentGranted(true);
-                    targetStep = 'CropDetails';
+                    setCurrentStep('CropDetails');
                 } else if (activeStep === 'CropDetails') {
                     if (data.name) setName(data.name);
                     if (data.crop) setCrop(data.crop);
                     if (data.land_size) setLandSize(parseFloat(String(data.land_size)));
 
                     if ((data.crop || cropRef.current) && (data.land_size || landSizeRef.current)) {
-                        targetStep = 'Location';
+                        setCurrentStep('Location');
                     }
                 } else if (activeStep === 'StorageTransport') {
                     if (data.storage_type) setStorageType(data.storage_type);
                     if (data.transport_type) setTransportType(data.transport_type);
 
                     if ((data.storage_type || storageTypeRef.current) && (data.transport_type || transportTypeRef.current)) {
-                        targetStep = 'FinalCalibration';
+                        setCurrentStep('FinalCalibration');
                     }
                 } else if (activeStep === 'FinalCalibration') {
                     if (data.yield_quintals) setYieldQuintals(parseFloat(String(data.yield_quintals)));
                     if (data.planting_date) setPlantingDate(data.planting_date);
 
                     if (data.yield_quintals || yieldQuintalsRef.current) {
-                        targetStep = 'Verdict';
+                        setCurrentStep('Verdict');
                     }
                 }
 
-                speakResponse(data.ai_reply, activeLang, () => finishTurn(targetStep));
+                // If we just transitioned to FinalCalibration, we MUST prompt the user
+                if (activeStep === 'StorageTransport' && ((data.storage_type || storageTypeRef.current) && (data.transport_type || transportTypeRef.current))) {
+                     const calibrateMsg = activeLang === "Marathi" ? "धन्यवाद. आता सांगा, तुमची अंदाजे किती क्विंटल पिके येतीत?" : activeLang === "Hindi" ? "धन्यवाद। अब बताएं, आपकी अनुमानित उपज कितने क्विंटल होगी?" : "Got it. Finally, what is your expected yield in quintals?";
+                     setAiReply(calibrateMsg);
+                     speakResponse(calibrateMsg, activeLang, () => {
+                         if (currentStepRef.current !== 'Verdict') {
+                             startRecognitionInternal();
+                         }
+                     });
+                } else {
+                    speakResponse(data.ai_reply, activeLang, () => {
+                        if (currentStepRef.current !== 'Verdict') {
+                            startRecognitionInternal();
+                        }
+                    });
+                }
             } else {
                 // If no ai_reply, transition immediately if criteria met
-                let targetStep: Step | undefined = undefined;
                 if (activeStep === 'Consent' && isConsentTrue) {
                     setConsentGranted(true);
-                    targetStep = 'CropDetails';
+                    setCurrentStep('CropDetails');
                 } else if (activeStep === 'CropDetails' && cropRef.current && landSizeRef.current) {
-                    targetStep = 'Location';
+                    setCurrentStep('Location');
                 }
-                finishTurn(targetStep);
+                
+                if (currentStepRef.current !== 'Verdict') {
+                    startRecognitionInternal();
+                }
             }
 
         } catch (error) {
@@ -385,8 +393,8 @@ export default function OnboardingPage() {
                 } else {
                     const successMsg = langStr === "Marathi" ? "लोकेशन मिळाली आहे. आता सांगा, पीक कसे साठवत आहात? उघड्यावर, छायेत की क्रेट्समध्ये?" : langStr === "Hindi" ? "लोकेशन मिल गई है। अब बताएं, उपज को कैसे स्टोर करेंगे? खुले में, छाया में, या क्रेट में?" : "Coordinates secured. Next, how will you store your yield today (Open Field, Shaded, or Crated)?";
                     setAiReply(successMsg);
+                    setCurrentStep('StorageTransport');
                     speakResponse(successMsg, langStr, () => {
-                        setCurrentStep('StorageTransport');
                         startRecognitionInternal();
                     });
                 }
