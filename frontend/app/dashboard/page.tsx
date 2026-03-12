@@ -83,7 +83,7 @@ export default function DashboardPage() {
     }>({ isOpen: false, metric: '', value: 0, unit: '' });
 
     const { location, requestLocation } = useGPS();
-    const { isOnline, cachedData, saveToCache } = useOfflineCache('dashboard_recommendation');
+    const { isOnline, cachedData, saveToCache, calculateOfflineSpoilage } = useOfflineCache('dashboard_recommendation');
 
     // Trigger re-calculation when overrides or yield change locally
     const recalculateWithOverrides = (currentData: any, newOverrides: Record<string, number>, newYield?: number) => {
@@ -97,8 +97,12 @@ export default function DashboardPage() {
 
         if (newOverrides[tempKey]) {
             updated.weather.temperature_c = newOverrides[tempKey];
+            
+            // Offline math fallback
+            const offlineSpoilageRisk = calculateOfflineSpoilage(0.005, newOverrides[tempKey], 20.0, 48.0);
+            updated.spoilage_risk_pct = offlineSpoilageRisk;
+
             if (newOverrides[tempKey] > 35) {
-                updated.weather.spoilage_risk = Math.min(100, (updated.weather.spoilage_risk || 0) + 10);
                 updated.net_realization_inr -= 500;
             }
         }

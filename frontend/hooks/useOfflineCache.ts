@@ -2,8 +2,14 @@ import { useEffect, useState } from 'react';
 
 export function useOfflineCache(key: string, initialData: any = null) {
     const [isOnline, setIsOnline] = useState(true);
-    const [cachedData, setCachedData] = useState<any>(initialData);
     const [syncQueue, setSyncQueue] = useState<any[]>([]);
+
+    // Offline Math Helper
+    const calculateOfflineSpoilage = (base_q10: number, current_temp: number, target_temp: number, duration_hours: number) => {
+        const q10_factor = 2.5;
+        const accelerated_rate = base_q10 * Math.pow(q10_factor, (current_temp - target_temp) / 10.0);
+        return Math.min(accelerated_rate * duration_hours * 100, 100); // return as percentage
+    };
 
     useEffect(() => {
         // Initial check
@@ -65,5 +71,5 @@ export function useOfflineCache(key: string, initialData: any = null) {
         setSyncQueue([]);
     };
 
-    return { isOnline, cachedData, saveToCache, addToSyncQueue, syncQueueLength: syncQueue.length };
+    return { isOnline, cachedData, saveToCache, addToSyncQueue, syncQueueLength: syncQueue.length, calculateOfflineSpoilage };
 }

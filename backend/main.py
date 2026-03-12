@@ -5,6 +5,7 @@ from typing import Dict, Any
 from engine.profit_calc import get_net_realization
 from engine.map_logic import calculate_spatial_profit
 from engine.shock_analyzer import detect_market_shock, detect_volume_shock
+from engine.spoilage_pro import calculate_dynamic_spoilage, get_heat_multiplier, get_preservation_actions
 from integrations.mandi_api import fetch_mandi_prices
 from integrations.weather_api import fetch_district_weather
 
@@ -32,6 +33,8 @@ class HarvestRequest(BaseModel):
     yield_est_quintals: float
     base_spoilage_rate: float = 0.05 # 5% base spoilage
     language: str = "en"
+    storage_type: str = "Open Field"
+    transport_type: str = "Open Trolley"
 
 @app.get("/health")
 def health_check():
@@ -128,6 +131,35 @@ async def get_harvest_recommendation(data: HarvestRequest):
         logistics_cost = dist_best * 15.0 
         spoilage_penalty = (best_optimal_option["quality_loss_pct"] / 100.0) * gross_rev
         
+        # 3.8 Preservation Engine Integration
+        storage_multiplier = get_heat_multiplier(data.storage_type)
+        transport_multiplier = get_heat_multiplier(data.transport_type)
+        
+        base_hourly_q10 = 0.005 # Base decay rate per hour at optimal temp (e.g. 0.5%)
+        target_temp = 20.0 # Standard cool temp
+        
+        # Calculate Dynamic Spoilage for next 48 hours for display
+        # Simplified: We use the 48h temp forecast
+        dynamic_spoilage_pct = calculate_dynamic_spoilage(
+            base_q10=base_hourly_q10, 
+            current_temp=temp_forecast_48h, 
+            target_temp=target_temp, 
+            duration_hours=48.0, 
+            multiplier=(storage_multiplier + transport_multiplier)/2
+        )
+        
+        # Combine initial spatial decay logic with our new dynamic heat multiplier
+        quality_loss_pct = min(100.0, best_optimal_option["quality_loss_pct"] * storage_multiplier)
+        spoilage_penalty = (quality_loss_pct / 100.0) * gross_rev
+        
+        # Calculate Total Crop Value for Preservation Math
+        total_crop_value = gross_rev
+        preservation_data = get_preservation_actions(total_crop_value, quality_loss_pct, temp_today, data.storage_type)
+
+        # Re-calc net profit with updated spoilage
+        total_profit_today = gross_rev - logistics_cost - spoilage_penalty
+        profit_today = total_profit_today / data.yield_est_quintals
+        
         # 4. Synthesize Final Recommendation & Routing Pivot
         is_selling_optimal = profit_today >= profit_48h
         status = "GREEN" if is_selling_optimal else "RED"
@@ -162,6 +194,8 @@ async def get_harvest_recommendation(data: HarvestRequest):
             "profit_forecast_48h": round(profit_48h, 2),
             "best_mandi": f"{best_mandi_name} ({round(dist_best, 1)} km)",
             "weather": weather_data,
+            "preservation": preservation_data,
+            "spoilage_risk_pct": round(dynamic_spoilage_pct, 2),
             "mandi_stats": {
                 "name": best_mandi_name,
                 "current_price": best_optimal_option["market_price"],
@@ -171,6 +205,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
             "shock_alert": active_shock,
             "regional_options": spatial_profits, # Send all map data for the Market Maps tab
             "decay_metrics": {
+                "quality_loss_applied_pct": round(quality_loss_pct, 2),
                 "today_profit": round(profit_today, 2),
                 "future_profit": round(profit_48h, 2),
                 "profit_difference": round(profit_today - profit_48h, 2)

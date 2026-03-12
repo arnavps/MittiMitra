@@ -26,6 +26,9 @@ export function VerdictCard({ data, userCrop, onExplain }: VerdictCardProps) {
     const totalTakeHome = data.total_net_profit ?? (grossRevenue - logistics - spoilagePenalty);
     const perQuintalRealization = data.net_realization_inr_per_quintal || (totalTakeHome / yieldQtl);
 
+    const spoilageRiskPct = data.spoilage_risk_pct || 0;
+    const priorityAction = data.preservation?.priority_action;
+
     return (
         <div className="rounded-3xl border border-white/20 bg-black/20 backdrop-blur-xl p-8 lg:p-10 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
             {/* Background Glows based on status */}
@@ -88,6 +91,44 @@ export function VerdictCard({ data, userCrop, onExplain }: VerdictCardProps) {
                 <span className="text-[10px] text-gray-400 uppercase tracking-widest font-black block mb-1">{t('estimatedTakeHome') || 'Net Take-Home Payout'}</span>
                 <div className="text-6xl font-black text-mint font-mono drop-shadow-[0_0_15px_rgba(32,255,189,0.3)] tabular-nums animate-pulse-slow">
                     ₹<AnimatedNumber value={totalTakeHome} />
+                </div>
+            </div>
+
+            {/* Preservation Priority Action */}
+            {priorityAction && priorityAction.is_recommended && (
+                <div className="z-10 w-full mt-2 mb-4 animate-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-gradient-to-r from-mint/20 to-emerald-500/10 border border-mint/30 rounded-2xl p-4 flex items-center justify-between shadow-[0_0_20px_rgba(32,255,189,0.15)] relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="flex items-center text-left">
+                            <div className="w-10 h-10 rounded-full bg-mint/20 flex items-center justify-center mr-3 border border-mint/40">
+                                <svg className="w-5 h-5 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-mint uppercase tracking-widest font-black opacity-80 mb-0.5">Priority Action</p>
+                                <p className="text-white text-sm font-bold">{priorityAction.action}</p>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-0.5">Saves You</p>
+                            <p className="text-mint font-mono font-black text-lg">₹{n(priorityAction.net_saving_inr)}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Dynamic Spoilage Risk Bar */}
+            <div className="z-10 w-full mb-4 px-2">
+                <div className="flex justify-between items-end mb-1.5">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Spoilage Risk (48h)</span>
+                    <span className={`text-xs font-mono font-black ${spoilageRiskPct > 50 ? 'text-red-400' : spoilageRiskPct > 20 ? 'text-yellow-400' : 'text-mint'}`}>
+                        {n(spoilageRiskPct)}%
+                    </span>
+                </div>
+                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                        className={`h-full transition-all duration-1000 ease-out ${spoilageRiskPct > 50 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : spoilageRiskPct > 20 ? 'bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' : 'bg-mint shadow-[0_0_10px_rgba(32,255,189,0.5)]'}`}
+                        style={{ width: `${Math.min(spoilageRiskPct, 100)}%` }}
+                    ></div>
                 </div>
             </div>
 

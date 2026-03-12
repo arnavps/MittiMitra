@@ -36,6 +36,8 @@ class OnboardingExtractRequest(BaseModel):
     consent_granted: Any = None
     location_available: bool = False
     gps_error: Any = None
+    current_storage: str = ""
+    current_transport: str = ""
 
 def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     """
@@ -94,6 +96,7 @@ Here is the CURRENT REAL-TIME DATA for the farmer:
   * Net Change if you wait: ₹{total_diff}
 {f"CRITICAL: The farmer has MANUALLY CALIBRATED the environmental data ({context.get('manual_override_count')} overrides). Trust the farmer's ground truth over the sensors. Acknowledge this in your opening." if context.get('is_manual_override') else ""}
 
+If the dashboard context includes a `priority_action` under `preservation`, you MUST mention it and tell the farmer exactly how much money they will save by doing it. Example format: "Also, by [action], you can save ₹[net_saving_inr] today." (translate to {language}).
 """
     if shock and shock.get("is_shock"):
         prompt += f"\nCRITICAL SHOCK ALERT ACTIVE: {shock.get('message')}. Pivot Advice: {shock.get('pivot_advice')}\n"
@@ -200,6 +203,11 @@ EXTRACT CONSENT:
   - 'Tamatar' -> 'tomato'
 - 'ai_reply' MUST be in """ + req.language + """ script.
 - If you have some info but not all (e.g. you have 5 acres but no crop), the 'ai_reply' MUST acknowledge the 5 acres and specifically ask for the missing crop."""
+        elif req.step == "StorageTransport":
+             schema_instructions = """Return JSON with: {'storage_type': string/null, 'transport_type': string/null, 'ai_reply': 'string'}.
+- Extract storage type (must map to exactly one of: 'Open Field', 'Shaded', 'Crated'). Default to 'Open Field' if unclear but present.
+- Extract transport type (must map to exactly one of: 'Open Trolley', 'Covered Pickup'). Default to 'Open Trolley' if unclear but present.
+- 'ai_reply' MUST be in """ + req.language + """ script only. If missing one, ask for the other briefly."""
         elif req.step == "FinalCalibration":
              schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'planting_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}. Extract yield as number. 'ai_reply' MUST be in " + req.language + " script only."
         else:
@@ -212,6 +220,8 @@ CONTEXT OF ALREADY EXTRACTED DATA:
 - Crop: {req.current_crop or 'Unknown'}
 - Land Size: {req.current_land_size or 'Unknown'} acres
 - Consent: {req.consent_granted}
+- Storage: {req.current_storage or 'Unknown'}
+- Transport: {req.current_transport or 'Unknown'}
 
 Current Step: {req.step}
 Farmer Language: {req.language}

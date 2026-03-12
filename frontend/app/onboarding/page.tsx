@@ -15,7 +15,7 @@ export default function OnboardingPage() {
     const { location, error: gpsError, requestLocation } = useGPS();
 
     // Onboarding State Machine
-    type Step = 'Language' | 'Consent' | 'CropDetails' | 'Location' | 'FinalCalibration' | 'Verdict';
+    type Step = 'Language' | 'Consent' | 'CropDetails' | 'Location' | 'StorageTransport' | 'FinalCalibration' | 'Verdict';
     const [currentStep, _setCurrentStep] = useState<Step>('Language');
     const currentStepRef = useRef<Step>('Language');
 
@@ -74,6 +74,20 @@ export default function OnboardingPage() {
         _setPlantingDate(val);
     };
 
+    const [storageType, _setStorageType] = useState("");
+    const storageTypeRef = useRef("");
+    const setStorageType = (val: string) => {
+        storageTypeRef.current = val;
+        _setStorageType(val);
+    };
+
+    const [transportType, _setTransportType] = useState("");
+    const transportTypeRef = useRef("");
+    const setTransportType = (val: string) => {
+        transportTypeRef.current = val;
+        _setTransportType(val);
+    };
+
     // Conversational UI States
     const [isListening, setIsListening] = useState(false);
     const [isThinking, setIsThinking] = useState(false);
@@ -96,6 +110,8 @@ export default function OnboardingPage() {
                     setLandSize(data.landSize ?? null);
                     setYieldQuintals(data.yieldQuintals ?? null);
                     setPlantingDate(data.plantingDate || "");
+                    setStorageType(data.storageType || "");
+                    setTransportType(data.transportType || "");
                     setShowLanguageModal(data.showLanguageModal ?? true);
                 }
             } catch (e) {
@@ -108,12 +124,12 @@ export default function OnboardingPage() {
     useEffect(() => {
         if (currentStep !== 'Verdict') {
             localStorage.setItem('krishi_onboarding_cache', JSON.stringify({
-                currentStep, langStr, consentGranted, name, crop, landSize, yieldQuintals, plantingDate, showLanguageModal
+                currentStep, langStr, consentGranted, name, crop, landSize, yieldQuintals, plantingDate, storageType, transportType, showLanguageModal
             }));
         } else {
             localStorage.removeItem('krishi_onboarding_cache');
         }
-    }, [currentStep, langStr, consentGranted, name, crop, landSize, yieldQuintals, plantingDate, showLanguageModal]);
+    }, [currentStep, langStr, consentGranted, name, crop, landSize, yieldQuintals, plantingDate, storageType, transportType, showLanguageModal]);
 
     // Audio & STT Refs
     const recognitionRef = useRef<any>(null);
@@ -271,7 +287,9 @@ export default function OnboardingPage() {
                     current_land_size: landSizeRef.current || landSize || 0,
                     consent_granted: (typeof consentGranted === 'boolean') ? consentGranted : consentGrantedRef.current,
                     location_available: !!location,
-                    gps_error: gpsError
+                    gps_error: gpsError,
+                    current_storage: storageTypeRef.current || storageType,
+                    current_transport: transportTypeRef.current || transportType
                 })
             });
 
@@ -311,6 +329,13 @@ export default function OnboardingPage() {
 
                     if ((data.crop || cropRef.current) && (data.land_size || landSizeRef.current)) {
                         targetStep = 'Location';
+                    }
+                } else if (activeStep === 'StorageTransport') {
+                    if (data.storage_type) setStorageType(data.storage_type);
+                    if (data.transport_type) setTransportType(data.transport_type);
+
+                    if (data.storage_type || storageTypeRef.current) {
+                        targetStep = 'FinalCalibration';
                     }
                 } else if (activeStep === 'FinalCalibration') {
                     if (data.yield_quintals) setYieldQuintals(parseFloat(String(data.yield_quintals)));
@@ -352,10 +377,10 @@ export default function OnboardingPage() {
                         requestLocation();
                     });
                 } else {
-                    const successMsg = langStr === "Marathi" ? "लोकेशन मिळाली आहे. आता अपेक्षित उत्पन्न सांगा." : langStr === "Hindi" ? "लोकेशन मिल गई है। अब अपेक्षित पैदावार बताएं।" : "Coordinates secured. Lastly, what is your expected yield?";
+                    const successMsg = langStr === "Marathi" ? "लोकेशन मिळाली आहे. आता सांगा, पीक कसे साठवत आहात? उघड्यावर, छायेत की क्रेट्समध्ये?" : langStr === "Hindi" ? "लोकेशन मिल गई है। अब बताएं, उपज को कैसे स्टोर करेंगे? खुले में, छाया में, या क्रेट में?" : "Coordinates secured. Next, how will you store your yield today (Open Field, Shaded, or Crated)?";
                     setAiReply(successMsg);
                     speakResponse(successMsg, langStr, () => {
-                        setCurrentStep('FinalCalibration');
+                        setCurrentStep('StorageTransport');
                         startRecognitionInternal();
                     });
                 }
@@ -383,7 +408,9 @@ export default function OnboardingPage() {
                         latitude: fuzzed.latitude,
                         longitude: fuzzed.longitude,
                         yield_quintals: yieldQuintals || 100,
-                        planting_date: plantingDate || new Date().toISOString().split('T')[0]
+                        planting_date: plantingDate || new Date().toISOString().split('T')[0],
+                        storage_type: storageType || "Open Field",
+                        transport_type: transportType || "Open Trolley"
                     });
 
                     setTimeout(() => router.push('/dashboard'), 3000);
@@ -453,9 +480,9 @@ export default function OnboardingPage() {
                             <div className="space-y-3">
                                 {(() => {
                                     const labels: Record<string, any> = {
-                                        "English": { c: "Consent", t: "Crop Type", s: "Scale (Acres)", g: "GPS Lock", y: "Expected Yield" },
-                                        "Hindi": { c: "सहमति", t: "फसल का प्रकार", s: "क्षेत्र (एकड़)", g: "जीपीएस लॉक", y: "अपेक्षित पैदावार" },
-                                        "Marathi": { c: "संमती", t: "पिकाचा प्रकार", s: "क्षेत्र (एकर)", g: "जीपीएस लॉक", y: "अपेक्षित उत्पन्न" }
+                                        "English": { c: "Consent", t: "Crop Type", s: "Scale (Acres)", g: "GPS Lock", st: "Storage", tr: "Transport", y: "Expected Yield" },
+                                        "Hindi": { c: "सहमति", t: "फसल का प्रकार", s: "क्षेत्र (एकड़)", g: "जीपीएस लॉक", st: "भंडारण", tr: "यातायात", y: "अपेक्षित पैदावार" },
+                                        "Marathi": { c: "संमती", t: "पिकाचा प्रकार", s: "क्षेत्र (एकर)", g: "जीपीएस लॉक", st: "साठवणूक", tr: "वाहतूक", y: "अपेक्षित उत्पन्न" }
                                     };
                                     const l = labels[langStr] || labels["English"];
                                     return (
@@ -464,6 +491,8 @@ export default function OnboardingPage() {
                                             <FieldRow label={l.t} value={crop || "..."} active={currentStep === 'CropDetails'} filled={!!crop} />
                                             <FieldRow label={l.s} value={landSize ? `${landSize} ${langStr === "Marathi" ? "एकर" : "Acres"}` : "..."} active={currentStep === 'CropDetails'} filled={!!landSize} />
                                             <FieldRow label={l.g} value={location ? (langStr === "Marathi" ? "सुरक्षित" : "Secured") : "..."} active={currentStep === 'Location'} filled={!!location} />
+                                            <FieldRow label={l.st} value={storageType || "..."} active={currentStep === 'StorageTransport'} filled={!!storageType} />
+                                            <FieldRow label={l.tr} value={transportType || "..."} active={currentStep === 'StorageTransport'} filled={!!transportType} />
                                             <FieldRow label={l.y} value={yieldQuintals ? `${yieldQuintals} ${langStr === "Marathi" ? "क्विंटल" : "Quintals"}` : "..."} active={currentStep === 'FinalCalibration'} filled={!!yieldQuintals} />
                                         </>
                                     );
