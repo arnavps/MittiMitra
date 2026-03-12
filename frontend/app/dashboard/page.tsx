@@ -192,11 +192,12 @@ export default function DashboardPage() {
                         message: "CRITICAL: Price crashed by 3.5σ below the 7-day average. Massive volume spike detected!",
                         pivot_advice: "EMERGENCY: Sudden price crash detected. Redirecting you to the nearest cold storage to save your asset."
                     };
-                    // Mock a pivot mandi for the demo
                     if (json.regional_options && json.regional_options.length > 1) {
                         const pivot = json.regional_options[1];
-                        json.shock_alert.pivot_advice += ` Re-routing to ${pivot.mandi_name} (${roundVal(pivot.distance_km)}km).`;
+                        const savings = Math.max(3000, pivot.total_net_profit - (json.mandi_stats.current_price * (yieldEst || 50)));
+                        json.shock_alert.pivot_advice = `Warning: Prices at ${json.mandi_stats.name} just fell. Rerouting to ${pivot.mandi_name} to save ₹${Math.floor(savings)}.`;
                         json.shock_alert.pivot_mandi = pivot;
+                        json.shock_alert.savings_inr = savings;
                     }
                 }
 

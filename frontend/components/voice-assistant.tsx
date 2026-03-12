@@ -146,6 +146,23 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
                     audioRef.current.currentTime = 0;
                 }
                 
+                // Play a subtle alert beep first
+                try {
+                    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
+                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.5);
+                } catch (e) {
+                    console.warn("AudioContext beep failed", e);
+                }
+
                 setIsOpen(true);
                 setResponse(fullAlert);
                 speakResponse(fullAlert);

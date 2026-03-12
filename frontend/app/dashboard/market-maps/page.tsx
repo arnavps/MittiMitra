@@ -6,6 +6,7 @@ import { useOfflineCache } from '@/hooks/useOfflineCache';
 import { StatusPill } from '@/components/status-pill';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { VoiceAssistant } from '@/components/voice-assistant';
 
 const TransitMap = dynamic(() => import('@/components/dashboard/TransitMap'), { 
     ssr: false,
@@ -80,7 +81,7 @@ export default function MarketMapsPage() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-24">
 
                 {/* Visual "Map" Alternative - Logistics List */}
                 <GlassCard className="col-span-1 lg:col-span-2">
@@ -228,6 +229,8 @@ export default function MarketMapsPage() {
                     </div>
                 </GlassCard>
             </div>
+
+            <VoiceAssistant dashboardData={cachedData} />
         </div>
     );
 }

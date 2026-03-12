@@ -181,6 +181,13 @@ async def get_harvest_recommendation(data: HarvestRequest):
         if active_shock:
             status = "RED" # Shocks always override to RED/WAIT for primary
             
+            # Find the primary market's profit explicitly to calculate savings
+            primary_profit = 0
+            for option in spatial_profits:
+                if option["mandi_name"] == primary_mandi["name"]:
+                    primary_profit = option["total_net_profit"]
+                    break
+            
             # Find the best alternative that IS NOT the primary mandi
             for option in spatial_profits:
                 if option["mandi_name"] != primary_mandi["name"] and not option.get("is_dead_zone"):
@@ -188,8 +195,11 @@ async def get_harvest_recommendation(data: HarvestRequest):
                     break
             
             if pivot_mandi:
-                 active_shock["pivot_advice"] = f"EMERGENCY: Primary market crashed. Re-routing you to {pivot_mandi['mandi_name']} ({round(pivot_mandi['distance_km'], 1)}km). Estimated Net Profit: ₹{pivot_mandi['total_net_profit']}"
+                 savings = max(0, pivot_mandi['total_net_profit'] - primary_profit)
+                 # Refined phrasing for voice navigation co-pilot
+                 active_shock["pivot_advice"] = f"Warning: Prices at {primary_mandi['name']} just fell. Rerouting to {pivot_mandi['mandi_name']} to save ₹{int(savings)}."
                  active_shock["pivot_mandi"] = pivot_mandi
+                 active_shock["savings_inr"] = savings
             
         recommendation = {
             "status": status,
