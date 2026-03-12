@@ -31,11 +31,12 @@ interface Route {
 interface TransitMapProps {
     startLoc: { lat: number; lng: number };
     endLoc: { lat: number; lng: number };
-    routes: Route[];
+    routes: any[];
     optimalRouteId?: string;
+    onRouteSelect?: (route: any) => void;
 }
 
-export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }: TransitMapProps) {
+export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId, onRouteSelect }: TransitMapProps) {
     const [isMounted, setIsMounted] = useState(false);
 
     const [activeRouteId, setActiveRouteId] = useState<string | null>(null);
@@ -171,7 +172,10 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
                 {routes.map(route => (
                     <button 
                         key={route.id}
-                        onClick={() => setActiveRouteId(route.id)}
+                        onClick={() => {
+                            setActiveRouteId(route.id);
+                            onRouteSelect?.(route);
+                        }}
                         className={`flex-shrink-0 p-3 rounded-xl border transition-all text-left w-48 ${
                             route.id === effectiveOptimalId 
                             ? 'bg-mint/10 border-mint/50 shadow-[0_0_15px_rgba(32,255,189,0.1)]' 

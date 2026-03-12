@@ -20,6 +20,8 @@ export default function MarketMapsPage() {
     const [routingData, setRoutingData] = useState<any>(null);
     const [isRoutingLoading, setIsRoutingLoading] = useState(false);
     const [selectedMandi, setSelectedMandi] = useState<any>(null);
+    const [selectedRouteObject, setSelectedRouteObject] = useState<any>(null);
+    const [isVakeelThinking, setIsVakeelThinking] = useState(false);
 
     // Get current location (from user profile or default)
     const startLoc = cachedData?.user_location || { lat: 18.5204, lng: 73.8567 };
@@ -51,6 +53,8 @@ export default function MarketMapsPage() {
             if (res.ok) {
                 const json = await res.json();
                 setRoutingData(json);
+                const optimalRoute = json.routes.find((r: any) => r.id === json.optimal_id) || json.routes[0];
+                setSelectedRouteObject(optimalRoute);
                 const routeId = `route_${targetMandi.mandi_name.replace(/\s+/g, '_')}_${Date.now()}`;
                 saveRouteToIDB(routeId, json);
             }
@@ -74,11 +78,18 @@ export default function MarketMapsPage() {
         fetchRouting(mandi);
     };
 
+    const handleAskVakeel = async () => {
+        if (!selectedRouteObject) return;
+        setIsVakeelThinking(true);
+        // This is a mock interaction - in production we'd send context to the chatbot
+        setTimeout(() => setIsVakeelThinking(false), 2000);
+    };
+
     // Fallback to empty array if data isn't loaded yet
     const data = cachedData || { regional_options: [] };
 
     return (
-        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
             <header className="relative z-50 flex flex-col mb-8">
                 <div className="flex justify-between items-start">
                     <div>
@@ -94,157 +105,151 @@ export default function MarketMapsPage() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-24">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-24">
 
-                {/* Visual "Map" Alternative - Logistics List */}
-                <GlassCard className="col-span-1 lg:col-span-2">
-                    <div className="flex justify-between items-center mb-6">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 rounded-full bg-mint/10 border border-mint/20 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7" />
-                                </svg>
+                {/* Left Side: Map and Analysis (2/3 width) */}
+                <div className="lg:col-span-2 space-y-6">
+                    <GlassCard className="p-0 overflow-hidden relative border-white/5">
+                        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 rounded-lg bg-mint/10 flex items-center justify-center border border-mint/20">
+                                    <svg className="w-4 h-4 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-lg font-bold text-white uppercase tracking-tight">{t('spatialProfitAnalysis') || 'Logistics Intelligence'}</h2>
                             </div>
-                            <h2 className="text-xl font-bold text-white">{t('spatialProfitAnalysis')}</h2>
+                            <StatusPill status="GREEN" message={t('liveGPSTransitData')} />
                         </div>
-                        <StatusPill status="GREEN" message={t('liveGPSTransitData')} />
-                    </div>
 
-                    <p className="text-gray-400 text-sm mb-6 max-w-2xl">
-                        {t('evaluatingDestinations')}
-                    </p>
-
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-white">{t('marketOrbit')}</h3>
-                        <div className="flex items-center space-x-2">
-                            <span className="w-2 h-2 rounded-full bg-mint animate-pulse"></span>
-                            <span className="text-xs font-mono text-mint tracking-wider">{t('liveData')}</span>
+                        {/* Transit Map Integration */}
+                        <div className="border-b border-white/5 relative">
+                            <TransitMap 
+                                startLoc={startLoc}
+                                endLoc={{ 
+                                    lat: selectedMandi?.lat || data.regional_options?.[0]?.lat || 18.5204 + 0.1, 
+                                    lng: selectedMandi?.lng || data.regional_options?.[0]?.lng || 73.8567 + 0.1 
+                                }}
+                                routes={routingData?.routes || []}
+                                optimalRouteId={routingData?.optimal_id}
+                                onRouteSelect={(route) => setSelectedRouteObject(route)}
+                            />
                         </div>
-                    </div>
 
-                    {/* Transit Map Integration */}
-                    <div className="mb-8 rounded-2xl overflow-hidden border border-white/5 relative">
-                        <TransitMap 
-                            startLoc={startLoc}
-                            endLoc={{ 
-                                lat: selectedMandi?.lat || data.regional_options?.[0]?.lat || 18.5204 + 0.1, 
-                                lng: selectedMandi?.lng || data.regional_options?.[0]?.lng || 73.8567 + 0.1 
-                            }}
-                            routes={routingData?.routes || []}
-                            optimalRouteId={routingData?.optimal_id}
-                        />
-                    </div>
-
-                    <div className="space-y-4">
-                        {data.regional_options.length === 0 && (
-                            <p className="text-gray-400 text-sm text-center py-4">{t('noAlternatives')}</p>
+                        {/* Route Intelligence Briefing (Inline) */}
+                        {selectedRouteObject && (
+                            <div className="p-6 bg-mint/[0.03] transition-all duration-500">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-mint mb-1 flex items-center">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-mint mr-2 animate-pulse" />
+                                            AI Intelligence Briefing
+                                        </h3>
+                                        <p className="text-white font-bold text-lg">{selectedRouteObject.name} Analysis</p>
+                                    </div>
+                                    <button 
+                                        onClick={handleAskVakeel}
+                                        disabled={isVakeelThinking}
+                                        className="flex items-center space-x-2 bg-forest border border-mint/30 hover:bg-mint/10 px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(32,255,189,0.1)] group"
+                                    >
+                                        <svg className={`w-4 h-4 ${isVakeelThinking ? 'animate-spin text-mint' : 'text-mint'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                        </svg>
+                                        <span className="text-xs font-bold text-white group-hover:text-mint transition-colors">
+                                            {isVakeelThinking ? 'Vakeel is Thinking...' : 'Ask Agri-Vakeel'}
+                                        </span>
+                                    </button>
+                                </div>
+                                <div className="p-4 rounded-xl bg-forest/40 border border-white/5 backdrop-blur-sm">
+                                    <p className="text-sm text-gray-300 italic leading-relaxed font-medium">
+                                        "{selectedRouteObject.justification || selectedRouteObject.description}"
+                                    </p>
+                                </div>
+                            </div>
                         )}
+                    </GlassCard>
 
-                        {data.regional_options.map((option: any, index: number) => {
-                            const isOptimal = index === 0;
-                            const hasHighSpoilage = option.quality_loss_inr > 300; // Mock threshold
+                    {/* Logic Detail Card */}
+                    <GlassCard className="h-48 flex flex-col justify-center p-6 border-white/5">
+                        <h2 className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4">{t('routeOptimizationLogic')}</h2>
+                        <div className="grid grid-cols-3 gap-8 font-mono text-sm">
+                            <div className="space-y-1">
+                                <span className="text-gray-500 block text-[10px] uppercase">{t('transportRate')}</span>
+                                <span className="text-white font-bold">₹{n(15.0)} / {t('km')}</span>
+                            </div>
+                            <div className="space-y-1 text-center">
+                                <span className="text-gray-500 block text-[10px] uppercase">{t('baseTransitSpeed')}</span>
+                                <span className="text-white font-bold">{n(30)} {t('kmPerHour')}</span>
+                            </div>
+                            <div className="space-y-1 text-right">
+                                <span className="text-gray-500 block text-[10px] uppercase">Analysis Mode</span>
+                                <span className="text-mint font-bold uppercase tracking-wider">{t('enabled')}</span>
+                            </div>
+                        </div>
+                    </GlassCard>
+                </div>
 
-                            return (
-                                <div
-                                    key={index}
-                                    onClick={() => handleMandiSelect(option)}
-                                    className={`relative p-4 rounded-xl border transition-all cursor-pointer ${
-                                        (selectedMandi?.mandi_name === option.mandi_name)
-                                        ? 'bg-mint/10 border-mint/30 shadow-[0_0_15px_rgba(32,255,189,0.1)] ring-1 ring-mint/50'
-                                        : isOptimal
-                                        ? 'bg-mint/5 border-mint/10'
-                                        : hasHighSpoilage
-                                            ? 'bg-red-500/5 border-red-500/20'
-                                            : 'bg-white/5 border-white/10 hover:bg-white/10'
-                                        }`}
-                                >
-                                    {/* Top Row: Name and Status */}
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div>
-                                            <h4 className="font-bold text-white text-lg">{t('mandiName')}: {option.mandi_name}</h4>
-                                            <div className="flex items-center space-x-2 mt-1">
-                                                <span className="text-xs text-gray-400 flex items-center">
-                                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    </svg>
-                                                    {n(roundVal(option.distance_km))} {t('km') || 'km'} {t('distance')}
-                                                </span>
-                                                <span className="text-gray-600 text-xs">•</span>
-                                                <span className="text-xs text-gray-400 flex items-center">
-                                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    {n((option.distance_km * 1.5).toFixed(0))} {t('mins') || 'mins'}
+                {/* Right Side: Market Orbit / Mandi Selection (1/3 width) */}
+                <div className="lg:col-span-1 space-y-6">
+                    <GlassCard className="h-full flex flex-col border-white/5">
+                        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
+                            <h2 className="text-xl font-bold text-white tracking-tight">{t('marketOrbit')}</h2>
+                            <span className="text-[10px] font-mono text-mint border border-mint/20 px-2 py-0.5 rounded-full">{t('liveData')}</span>
+                        </div>
+
+                        <div className="p-4 space-y-4 max-h-[800px] overflow-y-auto custom-scrollbar">
+                            {data.regional_options.length === 0 && (
+                                <p className="text-gray-400 text-sm text-center py-8">{t('noAlternatives')}</p>
+                            )}
+
+                            {data.regional_options.map((option: any, index: number) => {
+                                const isSelected = selectedMandi?.mandi_name === option.mandi_name;
+                                const hasHighSpoilage = (option.quality_loss_inr || 0) > 300;
+
+                                return (
+                                    <div
+                                        key={index}
+                                        onClick={() => handleMandiSelect(option)}
+                                        className={`relative p-4 rounded-xl border transition-all cursor-pointer group ${
+                                            isSelected
+                                            ? 'bg-mint/10 border-mint/40 shadow-[0_0_20px_rgba(32,255,189,0.1)] ring-1 ring-mint/30'
+                                            : index === 0
+                                            ? 'bg-mint/[0.05] border-mint/10'
+                                            : 'bg-white/[0.03] border-white/5 hover:border-white/20 hover:bg-white/[0.05]'
+                                            }`}
+                                    >
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h4 className={`font-bold transition-colors ${isSelected ? 'text-mint' : 'text-white'}`}>
+                                                    {option.mandi_name}
+                                                </h4>
+                                                <p className="text-[10px] text-gray-500 mt-0.5">
+                                                    {n(roundVal(option.distance_km))} km • {n((option.distance_km * 1.5).toFixed(0))} mins
+                                                </p>
+                                            </div>
+                                            {index === 0 && (
+                                                <span className="bg-mint text-forest text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm">OPTIMAL</span>
+                                            )}
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/5">
+                                            <div>
+                                                <span className="text-[9px] text-gray-500 uppercase block">Profit</span>
+                                                <span className="text-sm font-bold text-white font-mono">₹{n(option.total_net_profit)}</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-[9px] text-gray-500 uppercase block">Spoilage</span>
+                                                <span className={`text-sm font-bold font-mono ${hasHighSpoilage ? 'text-red-400' : 'text-gray-400'}`}>
+                                                    -₹{n((option.transport_cost_inr || 0) + (option.quality_loss_inr || 0))}
                                                 </span>
                                             </div>
                                         </div>
-                                        {isOptimal && (
-                                            <span className="bg-mint text-forest text-[10px] font-bold px-2 py-1 rounded-full animate-pulse shadow-[0_0_10px_rgba(32,255,189,0.5)]">
-                                                {t('optimalRoute')}
-                                            </span>
-                                        )}
-                                        {hasHighSpoilage && !isOptimal && (
-                                            <span className="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-bold px-2 py-1 rounded">
-                                                {t('deadZone')}
-                                            </span>
-                                        )}
                                     </div>
-
-                                    {/* Warning Banner */}
-                                    {hasHighSpoilage && (
-                                        <div className="mb-3 px-3 py-2 bg-red-500/10 border-l-2 border-red-500 text-xs text-red-300 flex items-center">
-                                            <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                            {t('warningSpoilage')} (<span className="text-red-400 ml-1 font-mono">₹{n(option.quality_loss_inr)}</span>)
-                                        </div>
-                                    )}
-
-                                    {/* Financial Metrics */}
-                                    <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-white/5">
-                                        <div>
-                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest">{t('price')}</p>
-                                            <p className="font-mono text-sm text-gray-300">₹{n(option.market_price)}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest">{t('logiSpoilage')}</p>
-                                            <p className="font-mono text-sm text-red-400">
-                                                -₹{n((option.transport_cost_inr || 0) + (option.quality_loss_inr || 0))}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Net Profit Row */}
-                                    <div className="mt-3 pt-3 border-t border-white/10 flex justify-between items-end">
-                                        <p className="text-xs font-medium text-gray-400">{t('takeHomeProfit')}</p>
-                                        <p className="font-mono text-lg font-bold text-white">
-                                            ₹{n(option.total_net_profit)}
-                                        </p>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </GlassCard>
-
-                <GlassCard className="h-48 flex flex-col justify-center p-6">
-                    <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">{t('routeOptimizationLogic')}</h2>
-                    <div className="space-y-4 font-mono text-sm">
-                        <div className="flex justify-between items-center">
-                            <span className="text-gray-500">{t('transportRate') || 'Transport Rate'}</span>
-                            <span className="text-white">₹{n(15.0)} / {t('km') || 'km'}</span>
+                                );
+                            })}
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-gray-500">{t('baseTransitSpeed') || 'Base Transit Speed'}</span>
-                            <span className="text-white">{n(30)} {t('kmPerHour') || 'km/hr'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-gray-500">{t('q10SpoilageActive') || 'Q10 Spoilage Active'}</span>
-                            <span className="text-mint ml-2">{t('enabled') || 'ENABLED'}</span>
-                        </div>
-                    </div>
-                </GlassCard>
+                    </GlassCard>
+                </div>
             </div>
 
             <VoiceAssistant dashboardData={cachedData} />
@@ -252,7 +257,6 @@ export default function MarketMapsPage() {
     );
 }
 
-// helper
 function roundVal(num: number) {
     return Math.round(num * 10) / 10;
 }

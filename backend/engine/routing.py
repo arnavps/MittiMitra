@@ -104,7 +104,8 @@ def mock_route_alternatives(start: Dict[str, float], end: Dict[str, float]) -> L
             "segments": [
                 {"temp": 34.0, "duration_hours": round((base_dist * 1.05) / 50.0, 2), "vibration_index": 1.0}
             ],
-            "description": "Shortest time, but high solar exposure."
+            "description": "Shortest time, but high solar exposure.",
+            "justification": "This route minimizes fuel cost and engine wear-and-tear by using the direct highway, but it lacks shade, increasing heat-decay risk."
         },
         {
             "id": "smoothest",
@@ -114,7 +115,8 @@ def mock_route_alternatives(start: Dict[str, float], end: Dict[str, float]) -> L
             "segments": [
                 {"temp": 31.0, "duration_hours": round((base_dist * 1.2) / 40.0, 2), "vibration_index": 1.1}
             ],
-            "description": "Well-paved, less vibration damage."
+            "description": "Well-paved, less vibration damage.",
+            "justification": "Superior road quality prevents bruising of delicate crops like tomatoes. Highly recommended if your truck lacks advanced suspension."
         },
         {
             "id": "coolest",
@@ -124,6 +126,7 @@ def mock_route_alternatives(start: Dict[str, float], end: Dict[str, float]) -> L
             "segments": [
                 {"temp": 28.0, "duration_hours": round((base_dist * 1.15) / 30.0, 2), "vibration_index": 1.4}
             ],
-            "description": "Longer and bumpy, but 6°C cooler shade."
+            "description": "Longer and bumpy, but 6°C cooler shade.",
+            "justification": "The 28°C ambient temperature effectively pauses rapid spoilage. Ideal for high-heat days even if it takes 20% longer to arrive."
         }
     ]
