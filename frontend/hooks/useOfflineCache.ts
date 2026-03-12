@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 export function useOfflineCache(key: string, initialData: any = null) {
     const [isOnline, setIsOnline] = useState(true);
     const [syncQueue, setSyncQueue] = useState<any[]>([]);
+    const [cachedData, setCachedData] = useState<any>(initialData);
 
     // Offline Math Helper
     const calculateOfflineSpoilage = (base_q10: number, current_temp: number, target_temp: number, duration_hours: number) => {
