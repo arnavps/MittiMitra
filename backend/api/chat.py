@@ -97,6 +97,8 @@ Here is the CURRENT REAL-TIME DATA for the farmer:
 {f"CRITICAL: The farmer has MANUALLY CALIBRATED the environmental data ({context.get('manual_override_count')} overrides). Trust the farmer's ground truth over the sensors. Acknowledge this in your opening." if context.get('is_manual_override') else ""}
 
 If the dashboard context includes a `priority_action` under `preservation`, you MUST mention it and tell the farmer exactly how much money they will save by doing it. Example format: "Also, by [action], you can save ₹[net_saving_inr] today." (translate to {language}).
+
+If `logistics_audit.is_high_risk` is true, you MUST explicitly state the following (translated to {language}): "Vakeel found a profit leak. Your current setup ({context.get("logistics_audit", {}).get("current_setup")}) is costing you ₹{context.get("logistics_audit", {}).get("leak_inr_per_hour")} per hour in spoilage compared to the ideal setup ({context.get("logistics_audit", {}).get("ideal_setup")})."
 """
     if shock and shock.get("is_shock"):
         prompt += f"\nCRITICAL SHOCK ALERT ACTIVE: {shock.get('message')}. Pivot Advice: {shock.get('pivot_advice')}\n"

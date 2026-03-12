@@ -6,6 +6,7 @@ from engine.profit_calc import get_net_realization
 from engine.map_logic import calculate_spatial_profit
 from engine.shock_analyzer import detect_market_shock, detect_volume_shock
 from engine.spoilage_pro import calculate_dynamic_spoilage, get_heat_multiplier, get_preservation_actions
+from engine.audit import identify_profit_leaks
 from integrations.mandi_api import fetch_mandi_prices
 from integrations.weather_api import fetch_district_weather
 
@@ -155,6 +156,14 @@ async def get_harvest_recommendation(data: HarvestRequest):
         # Calculate Total Crop Value for Preservation Math
         total_crop_value = gross_rev
         preservation_data = get_preservation_actions(total_crop_value, quality_loss_pct, temp_today, data.storage_type)
+        
+        # Phase 1.5: Logistics Audit & Profit Leaks
+        current_state = {
+            "storage_environment": data.storage_type,
+            "vehicle_type": data.transport_type
+        }
+        market_price_per_qtl = best_optimal_option["market_price"]
+        audit_data = identify_profit_leaks(current_state, data.crop, temp_today, data.yield_est_quintals, market_price_per_qtl)
 
         # Re-calc net profit with updated spoilage
         total_profit_today = gross_rev - logistics_cost - spoilage_penalty
@@ -195,6 +204,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
             "best_mandi": f"{best_mandi_name} ({round(dist_best, 1)} km)",
             "weather": weather_data,
             "preservation": preservation_data,
+            "logistics_audit": audit_data,
             "spoilage_risk_pct": round(dynamic_spoilage_pct, 2),
             "mandi_stats": {
                 "name": best_mandi_name,

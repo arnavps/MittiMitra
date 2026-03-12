@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { VerdictCard } from './VerdictCard';
 import { MetricsGrid } from './MetricsGrid';
+import { AuditSummaryCard } from './AuditSummaryCard';
 import { ManualOverrideModal } from '@/components/dashboard/ManualOverrideModal';
 import { VakeelBrief } from '@/components/dashboard/VakeelBrief';
 import { auth } from '@/services/firebase';
@@ -369,6 +370,13 @@ export default function DashboardPage() {
                             </div>
                         </GlassCard>
                     </div>
+
+                    {/* Logistics Audit Card (Phase 1.5) */}
+                    {data?.logistics_audit && (
+                        <div className="order-3 lg:order-3">
+                            <AuditSummaryCard auditData={data.logistics_audit} />
+                        </div>
+                    )}
                 </div>
             </div>
 
