@@ -106,9 +106,8 @@ If `logistics_audit.is_high_risk` is true, you MUST explicitly state the followi
     prompt += """
 YOUR TASK:
 Explain the 'Sell vs Wait' recommendation to the farmer based ONLY on the data above.
-Do not just repeat the numbers. Explain the TRADE-OFFS—specifically the balance between harvesting now to avoid spoilage versus waiting for a potential price peak.
-Compare the Total Profit Today vs the Predicted Profit in 48 hours clearly.
-The response should be concise enough for voice playback (around 4-5 sentences) but comprehensive enough to build institutional trust.
+Explain the TRADE-OFFS (e.g., harvest now to avoid spoilage vs waiting for price peak).
+CRITICAL: The response MUST be extremely brief and punchy for fast voice playback. STRICT MAXIMUM of 2 short sentences. Do not use complex numbers. Provide a fast, direct answer to build trust without making the farmer wait.
 """
     return prompt
 
@@ -157,13 +156,13 @@ def chat_explain(req: ChatRequest):
         system_prompt = build_system_prompt(req.dashboard_context, req.language)
         
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": req.farmer_query or "Please explain my dashboard recommendation."}
             ],
             temperature=0.3, # Low temperature for factual consistency
-            max_tokens=250, # Increased for complex multilingual sentences
+            max_tokens=100, # Decreased to enforce punchy replies
         )
         
         reply = completion.choices[0].message.content
