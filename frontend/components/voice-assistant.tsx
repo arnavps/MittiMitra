@@ -95,7 +95,9 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
             };
 
             recognition.onerror = (event: any) => {
-                console.error("Speech recognition error", event.error);
+                if (event.error !== 'no-speech') {
+                    console.error("Speech recognition error", event.error);
+                }
                 setIsListening(false);
 
                 if (event.error === 'not-allowed') {
@@ -121,7 +123,7 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
         return () => {
             if (audioRef.current) {
                 audioRef.current.pause();
-                audioRef.current.src = "";
+                audioRef.current.removeAttribute('src');
             }
         };
     }, [language]);
@@ -150,10 +152,14 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
 
                 recognitionRef.current?.start();
                 setIsListening(true);
-            } catch (err) {
-                console.error("Microphone permission denied or not supported:", err);
-                setErrorMsg(t('micRequired') || "Microphone access is required to use the Voice Assistant.");
-                setIsListening(false);
+            } catch (err: any) {
+                if (err.name === 'InvalidStateError') {
+                    setIsListening(true);
+                } else {
+                    console.error("Microphone permission denied or not supported:", err);
+                    setErrorMsg(t('micRequired') || "Microphone access is required to use the Voice Assistant.");
+                    setIsListening(false);
+                }
             }
         }
     };

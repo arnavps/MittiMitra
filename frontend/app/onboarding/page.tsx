@@ -140,7 +140,7 @@ export default function OnboardingPage() {
         return () => {
             if (audioRef.current) {
                 audioRef.current.pause();
-                audioRef.current.src = "";
+                audioRef.current.removeAttribute('src');
             }
         };
     }, []);
@@ -193,8 +193,12 @@ export default function OnboardingPage() {
         try {
             recognitionRef.current?.start();
             setIsListening(true);
-        } catch (e) {
-            console.error("Recognition start failed", e);
+        } catch (e: any) {
+            if (e.name !== 'InvalidStateError') {
+                console.error("Recognition start failed", e);
+            } else {
+                setIsListening(true);
+            }
         }
     };
 
@@ -220,7 +224,9 @@ export default function OnboardingPage() {
         };
 
         recognition.onerror = (event: any) => {
-            console.error("STT Error", event.error);
+            if (event.error !== 'no-speech') {
+                console.error("STT Error", event.error);
+            }
             setIsListening(false);
         };
 
