@@ -1,0 +1,23 @@
+{
+  "name": "mittimitra",
+  "version": "1.0.0",
+  "description": "> The Temporal Arbitrage Engine: Empowering 146M Smallholders to Optimize the 72-Hour Harvest-to-Market Window.",
+  "main": "index.js",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && fastapi dev main.py",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arnavps/Team_Technexis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arnavps/Team_Technexis/issues"
+  },
+  "homepage": "https://github.com/arnavps/Team_Technexis#readme"
+}
