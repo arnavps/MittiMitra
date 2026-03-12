@@ -204,12 +204,13 @@ EXTRACT CONSENT:
   - 'Tandul'/'Chawal' -> 'rice'
   - 'Tamatar' -> 'tomato'
 - 'ai_reply' MUST be in """ + req.language + """ script.
-- If you have some info but not all (e.g. you have 5 acres but no crop), the 'ai_reply' MUST acknowledge the 5 acres and specifically ask for the missing crop."""
+- If you have some info but not all (e.g. you have 5 acres but no crop), the 'ai_reply' MUST acknowledge the 5 acres and specifically ask for the missing crop.
+- If ALL info (crop and land size) is present, 'ai_reply' should be a brief success message like "Thank you."."""
         elif req.step == "StorageTransport":
              schema_instructions = """Return JSON with: {'storage_type': string/null, 'transport_type': string/null, 'ai_reply': 'string'}.
 - Extract storage type (must map to exactly one of: 'Open Field', 'Shaded', 'Crated'). Default to 'Open Field' if unclear but present.
 - Extract transport type (must map to exactly one of: 'Open Trolley', 'Covered Pickup'). Default to 'Open Trolley' if unclear but present.
-- 'ai_reply' MUST be in """ + req.language + """ script only. If missing one, ask for the other briefly."""
+- 'ai_reply' MUST be in """ + req.language + """ script only. If missing one, ask for the other briefly. If both are present, say "Thank you."."""
         elif req.step == "FinalCalibration":
              schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'planting_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}. Extract yield as number. 'ai_reply' MUST be in " + req.language + " script only."
         else:
@@ -233,9 +234,8 @@ Farmer Language: {req.language}
 STRICT RULES:
 1. Return ONLY valid JSON.
 2. The 'ai_reply' MUST be in {req.language} script.
-3. If a field (Name, Crop, or Land Size) is NOT 'Unknown' in the CONTEXT above, you MUST NOT ask for it again.
-4. If BOTH Crop AND Land Size are known, your 'ai_reply' should just be a very brief success message like "Thank you, I have all your details." (in {req.language}).
-5. do NOT use conversational filler like "Ji Kisan bhai" unless it's part of a brief acknowledgement.
+3. If a field is NOT 'Unknown' in the CONTEXT above, you MUST NOT ask for it again.
+4. do NOT use conversational filler like "Ji Kisan bhai" unless it's part of a brief acknowledgement.
 """
         # Safer logging for Windows terminals
         try:

@@ -340,7 +340,7 @@ export default function OnboardingPage() {
                     if (data.storage_type) setStorageType(data.storage_type);
                     if (data.transport_type) setTransportType(data.transport_type);
 
-                    if (data.storage_type || storageTypeRef.current) {
+                    if ((data.storage_type || storageTypeRef.current) && (data.transport_type || transportTypeRef.current)) {
                         targetStep = 'FinalCalibration';
                     }
                 } else if (activeStep === 'FinalCalibration') {
