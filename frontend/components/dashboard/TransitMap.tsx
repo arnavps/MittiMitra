@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { GlassCard } from '@/components/glass-card';
-import { MapContainer, TileLayer, Polyline, Marker, Popup, CircleMarker } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Marker, Popup, CircleMarker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -43,9 +43,19 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
         setIsMounted(true);
     }, []);
 
+    // Component to re-center map when props change
+    function ChangeView({ center }: { center: [number, number] }) {
+        const map = useMap();
+        useEffect(() => {
+            map.setView(center, map.getZoom());
+        }, [center, map]);
+        return null;
+    }
+
     if (!isMounted) return <div className="h-[400px] w-full bg-forest/50 animate-pulse rounded-2xl border border-white/5" />;
 
     const effectiveOptimalId = optimalRouteId || (routes.length > 0 ? routes[0].id : null);
+    const mapCenter: [number, number] = [(startLoc.lat + endLoc.lat) / 2, (startLoc.lng + endLoc.lng) / 2];
 
     // Generate a simple path between start and end for visualization 
     // In a real app, these would come from the Directions API geometry
@@ -72,12 +82,13 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
 
             <div className="h-[400px] w-full">
                 <MapContainer 
-                    center={[ (startLoc.lat + endLoc.lat) / 2, (startLoc.lng + endLoc.lng) / 2 ]} 
+                    center={mapCenter} 
                     zoom={9} 
                     scrollWheelZoom={false}
                     className="h-full w-full"
                     style={{ background: '#0a1a12' }}
                 >
+                    <ChangeView center={mapCenter} />
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"

@@ -19,6 +19,7 @@ export default function MarketMapsPage() {
     const { cachedData, saveRouteToIDB } = useOfflineCache('dashboard_recommendation');
     const [routingData, setRoutingData] = useState<any>(null);
     const [isRoutingLoading, setIsRoutingLoading] = useState(false);
+    const [selectedMandi, setSelectedMandi] = useState<any>(null);
 
     // Get current location (from user profile or default)
     const startLoc = cachedData?.user_location || { lat: 18.5204, lng: 73.8567 };
@@ -62,9 +63,16 @@ export default function MarketMapsPage() {
 
     useEffect(() => {
         if (cachedData?.regional_options?.[0]) {
-            fetchRouting(cachedData.regional_options[0]);
+            const initialMandi = cachedData.regional_options[0];
+            setSelectedMandi(initialMandi);
+            fetchRouting(initialMandi);
         }
     }, [cachedData?.regional_options]);
+
+    const handleMandiSelect = (mandi: any) => {
+        setSelectedMandi(mandi);
+        fetchRouting(mandi);
+    };
 
     // Fallback to empty array if data isn't loaded yet
     const data = cachedData || { regional_options: [] };
@@ -119,8 +127,8 @@ export default function MarketMapsPage() {
                         <TransitMap 
                             startLoc={startLoc}
                             endLoc={{ 
-                                lat: data.regional_options?.[0]?.lat || 18.5204 + 0.1, 
-                                lng: data.regional_options?.[0]?.lng || 73.8567 + 0.1 
+                                lat: selectedMandi?.lat || data.regional_options?.[0]?.lat || 18.5204 + 0.1, 
+                                lng: selectedMandi?.lng || data.regional_options?.[0]?.lng || 73.8567 + 0.1 
                             }}
                             routes={routingData?.routes || []}
                             optimalRouteId={routingData?.optimal_id}
@@ -139,8 +147,12 @@ export default function MarketMapsPage() {
                             return (
                                 <div
                                     key={index}
-                                    className={`relative p-4 rounded-xl border transition-all ${isOptimal
-                                        ? 'bg-mint/10 border-mint/30 shadow-[0_0_15px_rgba(32,255,189,0.1)]'
+                                    onClick={() => handleMandiSelect(option)}
+                                    className={`relative p-4 rounded-xl border transition-all cursor-pointer ${
+                                        (selectedMandi?.mandi_name === option.mandi_name)
+                                        ? 'bg-mint/10 border-mint/30 shadow-[0_0_15px_rgba(32,255,189,0.1)] ring-1 ring-mint/50'
+                                        : isOptimal
+                                        ? 'bg-mint/5 border-mint/10'
                                         : hasHighSpoilage
                                             ? 'bg-red-500/5 border-red-500/20'
                                             : 'bg-white/5 border-white/10 hover:bg-white/10'
@@ -198,7 +210,7 @@ export default function MarketMapsPage() {
                                         <div className="text-right">
                                             <p className="text-[10px] text-gray-500 uppercase tracking-widest">{t('logiSpoilage')}</p>
                                             <p className="font-mono text-sm text-red-400">
-                                                -₹{n(option.transport_cost_inr + option.quality_loss_inr)}
+                                                -₹{n((option.transport_cost_inr || 0) + (option.quality_loss_inr || 0))}
                                             </p>
                                         </div>
                                     </div>

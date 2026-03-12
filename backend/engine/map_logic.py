@@ -48,6 +48,10 @@ def calculate_spatial_profit(
         # Flag "Dead Zones" where spoilage risk is critically high (>15%) due to distance/heat
         is_dead_zone = loss_pct > 15.0
         
+        gross_revenue = price * yield_est
+        transport_cost = dist * mandi.get("transport_rate_per_km", 15.0) * yield_est
+        quality_loss_value = (loss_pct / 100.0) * gross_revenue
+        
         results.append({
             "mandi_name": mandi["name"],
             "distance_km": dist,
@@ -58,6 +62,8 @@ def calculate_spatial_profit(
             "net_profit_per_quintal": round(net_profit_per_quintal, 2),
             "total_net_profit": round(total_net_profit, 2),
             "quality_loss_pct": round(loss_pct, 2),
+            "quality_loss_inr": round(quality_loss_value, 2),
+            "transport_cost_inr": round(transport_cost, 2),
             "is_dead_zone": is_dead_zone,
             "is_recommended": False # Will be set later
         })
