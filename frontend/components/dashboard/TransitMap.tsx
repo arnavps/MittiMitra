@@ -38,10 +38,16 @@ interface TransitMapProps {
 export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }: TransitMapProps) {
     const [isMounted, setIsMounted] = useState(false);
 
+    const [activeRouteId, setActiveRouteId] = useState<string | null>(null);
+
     useEffect(() => {
         fixLeafletIcon();
         setIsMounted(true);
     }, []);
+
+    useEffect(() => {
+        if (optimalRouteId) setActiveRouteId(optimalRouteId);
+    }, [optimalRouteId]);
 
     // Component to re-center map when props change
     function ChangeView({ center }: { center: [number, number] }) {
@@ -54,7 +60,7 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
 
     if (!isMounted) return <div className="h-[400px] w-full bg-forest/50 animate-pulse rounded-2xl border border-white/5" />;
 
-    const effectiveOptimalId = optimalRouteId || (routes.length > 0 ? routes[0].id : null);
+    const effectiveOptimalId = activeRouteId || optimalRouteId || (routes.length > 0 ? routes[0].id : null);
     const mapCenter: [number, number] = [(startLoc.lat + endLoc.lat) / 2, (startLoc.lng + endLoc.lng) / 2];
 
     // Generate a simple path between start and end for visualization 
@@ -84,7 +90,8 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
                 <MapContainer 
                     center={mapCenter} 
                     zoom={9} 
-                    scrollWheelZoom={false}
+                    scrollWheelZoom={true}
+                    zoomControl={false}
                     className="h-full w-full"
                     style={{ background: '#0a1a12' }}
                 >
@@ -118,9 +125,12 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
                             positions={getRoutePath(idx)}
                             pathOptions={{
                                 color: route.id === effectiveOptimalId ? '#20FFBD' : '#ffffff',
-                                weight: route.id === effectiveOptimalId ? 6 : 3,
-                                opacity: route.id === effectiveOptimalId ? 1 : 0.3,
-                                dashArray: route.id === effectiveOptimalId ? undefined : '5, 10'
+                                weight: route.id === effectiveOptimalId ? 6 : 4,
+                                opacity: route.id === effectiveOptimalId ? 1 : 0.6,
+                                dashArray: route.id === effectiveOptimalId ? undefined : '10, 10'
+                            }}
+                            eventHandlers={{
+                                click: () => setActiveRouteId(route.id)
                             }}
                         >
                             <Popup>
@@ -161,17 +171,18 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
                 {routes.map(route => (
                     <button 
                         key={route.id}
+                        onClick={() => setActiveRouteId(route.id)}
                         className={`flex-shrink-0 p-3 rounded-xl border transition-all text-left w-48 ${
-                            route.id === optimalRouteId 
+                            route.id === effectiveOptimalId 
                             ? 'bg-mint/10 border-mint/50 shadow-[0_0_15px_rgba(32,255,189,0.1)]' 
-                            : 'bg-white/5 border-white/10'
+                            : 'bg-white/5 border-white/10 hover:bg-white/10'
                         }`}
                     >
                         <div className="flex justify-between items-start mb-2">
                             <span className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${
-                                route.id === optimalRouteId ? 'bg-mint text-forest' : 'bg-white/10 text-white/60'
+                                route.id === effectiveOptimalId ? 'bg-mint text-forest' : 'bg-white/10 text-white/60'
                             }`}>
-                                {route.id === optimalRouteId ? 'Optimal' : 'Alternative'}
+                                {route.id === effectiveOptimalId ? 'Optimal' : 'Alternative'}
                             </span>
                             <span className="text-[9px] font-bold text-white/40">{route.distance_km} km</span>
                         </div>

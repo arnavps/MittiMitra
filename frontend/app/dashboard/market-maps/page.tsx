@@ -123,7 +123,7 @@ export default function MarketMapsPage() {
                     </div>
 
                     {/* Transit Map Integration */}
-                    <div className="mb-8 rounded-2xl overflow-hidden border border-white/5 relative h-[400px]">
+                    <div className="mb-8 rounded-2xl overflow-hidden border border-white/5 relative">
                         <TransitMap 
                             startLoc={startLoc}
                             endLoc={{ 
