@@ -45,6 +45,8 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
 
     if (!isMounted) return <div className="h-[400px] w-full bg-forest/50 animate-pulse rounded-2xl border border-white/5" />;
 
+    const effectiveOptimalId = optimalRouteId || (routes.length > 0 ? routes[0].id : null);
+
     // Generate a simple path between start and end for visualization 
     // In a real app, these would come from the Directions API geometry
     const getRoutePath = (index: number) => {
@@ -104,10 +106,10 @@ export default function TransitMap({ startLoc, endLoc, routes, optimalRouteId }:
                             key={route.id}
                             positions={getRoutePath(idx)}
                             pathOptions={{
-                                color: route.id === optimalRouteId ? '#20FFBD' : '#ffffff',
-                                weight: route.id === optimalRouteId ? 6 : 3,
-                                opacity: route.id === optimalRouteId ? 1 : 0.3,
-                                dashArray: route.id === optimalRouteId ? undefined : '5, 10'
+                                color: route.id === effectiveOptimalId ? '#20FFBD' : '#ffffff',
+                                weight: route.id === effectiveOptimalId ? 6 : 3,
+                                opacity: route.id === effectiveOptimalId ? 1 : 0.3,
+                                dashArray: route.id === effectiveOptimalId ? undefined : '5, 10'
                             }}
                         >
                             <Popup>

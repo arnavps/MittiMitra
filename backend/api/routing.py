@@ -14,7 +14,7 @@ class RoutingRequest(BaseModel):
     transport_type: str
     market_price: float
 
-@router.post("/")
+@router.post("")
 async def get_optimal_route(req: RoutingRequest):
     """
     Returns multiple route alternatives scored by Net Realization.

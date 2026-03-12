@@ -100,6 +100,8 @@ def _parse_real_json_data(commodity_data: Dict[str, Any], crop: str, user_loc: d
             "current_volume_quintals": random.randint(100, 500),
             "average_volume_quintals": 250,
             "distance_km": round(dist, 1),
+            "lat": m_lat,
+            "lng": m_lng,
             "transport_rate_per_km": 15.0,
             "is_verified_real": True 
         })

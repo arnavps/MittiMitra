@@ -26,6 +26,11 @@ export default function MarketMapsPage() {
 
     const fetchRouting = async (targetMandi: any) => {
         if (!targetMandi || isRoutingLoading) return;
+        
+        // Ensure mandi has coords even if stripped in cache
+        const mandiLat = targetMandi.lat || 18.5204 + 0.1;
+        const mandiLng = targetMandi.lng || 73.8567 + 0.1;
+        
         setIsRoutingLoading(true);
         try {
             const res = await fetch('/api/routing', {
@@ -34,7 +39,7 @@ export default function MarketMapsPage() {
                 body: JSON.stringify({
                     crop: cachedData?.crop || "Tomato",
                     start_loc: startLoc,
-                    end_loc: { lat: targetMandi.lat, lng: targetMandi.lng },
+                    end_loc: { lat: mandiLat, lng: mandiLng },
                     yield_qtl: cachedData?.yield_quintals || 50,
                     storage_type: cachedData?.storage_type || "Open Field",
                     transport_type: cachedData?.transport_type || "Open Trolley",

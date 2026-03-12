@@ -53,6 +53,8 @@ def calculate_spatial_profit(
             "distance_km": dist,
             "estimated_transit_hours": round(estimated_transit_hours, 1),
             "market_price": price,
+            "lat": mandi.get("lat"),
+            "lng": mandi.get("lng"),
             "net_profit_per_quintal": round(net_profit_per_quintal, 2),
             "total_net_profit": round(total_net_profit, 2),
             "quality_loss_pct": round(loss_pct, 2),
