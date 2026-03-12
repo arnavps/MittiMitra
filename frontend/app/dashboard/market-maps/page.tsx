@@ -4,18 +4,64 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GlassCard } from '@/components/glass-card';
 import { useOfflineCache } from '@/hooks/useOfflineCache';
 import { StatusPill } from '@/components/status-pill';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+const TransitMap = dynamic(() => import('@/components/dashboard/TransitMap'), { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full bg-forest/50 animate-pulse rounded-2xl border border-white/5" />
+});
 
 export default function MarketMapsPage() {
     const { t, n } = useLanguage();
 
-    const { cachedData } = useOfflineCache('dashboard_recommendation');
+    const { cachedData, saveRouteToIDB } = useOfflineCache('dashboard_recommendation');
+    const [routingData, setRoutingData] = useState<any>(null);
+    const [isRoutingLoading, setIsRoutingLoading] = useState(false);
 
-    // Fallback to empty array if data isn't loaded yet
-    const regionalOptions = cachedData?.regional_options || [];
+    // Get current location (from user profile or default)
+    const startLoc = cachedData?.user_location || { lat: 18.5204, lng: 73.8567 };
     const activeShock = cachedData?.shock_alert;
 
-    // Assuming 'data' in the provided snippet refers to cachedData
-    const data = cachedData || { regional_options: [] }; // Define data for the new structure
+    const fetchRouting = async (targetMandi: any) => {
+        if (!targetMandi || isRoutingLoading) return;
+        setIsRoutingLoading(true);
+        try {
+            const res = await fetch('/api/routing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    crop: cachedData?.crop || "Tomato",
+                    start_loc: startLoc,
+                    end_loc: { lat: targetMandi.lat, lng: targetMandi.lng },
+                    yield_qtl: cachedData?.yield_quintals || 50,
+                    storage_type: cachedData?.storage_type || "Open Field",
+                    transport_type: cachedData?.transport_type || "Open Trolley",
+                    market_price: targetMandi.market_price
+                })
+            });
+
+            if (res.ok) {
+                const json = await res.json();
+                setRoutingData(json);
+                const routeId = `route_${targetMandi.mandi_name.replace(/\s+/g, '_')}_${Date.now()}`;
+                saveRouteToIDB(routeId, json);
+            }
+        } catch (err) {
+            console.error("Routing fetch failed", err);
+        } finally {
+            setIsRoutingLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (cachedData?.regional_options?.[0]) {
+            fetchRouting(cachedData.regional_options[0]);
+        }
+    }, [cachedData?.regional_options]);
+
+    // Fallback to empty array if data isn't loaded yet
+    const data = cachedData || { regional_options: [] };
 
     return (
         <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
@@ -60,6 +106,19 @@ export default function MarketMapsPage() {
                             <span className="w-2 h-2 rounded-full bg-mint animate-pulse"></span>
                             <span className="text-xs font-mono text-mint tracking-wider">{t('liveData')}</span>
                         </div>
+                    </div>
+
+                    {/* Transit Map Integration */}
+                    <div className="mb-8 rounded-2xl overflow-hidden border border-white/5 relative h-[400px]">
+                        <TransitMap 
+                            startLoc={startLoc}
+                            endLoc={{ 
+                                lat: data.regional_options?.[0]?.lat || 18.5204 + 0.1, 
+                                lng: data.regional_options?.[0]?.lng || 73.8567 + 0.1 
+                            }}
+                            routes={routingData?.routes || []}
+                            optimalRouteId={routingData?.optimal_id}
+                        />
                     </div>
 
                     <div className="space-y-4">

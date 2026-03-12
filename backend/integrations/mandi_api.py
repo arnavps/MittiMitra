@@ -136,10 +136,18 @@ def _parse_gov_api_data(records: List[Dict[str, Any]], crop: str) -> Dict[str, A
             price = float(rec.get("modal_price", 5000))
         except:
             price = current_price
+        dist_km = random.uniform(20.0, 500.0)
+        # Generate plausible coordinates based on distance
+        angle = random.uniform(0, 2 * math.pi)
+        lat_offset = (dist_km / 111.0) * math.cos(angle)
+        lng_offset = (dist_km / (111.0 * math.cos(math.radians(18.5)))) * math.sin(angle)
+        
         regional_options.append({
             "name": f"{rec.get('market', 'Regional APMC')} ({rec.get('state', 'India')})",
             "current_price": round(price, 2),
-            "distance_km": random.uniform(20.0, 500.0), # Expanded to 500km
+            "distance_km": round(dist_km, 1),
+            "lat": 18.5204 + lat_offset, # Use Pune as base for now
+            "lng": 73.8567 + lng_offset,
             "transport_rate_per_km": 15.0
         })
     return {"primary": primary_mandi, "regional_options": regional_options}
@@ -160,11 +168,18 @@ def _generate_mock_fallback(crop: str, language: str) -> Dict[str, Any]:
     regional_options = [primary_mandi]
     for i in range(3):
         price = round(base_price + random.uniform(-200, 200), 2)
+        dist_km = random.uniform(20.0, 500.0)
+        angle = random.uniform(0, 2 * math.pi)
+        lat_offset = (dist_km / 111.0) * math.cos(angle)
+        lng_offset = (dist_km / (111.0 * math.cos(math.radians(18.5)))) * math.sin(angle)
+
         regional_options.append({
             "name": f"Regional Mandi #{i+1}",
             "crop": crop,
             "current_price": price,
-            "distance_km": random.uniform(20.0, 500.0), # Expanded to 500km
+            "distance_km": round(dist_km, 1),
+            "lat": 18.5204 + lat_offset,
+            "lng": 73.8567 + lng_offset,
             "transport_rate_per_km": 15.0
         })
     return {"primary": primary_mandi, "regional_options": regional_options}
