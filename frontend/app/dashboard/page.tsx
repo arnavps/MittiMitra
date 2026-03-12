@@ -16,6 +16,12 @@ import { AuditSummaryCard } from './AuditSummaryCard';
 import { ManualOverrideModal } from '@/components/dashboard/ManualOverrideModal';
 import { VakeelBrief } from '@/components/dashboard/VakeelBrief';
 import { auth } from '@/services/firebase';
+import dynamic from 'next/dynamic';
+
+const TransitMap = dynamic(() => import('@/components/dashboard/TransitMap'), { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full bg-forest/50 animate-pulse rounded-2xl border border-white/5" />
+});
 
 export default function DashboardPage() {
     const { t, n, language } = useLanguage();
@@ -31,6 +37,8 @@ export default function DashboardPage() {
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
     const [manualLocation, setManualLocation] = useState<{ lat: number, lng: number } | null>(null);
     const [profileLocation, setProfileLocation] = useState<{ lat: number, lng: number } | null>(null);
+    const [routingData, setRoutingData] = useState<any>(null);
+    const [isRoutingLoading, setIsRoutingLoading] = useState(false);
 
     const availableCrops = ["Tomato", "Potato", "Onion", "Soybean", "Wheat", "Cotton"];
     const hubs = [
@@ -84,7 +92,7 @@ export default function DashboardPage() {
     }>({ isOpen: false, metric: '', value: 0, unit: '' });
 
     const { location, requestLocation } = useGPS();
-    const { isOnline, cachedData, saveToCache, calculateOfflineSpoilage } = useOfflineCache('dashboard_recommendation');
+    const { isOnline, cachedData, saveToCache, calculateOfflineSpoilage, saveRouteToIDB, getRouteFromIDB } = useOfflineCache('dashboard_recommendation');
 
     // Trigger re-calculation when overrides or yield change locally
     const recalculateWithOverrides = (currentData: any, newOverrides: Record<string, number>, newYield?: number) => {
@@ -214,6 +222,53 @@ export default function DashboardPage() {
         }
     };
 
+    const fetchRouting = async (bestMandi: any) => {
+        if (!bestMandi || isRoutingLoading) return;
+        setIsRoutingLoading(true);
+        try {
+            const start = manualLocation || (location ? { lat: location.latitude, lng: location.longitude } : (profileLocation || { lat: 18.5204, lng: 73.8567 }));
+            
+            // For now, mandis in regional_options have distance but we need coords. 
+            // In a real app, the mandi_api returns coords. We'll fallback to Pune if missing.
+            const end = { 
+                lat: bestMandi.lat || 18.5204 + (Math.random() * 0.2), 
+                lng: bestMandi.lng || 73.8567 + (Math.random() * 0.2) 
+            };
+
+            const res = await fetch('/api/routing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    crop: userCrop || "Tomato",
+                    start_loc: start,
+                    end_loc: end,
+                    yield_qtl: yieldEst || 50,
+                    storage_type: data?.storage_type || "Open Field",
+                    transport_type: data?.transport_type || "Open Trolley",
+                    market_price: bestMandi.market_price
+                })
+            });
+
+            if (res.ok) {
+                const json = await res.json();
+                setRoutingData(json);
+                // Persist to IDB for offline navigation
+                const routeId = `route_${bestMandi.name.replace(/\s+/g, '_')}_${Date.now()}`;
+                saveRouteToIDB(routeId, json);
+            }
+        } catch (err) {
+            console.error("Routing fetch failed", err);
+        } finally {
+            setIsRoutingLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (data?.mandi_stats) {
+            fetchRouting(data.regional_options?.[0]);
+        }
+    }, [data?.mandi_stats]);
+
     useEffect(() => {
         if (!location) {
             requestLocation();
@@ -337,6 +392,22 @@ export default function DashboardPage() {
                                 <h3 className="text-lg font-bold text-white">{t('marketOrbit')}</h3>
                                 <StatusPill status="GREEN" message={t('liveData')} />
                             </div>
+                            
+                            {/* Transit Map Integration */}
+                            {(location || profileLocation || manualLocation) && (
+                                <div className="mb-6 rounded-2xl overflow-hidden border border-white/5">
+                                    <TransitMap 
+                                        startLoc={manualLocation || (location ? { lat: location.latitude, lng: location.longitude } : (profileLocation || { lat: 18.5204, lng: 73.8567 }))}
+                                        endLoc={{ 
+                                            lat: data?.regional_options?.[0]?.lat || 18.5204 + 0.1, 
+                                            lng: data?.regional_options?.[0]?.lng || 73.8567 + 0.1 
+                                        }}
+                                        routes={routingData?.routes || []}
+                                        optimalRouteId={routingData?.optimal_id}
+                                    />
+                                </div>
+                            )}
+
                             <p className="text-sm text-gray-400 mb-6">{t('mandiDesc')}</p>
                             <MandiTable mandis={mandiList} />
                         </GlassCard>
@@ -384,7 +455,7 @@ export default function DashboardPage() {
             <VakeelBrief brief={data?.vakeel_brief} />
 
             {/* Floating Voice Assistant */}
-            <VoiceAssistant dashboardData={data} initialQuery={vakeelQuery} />
+            <VoiceAssistant dashboardData={{ ...data, routing_data: routingData }} initialQuery={vakeelQuery} />
 
             {/* Manual Override Modal */}
             <ManualOverrideModal

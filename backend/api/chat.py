@@ -51,6 +51,12 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     weather = context.get("weather", {})
     mandi = context.get("mandi_stats", {})
     shock = context.get("shock_alert", {})
+    routing = context.get("routing_data", {})
+    
+    optimal_route = next((r for r in routing.get("routes", []) if r["id"] == routing.get("optimal_id")), None)
+    route_info = ""
+    if optimal_route:
+        route_info = f"Optimal Route: {optimal_route['name']} ({optimal_route['distance_km']}km), transit spoilage risk: {optimal_route['quality_loss_pct']}%."
     
     # Calculate totals for the prompt to match dashboard
     total_today = total_profit
@@ -99,6 +105,9 @@ Here is the CURRENT REAL-TIME DATA for the farmer:
 If the dashboard context includes a `priority_action` under `preservation`, you MUST mention it and tell the farmer exactly how much money they will save by doing it. Example format: "Also, by [action], you can save ₹[net_saving_inr] today." (translate to {language}).
 
 If `logistics_audit.is_high_risk` is true, you MUST explicitly state the following (translated to {language}): "Vakeel found a profit leak. Your current setup ({context.get("logistics_audit", {}).get("current_setup")}) is costing you ₹{context.get("logistics_audit", {}).get("leak_inr_per_hour")} per hour in spoilage compared to the ideal setup ({context.get("logistics_audit", {}).get("ideal_setup")})."
+
+ROUTING CONTEXT:
+{route_info}
 """
     if shock and shock.get("is_shock"):
         prompt += f"\nCRITICAL SHOCK ALERT ACTIVE: {shock.get('message')}. Pivot Advice: {shock.get('pivot_advice')}\n"

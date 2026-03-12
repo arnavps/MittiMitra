@@ -24,9 +24,11 @@ app.add_middleware(
 
 from api.chat import router as chat_router, generate_vakeel_brief
 from api.user import router as user_router
+from api.routing import router as routing_router
 
 app.include_router(chat_router, prefix="/chat", tags=["AI Explanation"])
 app.include_router(user_router, prefix="/user", tags=["User Data Management"])
+app.include_router(routing_router, prefix="/routing", tags=["Smart Transit Maps"])
 
 class HarvestRequest(BaseModel):
     crop: str = ""

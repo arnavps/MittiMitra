@@ -3,6 +3,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ConsentNotice } from "@/components/auth/ConsentNotice";
 import { ServiceWorkerKiller } from "@/components/ServiceWorkerKiller";
 import "./globals.css";
+import "leaflet/dist/leaflet.css";
 
 export const metadata: Metadata = {
   title: "MittiMitra (AgriChain)",

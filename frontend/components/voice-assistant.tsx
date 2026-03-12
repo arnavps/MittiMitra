@@ -44,6 +44,7 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
     // Web Speech API references
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const lastShockRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (initialQuery && !isThinking) {
@@ -127,6 +128,32 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
             }
         };
     }, [language]);
+
+    // Dynamic Rerouting Interruption Logic
+    useEffect(() => {
+        if (dashboardData?.shock_alert?.is_shock) {
+            const shockMsg = dashboardData.shock_alert.message || "";
+            const pivotMsg = dashboardData.shock_alert.pivot_advice || "";
+            const fullAlert = `${shockMsg} ${pivotMsg}`;
+            
+            // Only trigger if this is a NEW shock we haven't alerted for yet
+            if (lastShockRef.current !== fullAlert) {
+                lastShockRef.current = fullAlert;
+                
+                // FORCE INTERRUPT!
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current.currentTime = 0;
+                }
+                
+                setIsOpen(true);
+                setResponse(fullAlert);
+                speakResponse(fullAlert);
+            }
+        } else {
+            lastShockRef.current = null;
+        }
+    }, [dashboardData?.shock_alert]);
 
     const toggleListen = async () => {
         if (isListening) {
