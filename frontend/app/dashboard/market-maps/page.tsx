@@ -169,29 +169,10 @@ export default function MarketMapsPage() {
                         )}
                     </GlassCard>
 
-                    {/* Logic Detail Card */}
-                    <GlassCard className="h-48 flex flex-col justify-center p-6 border-white/5">
-                        <h2 className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4">{t('routeOptimizationLogic')}</h2>
-                        <div className="grid grid-cols-3 gap-8 font-mono text-sm">
-                            <div className="space-y-1">
-                                <span className="text-gray-500 block text-[10px] uppercase">{t('transportRate')}</span>
-                                <span className="text-white font-bold">₹{n(15.0)} / {t('km')}</span>
-                            </div>
-                            <div className="space-y-1 text-center">
-                                <span className="text-gray-500 block text-[10px] uppercase">{t('baseTransitSpeed')}</span>
-                                <span className="text-white font-bold">{n(30)} {t('kmPerHour')}</span>
-                            </div>
-                            <div className="space-y-1 text-right">
-                                <span className="text-gray-500 block text-[10px] uppercase">Analysis Mode</span>
-                                <span className="text-mint font-bold uppercase tracking-wider">{t('enabled')}</span>
-                            </div>
-                        </div>
-                    </GlassCard>
                 </div>
 
-                {/* Right Side: Market Orbit / Mandi Selection (1/3 width) */}
                 <div className="lg:col-span-1 space-y-6">
-                    <GlassCard className="h-full flex flex-col border-white/5">
+                    <GlassCard className="flex flex-col border-white/5">
                         <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
                             <h2 className="text-xl font-bold text-white tracking-tight">{t('marketOrbit')}</h2>
                             <span className="text-[10px] font-mono text-mint border border-mint/20 px-2 py-0.5 rounded-full">{t('liveData')}</span>
@@ -247,6 +228,25 @@ export default function MarketMapsPage() {
                                     </div>
                                 );
                             })}
+                        </div>
+                    </GlassCard>
+
+                    {/* Logic Detail Card */}
+                    <GlassCard className="p-6 border-white/5 bg-white/[0.02]">
+                        <h2 className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4">{t('routeOptimizationLogic')}</h2>
+                        <div className="space-y-4 font-mono text-sm">
+                            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                                <span className="text-gray-500 text-[10px] uppercase">{t('transportRate')}</span>
+                                <span className="text-white font-bold">₹{n(15.0)} / {t('km')}</span>
+                            </div>
+                            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                                <span className="text-gray-500 text-[10px] uppercase">{t('baseTransitSpeed')}</span>
+                                <span className="text-white font-bold">{n(30)} {t('kmPerHour')}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500 text-[10px] uppercase">Analysis Mode</span>
+                                <span className="text-mint font-bold uppercase tracking-wider">{t('enabled')}</span>
+                            </div>
                         </div>
                     </GlassCard>
                 </div>
