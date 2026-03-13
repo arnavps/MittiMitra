@@ -194,15 +194,26 @@ export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData
                         ></div>
                     </div>
 
-                    <Link 
-                        href="/dashboard/harvest-oracle" 
-                        className="w-full flex items-center justify-center py-2 bg-mint/10 border border-mint/20 rounded-xl text-[10px] text-mint font-black uppercase tracking-widest hover:bg-mint hover:text-forest transition-all"
-                    >
-                        Learn More Logic
-                        <svg className="w-3 h-3 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                    </Link>
+                    <div className="grid grid-cols-2 gap-3">
+                        <Link 
+                            href="/dashboard/harvest-oracle" 
+                            className="flex items-center justify-center py-2 bg-mint/10 border border-mint/20 rounded-xl text-[10px] text-mint font-black uppercase tracking-widest hover:bg-mint hover:text-forest transition-all"
+                        >
+                            Learn More Logic
+                            <svg className="w-3 h-3 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </Link>
+                        <Link 
+                            href="/dashboard/transparency-ledger" 
+                            className="flex items-center justify-center py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] text-gray-400 font-black uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all"
+                        >
+                            <svg className="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            Certify Yield
+                        </Link>
+                    </div>
                 </div>
             )}
 
