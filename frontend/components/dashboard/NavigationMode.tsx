@@ -45,6 +45,7 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
     const [hoursElapsed, setHoursElapsed] = useState(0);
     const [currentPos, setCurrentPos] = useState({ lat: startLoc.lat, lng: startLoc.lng });
     const [progress, setProgress] = useState(0); // 0 to 1
+    const [isSimulating, setIsSimulating] = useState(false);
 
     // Pre-download Map Tiles for 0G dead zones
     useEffect(() => {
@@ -62,6 +63,8 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
 
     // Simulated Movement Interpolation
     useEffect(() => {
+        if (!isSimulating) return;
+        
         const interval = setInterval(() => {
             setProgress(prev => {
                 const next = Math.min(prev + 0.005, 1);
@@ -75,7 +78,7 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
             });
         }, 3000); // Progress every 3s
         return () => clearInterval(interval);
-    }, [startLoc, endLoc]);
+    }, [isSimulating, startLoc, endLoc]);
 
     // Simulated Navigation Directions based on progress
     useEffect(() => {
@@ -139,14 +142,14 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
         if (!navigator.geolocation) return;
         const watchId = navigator.geolocation.watchPosition(
             (pos) => {
-                const speedKph = pos.coords.speed ? Math.round(pos.coords.speed * 3.6) : (progress > 0 && progress < 1 ? 40 : 0);
+                const speedKph = pos.coords.speed ? Math.round(pos.coords.speed * 3.6) : (isSimulating ? 40 : 0);
                 setSpeed(speedKph);
             },
             (err) => console.warn("GPS Speed detection failed", err),
             { enableHighAccuracy: true }
         );
         return () => navigator.geolocation.clearWatch(watchId);
-    }, [progress]);
+    }, [isSimulating]);
 
     const distanceRemaining = Math.max(0, Math.round(totalDistance * (1 - progress)));
 
@@ -206,9 +209,16 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
                                 {targetMandi}
                             </h2>
                             <div className="flex items-center mt-3 space-x-3">
-                                <span className="px-2 py-0.5 bg-mint/10 text-mint text-xs font-black rounded border border-mint/20 uppercase tracking-widest animate-pulse">
-                                    LIVE
-                                </span>
+                                <button 
+                                    onClick={() => setIsSimulating(!isSimulating)}
+                                    className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                        isSimulating 
+                                        ? 'bg-mint text-forest border-mint animate-pulse' 
+                                        : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
+                                    }`}
+                                >
+                                    {isSimulating ? 'SIMULATING' : 'REAL GPS'}
+                                </button>
                                 <span className="text-gray-400 text-xl font-mono font-bold">
                                     {estimatedArrival}
                                 </span>
