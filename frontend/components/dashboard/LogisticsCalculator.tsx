@@ -29,6 +29,7 @@ interface LogisticsCalculatorProps {
     onVehicleSelect: (vehicleId: string) => void;
     onTransportTypeToggle: (isHired: boolean) => void;
     yieldQtl: number;
+    crop: string;
 }
 
 export function LogisticsCalculator({ 
@@ -36,11 +37,51 @@ export function LogisticsCalculator({
     sharedLogistics, 
     onVehicleSelect, 
     onTransportTypeToggle,
-    yieldQtl 
+    yieldQtl,
+    crop
 }: LogisticsCalculatorProps) {
     const [selectedId, setSelectedId] = useState(recommendations[0]?.id || '');
     const [isHired, setIsHired] = useState(true);
     const [showDiagram, setShowDiagram] = useState(false);
+
+    const getLoadingInfo = (vehicleId: string, currentCrop: string) => {
+        const cropLower = currentCrop.toLowerCase();
+        
+        if (cropLower.includes('potato') || cropLower.includes('onion')) {
+            if (vehicleId === 'Open Trolley') {
+                return {
+                    title: "Chimney Pattern Stacking",
+                    description: "Stack in 3x3 rows with a hollow center column for maximum core cooling.",
+                    img: "/loading_guide.png",
+                    goal: "Prevents internal rot by 22% on long trips."
+                };
+            }
+            return {
+                title: "Layered Stacking with Padding",
+                description: "Use 4-inch straw padding and limit to 4 layers to prevent bottom-layer bruising.",
+                img: "/stacking_padding.png",
+                goal: "Reduces 'silent profit leaks' fromMandis."
+            };
+        }
+
+        if (cropLower.includes('tomato')) {
+            return {
+                title: "Interlocking Crate Stacking",
+                description: "Use plastic crates with interlocking lids. Do not exceed vehicle sideboard height.",
+                img: "/tomato_crating.png",
+                goal: "Prevents sun-scald and crushing during transit."
+            };
+        }
+
+        return {
+            title: "Balanced Distribution",
+            description: "Distribute load evenly across the vehicle floor to maintain balance and airflow.",
+            img: "/loading_guide.png", // Fallback
+            goal: "Ensures vehicle stability and basic heat dissipation."
+        };
+    };
+
+    const loadingInfo = getLoadingInfo(selectedId, crop);
 
     const handleSelect = (id: string) => {
         setSelectedId(id);
@@ -143,19 +184,17 @@ export function LogisticsCalculator({
                                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
                                     <div 
                                         key={i} 
-                                        className={`rounded-sm border ${i === 5 ? 'bg-transparent border-dashed border-mint/50' : 'bg-mint/30 border-mint/50 animate-pulse'}`}
+                                        className={`rounded-sm border ${loadingInfo.title.includes('Chimney') && i === 5 ? 'bg-transparent border-dashed border-mint/50' : 'bg-mint/30 border-mint/50 animate-pulse'}`}
                                         style={{ animationDelay: `${i * 0.1}s` }}
                                     ></div>
                                 ))}
                             </div>
-                            <p className="text-[7px] text-mint font-bold text-center uppercase tracking-tighter">Chimney Pattern</p>
+                            <p className="text-[7px] text-mint font-bold text-center uppercase tracking-tighter">{loadingInfo.title.split(' ')[0]} Pattern</p>
                         </div>
 
                         <div className="flex-1">
                             <p className="text-xs text-gray-300 leading-relaxed font-medium italic mb-3">
-                                "{selectedVehicle?.id === 'Open Trolley' 
-                                    ? `Stack bags in 3x3 rows with the center column empty. This creates a vertical 'chimney' that pulls heat away from the core.` 
-                                    : `Apply 4-inch padding layer of straw. Do not exceed 5 levels of stacking to prevent bottom-layer compression.`}"
+                                "{loadingInfo.description}"
                             </p>
                             <div className="flex items-center space-x-4">
                                 <button 
@@ -191,7 +230,7 @@ export function LogisticsCalculator({
                     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowDiagram(false)}></div>
                     <GlassCard className="max-w-xl w-full p-6 md:p-8 border-mint/30 relative z-10 animate-in zoom-in-95 my-auto">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-white uppercase tracking-tight italic">Detailed Loading Guide</h3>
+                            <h3 className="text-xl font-bold text-white uppercase tracking-tight italic">{loadingInfo.title}</h3>
                             <button onClick={() => setShowDiagram(false)} className="text-gray-400 hover:text-white transition-colors">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
@@ -200,8 +239,8 @@ export function LogisticsCalculator({
                         <div className="space-y-6">
                             <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-white p-2 md:p-4 shadow-2xl">
                                 <img 
-                                    src="/loading_guide.png" 
-                                    alt="Chimney Pattern Loading Guide"
+                                    src={loadingInfo.img} 
+                                    alt={loadingInfo.title}
                                     className="w-full h-auto max-h-[40vh] md:max-h-[500px] object-contain mx-auto"
                                 />
                             </div>
@@ -210,13 +249,13 @@ export function LogisticsCalculator({
                                 <div className="p-4 rounded-xl bg-mint/5 border border-mint/20">
                                     <h4 className="text-xs font-black text-mint uppercase mb-2">The Goal</h4>
                                     <p className="text-sm text-gray-300 leading-relaxed">
-                                        Core temperature management is critical. A chimney layout reduces internal rot by 22% on trips longer than 2 hours.
+                                        {loadingInfo.goal}
                                     </p>
                                 </div>
                                 <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                                    <h4 className="text-xs font-black text-gray-400 uppercase mb-2">Next Step</h4>
+                                    <h4 className="text-xs font-black text-gray-400 uppercase mb-2">Instructions</h4>
                                     <p className="text-sm text-gray-300 leading-relaxed">
-                                        Ask Agri-Vakeel for voice instructions while you stack the bags in the field.
+                                        {loadingInfo.description}
                                     </p>
                                 </div>
                             </div>

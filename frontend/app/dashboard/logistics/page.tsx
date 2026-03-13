@@ -37,6 +37,7 @@ export default function LogisticsPage() {
                             recommendations={logisticsData}
                             sharedLogistics={sharedLogistics as any}
                             yieldQtl={yieldQtl}
+                            crop={cachedData?.crop || 'Potato'}
                             onVehicleSelect={setSelectedVehicleId}
                             onTransportTypeToggle={setIsHired}
                         />
