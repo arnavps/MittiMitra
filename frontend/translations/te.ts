@@ -122,6 +122,7 @@ export const te = {
     proFarmer: "ప్రో రైతు",
     agriVakeelNav: "అగ్రి-వకీల్",
     diseaseAudit: "పంట వ్యాధి పరీక్ష",
+    schemesHub: "కిసాన్ సహాయం",
 
     // Market Maps Page
     regionalAnalysis: "ప్రాంతీయ మార్కెట్ విశ్లేషణ",

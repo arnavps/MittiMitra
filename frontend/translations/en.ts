@@ -122,6 +122,7 @@ export const en = {
     proFarmer: "Pro Farmer",
     agriVakeelNav: "Agri-Vakeel",
     diseaseAudit: "Disease Audit",
+    schemesHub: "Kisan Sahayata",
 
     // Market Maps Page
     regionalAnalysis: "Regional Market Analysis",

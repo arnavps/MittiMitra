@@ -122,6 +122,7 @@ export const ta = {
     proFarmer: "ப்ரோ விவசாயி",
     agriVakeelNav: "அக்ரி-வக்கீல்",
     diseaseAudit: "நோய் தணிக்கை",
+    schemesHub: "கிசான் உதவி",
 
     // Market Maps Page
     regionalAnalysis: "பிராந்திய சந்தை பகுப்பாய்வு",

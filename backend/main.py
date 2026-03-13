@@ -18,6 +18,7 @@ from logic.shadowPrice import calculate_shadow_price
 from integrations.mandi_api import fetch_mandi_prices
 from integrations.weather_api import fetch_district_weather
 from engine.logistics import recommend_vehicle, identify_clusters
+from engine.scheme_ranker import rank_schemes
 
 app = FastAPI(title="AgriChain API", description="The Temporal Arbitrage Engine")
 
@@ -320,6 +321,11 @@ async def get_harvest_recommendation(data: HarvestRequest):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/schemes")
+async def get_ranked_schemes(data: dict):
+    # data expects: {spoilage_risk_pct: float, storage_type: str, crop: str}
+    return rank_schemes(data)
 
 if __name__ == "__main__":
     import uvicorn

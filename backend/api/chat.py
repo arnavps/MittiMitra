@@ -22,6 +22,7 @@ class ChatRequest(BaseModel):
     farmer_query: str
     dashboard_context: Dict[str, Any]
     language: str = "Regional"
+    context_mode: str = "expert" # expert, financial_advisor, co_pilot
 
 class TTSRequest(BaseModel):
     text: str
@@ -154,6 +155,22 @@ If `logistics_audit.is_high_risk` is true, you MUST explicitly state the followi
 
     if shock and shock.get("is_shock"):
         prompt += f"\nCRITICAL SHOCK ALERT ACTIVE: {shock.get('message')}. Pivot Advice: {shock.get('pivot_advice')}\n"
+
+    # Phase 10: Contextual Overrides
+    context_mode = context.get("context_mode", "expert")
+    if context_mode == "financial_advisor":
+        prompt += """
+FINANCIAL ADVISOR MODE:
+- You are now an expert on Indian Agri-Schemes and subsidies.
+- Connect the scheme's benefit specifically to the farmer's current risk (e.g., if spoilage is high, explain how Operation Greens helps).
+- Be extremely encouraging about modernizing the farm using government support.
+"""
+    elif context_mode == "co_pilot":
+        prompt += """
+CO-PILOT MODE:
+- Focus solely on traffic, road heat, and market pivots.
+- Be blunt, fast, and tactical. You are helping them drive right now.
+"""
 
     prompt += """
 YOUR TASK:

@@ -122,6 +122,7 @@ export const gu = {
     proFarmer: "પ્રો ખેડૂત",
     agriVakeelNav: "કૃષિ-વકીલ",
     diseaseAudit: "રોગ ઓડિટ",
+    schemesHub: "કિસાન સહાય",
 
     // Market Maps Page
     regionalAnalysis: "પ્રાદેશિક બજાર વિશ્લેષણ",

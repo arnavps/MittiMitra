@@ -122,6 +122,7 @@ export const mr = {
     proFarmer: "प्रो शेतकरी",
     agriVakeelNav: "कृषी-वकील",
     diseaseAudit: "रोग परीक्षण",
+    schemesHub: "शेतकरी साहाय्य",
 
     // Market Maps Page
     regionalAnalysis: "प्रादेशिक बाजार विश्लेषण",

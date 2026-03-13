@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useOfflineCache } from "@/hooks/useOfflineCache";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getVoiceContextMode } from "@/services/voiceOrchestrator";
+import { usePathname } from 'next/navigation';
 
 interface VoiceAssistantProps {
     dashboardData: any; // The full response from /recommendation
@@ -12,6 +14,7 @@ interface VoiceAssistantProps {
 
 export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery = "" }: VoiceAssistantProps) {
     const { t, language: globalLanguage } = useLanguage();
+    const pathname = usePathname();
 
     // Map context codes to backend names
     const langCodeToName: Record<string, string> = {
@@ -320,7 +323,10 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     farmer_query: query,
-                    dashboard_context: dashboardData,
+                    dashboard_context: {
+                        ...dashboardData,
+                        context_mode: getVoiceContextMode(pathname)
+                    },
                     language: language
                 })
             });
