@@ -168,7 +168,22 @@ export default function MarketMapsPage() {
                                         "{selectedRouteObject.justification || selectedRouteObject.description}"
                                     </p>
                                 </div>
-                                <div className="mt-4 flex justify-end">
+                                <div className="mt-4 flex flex-wrap justify-end gap-3">
+                                    <button 
+                                        className="bg-white/5 border border-white/10 text-gray-400 font-bold px-6 py-3 rounded-2xl hover:bg-white/10 transition-all flex items-center space-x-2"
+                                        onClick={() => {
+                                            // Trigger caching logic from here if we want or just show it's available in navigation
+                                            window.dispatchEvent(new CustomEvent('agriVakeelIntervention', { 
+                                                detail: { 
+                                                    message: "Don't forget to download the offline map package once you start navigation to stay safe in zero-signal areas!",
+                                                    title: "OFFLINE READY" 
+                                                } 
+                                            }));
+                                        }}
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                        <span>Prepare Offline</span>
+                                    </button>
                                     <button 
                                         onClick={() => setIsTripActive(true)}
                                         className="bg-mint text-forest font-black uppercase tracking-widest px-8 py-3 rounded-2xl shadow-[0_0_20px_rgba(32,255,189,0.3)] hover:bg-white transition-all transform hover:scale-105 active:scale-95 flex items-center space-x-2"

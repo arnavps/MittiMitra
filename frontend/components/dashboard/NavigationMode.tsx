@@ -46,11 +46,26 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
     const [currentPos, setCurrentPos] = useState({ lat: startLoc.lat, lng: startLoc.lng });
     const [progress, setProgress] = useState(0); // 0 to 1
     const [isSimulating, setIsSimulating] = useState(false);
+    const [isCaching, setIsCaching] = useState(false);
+    const [cacheStatus, setCacheStatus] = useState<"idle" | "downloading" | "complete">("idle");
 
-    // Pre-download Map Tiles for 0G dead zones
+    // Pre-download Map Tiles logic
+    const handleDownload = async () => {
+        setIsCaching(true);
+        setCacheStatus("downloading");
+        try {
+            await cacheMapTiles(currentPos, 15);
+            setCacheStatus("complete");
+        } catch (e) {
+            console.error(e);
+            setCacheStatus("idle");
+        } finally {
+            setIsCaching(false);
+        }
+    };
+
     useEffect(() => {
         fixLeafletIcon();
-        cacheMapTiles(startLoc, 15);
     }, []);
 
     const speak = (text: string) => {
@@ -263,7 +278,7 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
                     </div>
 
                     {/* Preservation Tip Mini-Card */}
-                    <div className="mt-8 p-6 bg-orange-500/10 border border-orange-500/20 rounded-[40px]">
+                    <div className="mt-8 p-6 bg-orange-500/10 border border-orange-500/20 rounded-[40px] mb-6">
                         <div className="flex items-center space-x-3 mb-2">
                              <svg className="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                              <span className="text-[10px] font-black text-orange-400 uppercase tracking-widest">Storage Alert</span>
@@ -272,6 +287,42 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
                             Maintain consistent speed to ensure airflow through crates. Current temp: 34°C.
                         </p>
                     </div>
+
+                    {/* Offline Download Option */}
+                    <button
+                        onClick={handleDownload}
+                        disabled={cacheStatus === "complete" || isCaching}
+                        className={`w-full p-6 rounded-[30px] border-2 flex items-center justify-between transition-all ${
+                            cacheStatus === "complete"
+                            ? 'bg-mint/20 border-mint/40 text-mint'
+                            : 'bg-white/5 border-white/10 hover:bg-white/10 text-white'
+                        }`}
+                    >
+                        <div className="flex items-center space-x-4">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${cacheStatus === "complete" ? 'bg-mint text-forest' : 'bg-white/10'}`}>
+                                {cacheStatus === "complete" ? (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                                ) : isCaching ? (
+                                    <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                )}
+                            </div>
+                            <div className="text-left">
+                                <p className="text-sm font-black uppercase tracking-widest">
+                                    {cacheStatus === "complete" ? "Offline Pack Ready" : isCaching ? "Downloading..." : "Download Offline Map"}
+                                </p>
+                                <p className="text-[10px] text-gray-400 font-bold">
+                                    {cacheStatus === "complete" ? "Works without Internet" : "Save 50MB for 0G dead zones"}
+                                </p>
+                            </div>
+                        </div>
+                        {cacheStatus !== "complete" && !isCaching && (
+                            <span className="text-xs font-black text-mint bg-mint/10 px-3 py-1 rounded-full border border-mint/20">
+                                FREE
+                            </span>
+                        )}
+                    </button>
                 </div>
 
                 {/* Exit Confirmation Modal */}
