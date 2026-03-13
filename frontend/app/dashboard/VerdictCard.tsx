@@ -158,10 +158,49 @@ export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData
                 </div>
             )}
 
+            {/* Harvest Oracle: Ripeness & Tactical Verdict */}
+            {oracleData && (
+                <div className="z-10 w-full mb-6 mt-4 p-5 bg-white/[0.03] border border-white/10 rounded-2xl relative group overflow-hidden">
+                    <div className="absolute top-0 right-0 p-3 flex space-x-2">
+                        {oracleData.oracle_verdict?.confidence_score && (
+                            <div className="px-2 py-0.5 bg-mint/20 border border-mint/30 rounded text-[8px] font-black text-mint tracking-widest">
+                                {oracleData.oracle_verdict.confidence_score}% CONFIDENCE
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="flex justify-between items-end mb-2">
+                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">Crop Ripeness (GDD)</span>
+                        <span className="text-sm font-black text-mint">{oracleData.current_maturity_pct}%</span>
+                    </div>
+
+                    {/* Classy Glassy Ripeness Bar */}
+                    <div className="h-3 w-full bg-white/5 rounded-full p-0.5 border border-white/10 shadow-inner">
+                        <div 
+                            className="h-full rounded-full transition-all duration-1500 ease-out bg-gradient-to-r from-mint via-emerald-400 to-mint animate-shimmer"
+                            style={{ 
+                                width: `${oracleData.current_maturity_pct}%`,
+                                backgroundSize: '200% 100%',
+                                boxShadow: '0 0 15px rgba(32,255,189,0.3)'
+                            }}
+                        ></div>
+                    </div>
+
+                    {oracleData.oracle_verdict?.explanation && (
+                        <div className="mt-4 pt-4 border-t border-white/5 text-left">
+                            <p className="text-[10px] text-mint uppercase tracking-widest font-black mb-1 opacity-60">Oracle Tactical Logic</p>
+                            <p className="text-xs text-white/90 font-bold leading-relaxed italic">
+                                "{oracleData.oracle_verdict.explanation}"
+                            </p>
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* Dynamic Spoilage Risk Bar */}
             <div className="z-10 w-full mb-4 px-2">
                 <div className="flex justify-between items-end mb-1.5">
-                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Spoilage Risk (48h)</span>
+                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Transit Spoilage Risk (48h)</span>
                     <span className={`text-xs font-mono font-black ${spoilageRiskPct > 50 ? 'text-red-400' : spoilageRiskPct > 20 ? 'text-yellow-400' : 'text-mint'}`}>
                         {n(spoilageRiskPct)}%
                     </span>

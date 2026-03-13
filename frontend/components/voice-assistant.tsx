@@ -162,48 +162,62 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
         };
     }, [language]);
 
-    // Dynamic Rerouting Interruption Logic
+    // 1. Market Shock / Rerouting Intervention
     useEffect(() => {
         if (dashboardData?.shock_alert?.is_shock) {
             const shockMsg = dashboardData.shock_alert.message || "";
             const pivotMsg = dashboardData.shock_alert.pivot_advice || "";
             const fullAlert = `${shockMsg} ${pivotMsg}`;
             
-            // Only trigger if this is a NEW shock we haven't alerted for yet
             if (lastShockRef.current !== fullAlert) {
                 lastShockRef.current = fullAlert;
-                
-                // FORCE INTERRUPT!
-                if (audioRef.current) {
-                    audioRef.current.pause();
-                    audioRef.current.currentTime = 0;
-                }
-                
-                // Play a subtle alert beep first
-                try {
-                    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-                    const oscillator = audioCtx.createOscillator();
-                    const gainNode = audioCtx.createGain();
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-                    oscillator.type = 'sine';
-                    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
-                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                    oscillator.start();
-                    oscillator.stop(audioCtx.currentTime + 0.5);
-                } catch (e) {
-                    console.warn("AudioContext beep failed", e);
-                }
-
-                setIsOpen(true);
-                setResponse(fullAlert);
-                speakResponse(fullAlert);
+                triggerVoiceIntervention(fullAlert);
             }
         } else {
             lastShockRef.current = null;
         }
     }, [dashboardData?.shock_alert]);
+
+    // 2. Harvest Oracle Strategic Intervention
+    const lastHarvestAlertRef = useRef<string | null>(null);
+    useEffect(() => {
+        const oracleVerdict = dashboardData?.oracle_verdict;
+        if (oracleVerdict?.action_priority === "STRATEGIC") {
+            const harvestMsg = `Namaste! Based on your crop maturity and the high supply expected at the Mandi next week, I recommend harvesting 2 days early. You might lose 2kg of weight, but you will gain ₹5/kg in price.`;
+            
+            if (lastHarvestAlertRef.current !== harvestMsg) {
+                lastHarvestAlertRef.current = harvestMsg;
+                triggerVoiceIntervention(harvestMsg);
+            }
+        }
+    }, [dashboardData?.oracle_verdict]);
+
+    const triggerVoiceIntervention = (message: string) => {
+        // FORCE INTERRUPT!
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+        
+        // Play alert beep
+        try {
+            const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.5);
+        } catch (e) {}
+
+        setIsOpen(true);
+        setResponse(message);
+        speakResponse(message);
+    };
 
     const toggleListen = async () => {
         if (isListening) {
