@@ -90,6 +90,36 @@ export function useOfflineCache(key: string, initialData: any = null) {
         }
     };
 
+    const cacheMapTiles = async (center: { lat: number, lng: number }, zoom: number) => {
+        const TILE_STORE = 'map_tiles';
+        const db = await openDB(DB_NAME, 1, {
+            upgrade(db) {
+                if (!db.objectStoreNames.contains(TILE_STORE)) {
+                    db.createObjectStore(TILE_STORE);
+                }
+            }
+        });
+
+        console.log(`Pre-downloading tiles for zoom ${zoom} around ${center.lat}, ${center.lng}...`);
+        
+        // Mocking tile download: in a real app, we'd fetch actual xyz blobs
+        const mockTiles = [`tile_${zoom}_x_y`, `tile_${zoom}_x1_y1`];
+        for (const tileId of mockTiles) {
+            await db.put(TILE_STORE, { blob: new Blob(['mock-tile-data']), timestamp: Date.now() }, tileId);
+        }
+        return true;
+    };
+
+    const getPreservationReminder = (hoursInTransit: number, temp: number, crop: string) => {
+        if (hoursInTransit > 2 && temp > 32) {
+            return `Reminder: It's been ${hoursInTransit} hours in high heat (${temp}°C). Please check if your ${crop} bags are properly ventilated and the tarp is secure.`;
+        }
+        if (hoursInTransit > 4) {
+            return `Time Check: 4 hours elapsed. Inspect produce for any signs of sweating or heat trapping.`;
+        }
+        return null;
+    };
+
     const addToSyncQueue = (action: any) => {
         const newQueue = [...syncQueue, { ...action, timestamp: Date.now() }];
         setSyncQueue(newQueue);
@@ -114,6 +144,8 @@ export function useOfflineCache(key: string, initialData: any = null) {
         syncQueueLength: syncQueue.length, 
         calculateOfflineSpoilage,
         saveRouteToIDB,
-        getRouteFromIDB
+        getRouteFromIDB,
+        cacheMapTiles,
+        getPreservationReminder
     };
 }

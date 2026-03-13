@@ -71,6 +71,21 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
         return () => window.removeEventListener('agriVakeelAsk', handleCustomAsk);
     }, [isThinking, dashboardData, language]); // Re-bind when context changes
 
+    // Handle high-priority interventions (Rerouting, Thermal, Market)
+    useEffect(() => {
+        const handleIntervention = (event: any) => {
+            const { message, title, options } = event.detail;
+            setIsOpen(true);
+            setResponse(message);
+            // In a real app, we'd wait for voice "Yes/No"
+            // For now, we show the message and play the voice.
+            speakResponse(message);
+        };
+
+        window.addEventListener('agriVakeelIntervention', handleIntervention);
+        return () => window.removeEventListener('agriVakeelIntervention', handleIntervention);
+    }, [language]);
+
     const initRecognition = () => {
         if (typeof window === "undefined") return;
 

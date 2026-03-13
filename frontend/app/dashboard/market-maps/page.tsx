@@ -13,6 +13,8 @@ const TransitMap = dynamic(() => import('@/components/dashboard/TransitMap'), {
     loading: () => <div className="h-[400px] w-full bg-forest/50 animate-pulse rounded-2xl border border-white/5" />
 });
 
+import { NavigationMode } from '@/components/dashboard/NavigationMode';
+
 export default function MarketMapsPage() {
     const { t, n } = useLanguage();
 
@@ -22,6 +24,7 @@ export default function MarketMapsPage() {
     const [selectedMandi, setSelectedMandi] = useState<any>(null);
     const [selectedRouteObject, setSelectedRouteObject] = useState<any>(null);
     const [isVakeelThinking, setIsVakeelThinking] = useState(false);
+    const [isTripActive, setIsTripActive] = useState(false);
 
     // Get current location (from user profile or default)
     const startLoc = cachedData?.user_location || { lat: 18.5204, lng: 73.8567 };
@@ -165,9 +168,27 @@ export default function MarketMapsPage() {
                                         "{selectedRouteObject.justification || selectedRouteObject.description}"
                                     </p>
                                 </div>
+                                <div className="mt-4 flex justify-end">
+                                    <button 
+                                        onClick={() => setIsTripActive(true)}
+                                        className="bg-mint text-forest font-black uppercase tracking-widest px-8 py-3 rounded-2xl shadow-[0_0_20px_rgba(32,255,189,0.3)] hover:bg-white transition-all transform hover:scale-105 active:scale-95 flex items-center space-x-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                                        <span>Start Navigation</span>
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </GlassCard>
+
+                    {isTripActive && selectedMandi && (
+                        <NavigationMode 
+                            targetMandi={selectedMandi.mandi_name}
+                            distanceLeft={selectedMandi.distance_km}
+                            estimatedArrival="12:45 PM"
+                            onExit={() => setIsTripActive(false)}
+                        />
+                    )}
 
                 </div>
 
