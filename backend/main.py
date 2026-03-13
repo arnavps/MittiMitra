@@ -34,11 +34,15 @@ from api.chat import router as chat_router, generate_vakeel_brief
 from api.user import router as user_router
 from api.routing import router as routing_router
 from api.copilot import router as copilot_router
+from api.ecosystem import router as ecosystem_router
+from api.oracle import router as oracle_router
 
 app.include_router(chat_router, prefix="/chat", tags=["AI Explanation"])
 app.include_router(user_router, prefix="/user", tags=["User Data Management"])
 app.include_router(routing_router, prefix="/routing", tags=["Smart Transit Maps"])
 app.include_router(copilot_router, prefix="/copilot", tags=["Voice Co-Pilot"])
+app.include_router(ecosystem_router, prefix="/ecosystem", tags=["FPO & B2B Ecosystem"])
+app.include_router(oracle_router, prefix="/oracle", tags=["Harvest Oracle"])
 
 class HarvestRequest(BaseModel):
     crop: str = ""
@@ -271,3 +275,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8001)

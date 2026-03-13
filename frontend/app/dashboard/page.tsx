@@ -25,7 +25,10 @@ export default function DashboardPage() {
     const [profileName, setProfileName] = useState('');
     const [userCrop, setUserCrop] = useState('');
     const [yieldEst, setYieldEst] = useState<number | null>(null);
+    const [plantingDate, setPlantingDate] = useState('');
     const [profileLoaded, setProfileLoaded] = useState(false);
+    const [oracleData, setOracleData] = useState<any>(null);
+    const [clusterData, setClusterData] = useState<any>(null);
     const [vakeelQuery, setVakeelQuery] = useState('');
     const [isCropSelectorOpen, setIsCropSelectorOpen] = useState(false);
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
@@ -49,11 +52,12 @@ export default function DashboardPage() {
                 
                 const { data } = await supabase
                     .from('profiles')
-                    .select('name, crop, yield_quintals, latitude, longitude')
+                    .select('name, crop, yield_quintals, latitude, longitude, planting_date')
                     .eq('phone', phone)
                     .single();
                 if (data?.name) setProfileName(data.name);
                 if (data?.crop) setUserCrop(data.crop);
+                if (data?.planting_date) setPlantingDate(data.planting_date);
                 if (data?.yield_quintals) {
                     setYieldEst(data.yield_quintals);
                 } else {
@@ -198,6 +202,37 @@ export default function DashboardPage() {
 
                 setData(json);
                 setLastFetched(new Date());
+
+                // Fetch Oracle & Ecosystem Data in parallel
+                try {
+                    const [oracleRes, clusterRes] = await Promise.all([
+                        fetch('/api/oracle/forecast', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                planting_date: plantingDate || data?.planting_date || new Date().toISOString().split('T')[0], 
+                                crop: userCrop || data?.crop || "Tomato" 
+                            })
+                        }),
+                        fetch('/api/ecosystem/cluster', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                lat: payload.location.lat,
+                                lon: payload.location.lng,
+                                target_mandi: json.mandi_stats.name,
+                                harvest_date: new Date().toISOString().split('T')[0],
+                                user_yield_qtl: yieldEst || 50,
+                                market_price: json.mandi_stats.current_price
+                            })
+                        })
+                    ]);
+                    
+                    if (oracleRes.ok) setOracleData(await oracleRes.json());
+                    if (clusterRes.ok) setClusterData(await clusterRes.json());
+                } catch (err) {
+                    console.error("Secondary data fetch failed", err);
+                }
                 saveToCache(json);
             }
         } catch (err) {
@@ -304,26 +339,27 @@ export default function DashboardPage() {
                 />
             )}
 
-            {/* 2-Column Responsive Grid Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-
-                {/* Left Column (40% on Desktop) - The Verdict & Field Sensors */}
-                <div className="lg:col-span-4 space-y-6 flex flex-col">
-                    {/* Main Verdict Card */}
-                    <VerdictCard data={data} userCrop={userCrop} onExplain={(q: string) => setVakeelQuery(q)} />
-
-                    {/* Sensor Cards in 2x2 compact grid */}
-                    <div className="order-3 lg:order-2">
-                        <MetricsGrid
-                            data={data}
-                            onMetricClick={handleMetricClick}
-                            onExplain={(q: string) => setVakeelQuery(q)}
-                        />
-                    </div>
+            {/* Main Content Layout - 12 Column Grid for Precision */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Left Panel: Primary Recommendation & Key Metrics (Span 8) */}
+                <div className="lg:col-span-8 space-y-8 flex flex-col">
+                    <VerdictCard 
+                        data={data} 
+                        userCrop={userCrop} 
+                        onExplain={(q) => setVakeelQuery(q)} 
+                        oracleData={oracleData}
+                        clusterData={clusterData}
+                    />
+                    
+                    <MetricsGrid 
+                        data={data} 
+                        onMetricClick={handleMetricClick} 
+                        onExplain={(q: string) => setVakeelQuery(q)}
+                    />
                 </div>
 
-                {/* Right Column (60% on Desktop) - Analytics & Calibration */}
-                <div className="lg:col-span-6 space-y-6 flex flex-col group">
+                {/* Right Column: Analytics & Calibration (Span 4) */}
+                <div className="lg:col-span-4 space-y-6 flex flex-col group">
                     {/* Market Orbit - Desktop & Mobile Order Priority */}
                     <div className="order-1 lg:order-1">
                         <GlassCard className="h-full">

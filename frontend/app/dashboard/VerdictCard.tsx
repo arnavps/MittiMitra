@@ -5,9 +5,13 @@ interface VerdictCardProps {
     data: any;
     userCrop?: string;
     onExplain?: (query: string) => void;
+    oracleData?: any;
+    clusterData?: any;
 }
 
-export function VerdictCard({ data, userCrop, onExplain }: VerdictCardProps) {
+import { MaturityClock } from '@/components/dashboard/MaturityClock';
+
+export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData }: VerdictCardProps) {
     const { t, n } = useLanguage();
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -29,6 +33,10 @@ export function VerdictCard({ data, userCrop, onExplain }: VerdictCardProps) {
     const spoilageRiskPct = data.spoilage_risk_pct || 0;
     const priorityAction = data.preservation?.priority_action;
 
+    // Phase 6: Emergency Logic
+    const isPriceCrashing = data.shock_alert?.is_shock || false;
+    const showEmergencyStorage = spoilageRiskPct > 30 && isPriceCrashing;
+
     return (
         <div className="rounded-3xl border border-white/20 bg-black/20 backdrop-blur-xl p-8 lg:p-10 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
             {/* Background Glows based on status */}
@@ -45,10 +53,18 @@ export function VerdictCard({ data, userCrop, onExplain }: VerdictCardProps) {
             <h2 className="text-gray-400 uppercase tracking-[0.3em] text-[10px] font-black mb-4 z-10 opacity-60">{t('recommendation')}</h2>
 
             {userCrop && (
-                <div className="z-10 mb-4 scale-90">
-                    <span className="text-[10px] text-mint font-black border border-mint/30 px-3 py-1 rounded-full bg-mint/5 uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(32,255,189,0.1)]">
+                <div className="z-10 mb-4 flex items-center space-x-3">
+                    <span className="text-[10px] text-mint font-black border border-mint/30 px-3 py-1 rounded-full bg-mint/5 uppercase tracking-wide shadow-[0_0_15px_rgba(32,255,189,0.1)]">
                         {userCrop}
                     </span>
+                    {clusterData?.cluster?.total_neighbors > 0 && (
+                        <div className="flex items-center space-x-1 animate-in fade-in slide-in-from-right-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+                             <span className="text-[9px] text-blue-400 font-bold uppercase tracking-widest">
+                                {clusterData.cluster.total_neighbors} Neighbors Nearby
+                             </span>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -76,16 +92,42 @@ export function VerdictCard({ data, userCrop, onExplain }: VerdictCardProps) {
                     </div>
                 )}
 
+                {oracleData && data.status !== 'GREEN' && (
+                    <div className="mb-8 animate-in zoom-in-95 duration-700">
+                        <MaturityClock 
+                            maturityPct={oracleData.current_maturity_pct}
+                            daysToPeak={oracleData.days_to_peak}
+                            windowStart={oracleData.window_start}
+                            windowEnd={oracleData.window_end}
+                            status={oracleData.status}
+                        />
+                    </div>
+                )}
+
                 {onExplain && (
                     <button
                         onClick={() => onExplain(t('askWhy') || "Explain why you recommended this action.")}
-                        className="mt-8 px-6 py-2.5 bg-white/10 hover:bg-mint text-white hover:text-forest border border-white/20 hover:border-mint rounded-full text-xs font-black transition-all flex items-center space-x-2 mx-auto uppercase tracking-widest shadow-xl group"
+                        className="mt-4 px-6 py-2.5 bg-white/10 hover:bg-mint text-white hover:text-forest border border-white/20 hover:border-mint rounded-full text-xs font-black transition-all flex items-center space-x-2 mx-auto uppercase tracking-widest shadow-xl group"
                     >
                         <svg className="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         <span>{t('askVakeelWhy') || 'Ask Vakeel Why'}</span>
                     </button>
                 )}
             </div>
+
+            {/* Emergency Cold Storage Gateway */}
+            {showEmergencyStorage && (
+                <div className="z-10 w-full mb-6 animate-bounce-subtle">
+                    <button className="w-full bg-red-500 hover:bg-red-600 text-white font-black py-4 rounded-2xl flex flex-col items-center justify-center space-y-1 shadow-[0_0_30px_rgba(239,68,68,0.4)] border border-red-400 group relative overflow-hidden">
+                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                        <div className="flex items-center space-x-2">
+                             <svg className="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                             <span className="uppercase tracking-widest text-xs">Emergency Cold Storage</span>
+                        </div>
+                        <p className="text-[10px] opacity-80 font-bold">Secure Yield at ₹15/day vs losing ₹{n(data.shock_alert?.savings_inr || 0)}</p>
+                    </button>
+                </div>
+            )}
             {/* Neon Profit Centerpiece */}
             <div className="z-10 w-full mb-4">
                 <span className="text-[10px] text-gray-400 uppercase tracking-widest font-black block mb-1">{t('estimatedTakeHome') || 'Net Take-Home Payout'}</span>
