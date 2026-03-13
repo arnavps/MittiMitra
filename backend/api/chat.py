@@ -228,6 +228,7 @@ EXTRACT CONSENT:
         elif req.step == "CropDetails":
             schema_instructions = """Return JSON with: {'name': string/null, 'crop': string/null, 'land_size': number/null, 'ai_reply': 'string'}.
 - Extract person's name, crop name, and land size (acres).
+- CRITICAL: Name MUST be extracted in English/Roman script (e.g., 'Arnav' instead of 'अर्णव') regardless of the input language.
 - Map regional crop names to English equivalents:
   - 'Kanda' -> 'onion'
   - 'Batata' -> 'potato'
