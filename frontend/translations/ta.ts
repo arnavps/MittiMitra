@@ -123,6 +123,7 @@ export const ta = {
     agriVakeelNav: "அக்ரி-வக்கீல்",
     diseaseAudit: "நோய் தணிக்கை",
     schemesHub: "கிசான் உதவி",
+    communityHub: "சௌக் மன்றம்",
 
     // Market Maps Page
     regionalAnalysis: "பிராந்திய சந்தை பகுப்பாய்வு",

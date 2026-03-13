@@ -123,6 +123,7 @@ export const pa = {
     agriVakeelNav: "ਐਗਰੀ-ਵਕੀਲ",
     diseaseAudit: "ਬਿਮਾਰੀ ਆਡਿਟ",
     schemesHub: "ਕਿਸਾਨ ਸਹਾਇਤਾ",
+    communityHub: "ਚੌਂਕ ਫੋਰਮ",
 
     // Market Maps Page
     regionalAnalysis: "ਖੇਤਰੀ ਮਾਰਕੀਟ ਵਿਸ਼ਲੇਸ਼ਣ",

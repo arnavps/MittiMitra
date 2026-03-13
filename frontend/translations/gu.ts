@@ -123,6 +123,7 @@ export const gu = {
     agriVakeelNav: "કૃષિ-વકીલ",
     diseaseAudit: "રોગ ઓડિટ",
     schemesHub: "કિસાન સહાય",
+    communityHub: "ચૌક ફોરમ",
 
     // Market Maps Page
     regionalAnalysis: "પ્રાદેશિક બજાર વિશ્લેષણ",

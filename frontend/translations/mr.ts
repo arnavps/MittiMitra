@@ -123,6 +123,7 @@ export const mr = {
     agriVakeelNav: "कृषी-वकील",
     diseaseAudit: "रोग परीक्षण",
     schemesHub: "शेतकरी साहाय्य",
+    communityHub: "चौक मंच",
 
     // Market Maps Page
     regionalAnalysis: "प्रादेशिक बाजार विश्लेषण",

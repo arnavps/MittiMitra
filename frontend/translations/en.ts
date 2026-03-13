@@ -123,6 +123,7 @@ export const en = {
     agriVakeelNav: "Agri-Vakeel",
     diseaseAudit: "Disease Audit",
     schemesHub: "Kisan Sahayata",
+    communityHub: "Chowk Forum",
 
     // Market Maps Page
     regionalAnalysis: "Regional Market Analysis",
