@@ -121,6 +121,7 @@ export const pa = {
     accounts: "ਖਾਤੇ",
     proFarmer: "ਪ੍ਰੋ ਕਿਸਾਨ",
     agriVakeelNav: "ਐਗਰੀ-ਵਕੀਲ",
+    diseaseAudit: "ਬਿਮਾਰੀ ਆਡਿਟ",
 
     // Market Maps Page
     regionalAnalysis: "ਖੇਤਰੀ ਮਾਰਕੀਟ ਵਿਸ਼ਲੇਸ਼ਣ",

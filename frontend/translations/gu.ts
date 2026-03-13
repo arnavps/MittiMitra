@@ -121,6 +121,7 @@ export const gu = {
     accounts: "ખાતાઓ",
     proFarmer: "પ્રો ખેડૂત",
     agriVakeelNav: "કૃષિ-વકીલ",
+    diseaseAudit: "રોગ ઓડિટ",
 
     // Market Maps Page
     regionalAnalysis: "પ્રાદેશિક બજાર વિશ્લેષણ",

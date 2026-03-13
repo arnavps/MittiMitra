@@ -75,7 +75,7 @@ export const en = {
     showAuditTrail: "Show Audit Trail",
     hideAuditTrail: "Hide Audit Trail",
     marketValue: "MARKET VALUE",
-    logistics: "LOGISTICS",
+    logistics: "Logistics",
     qualityLoss: "QUALITY LOSS",
     liveArbitration: "Live Arbitration Logic Active",
     sourceEnam: "Source: e-NAM (Live)",
@@ -121,6 +121,7 @@ export const en = {
     accounts: "Accounts",
     proFarmer: "Pro Farmer",
     agriVakeelNav: "Agri-Vakeel",
+    diseaseAudit: "Disease Audit",
 
     // Market Maps Page
     regionalAnalysis: "Regional Market Analysis",

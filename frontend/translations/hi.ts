@@ -121,6 +121,7 @@ export const hi = {
     accounts: "खाते",
     proFarmer: "प्रो किसान",
     agriVakeelNav: "कृषि-वकील",
+    diseaseAudit: "रोग परीक्षण",
 
     // Market Maps Page
     regionalAnalysis: "क्षेत्रीय बाजार विश्लेषण",

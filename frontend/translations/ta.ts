@@ -121,6 +121,7 @@ export const ta = {
     accounts: "கணக்குகள்",
     proFarmer: "ப்ரோ விவசாயி",
     agriVakeelNav: "அக்ரி-வக்கீல்",
+    diseaseAudit: "நோய் தணிக்கை",
 
     // Market Maps Page
     regionalAnalysis: "பிராந்திய சந்தை பகுப்பாய்வு",

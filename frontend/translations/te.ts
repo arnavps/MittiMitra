@@ -121,6 +121,7 @@ export const te = {
     accounts: "ఖాతాలు",
     proFarmer: "ప్రో రైతు",
     agriVakeelNav: "అగ్రి-వకీల్",
+    diseaseAudit: "పంట వ్యాధి పరీక్ష",
 
     // Market Maps Page
     regionalAnalysis: "ప్రాంతీయ మార్కెట్ విశ్లేషణ",
