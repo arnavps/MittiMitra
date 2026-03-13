@@ -278,7 +278,7 @@ STRICT RULES:
             pass
         
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant", # Faster and more stable for extraction
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": req.text_input}
@@ -289,13 +289,26 @@ STRICT RULES:
         
         reply = completion.choices[0].message.content
         import json
-        parsed = json.loads(reply)
-        return parsed
+        
+        # Robust parsing to handle markdown blocks if present
+        cleaned_reply = reply.strip()
+        if cleaned_reply.startswith("```json"):
+            cleaned_reply = cleaned_reply.split("```json")[1].split("```")[0].strip()
+        elif cleaned_reply.startswith("```"):
+            cleaned_reply = cleaned_reply.split("```")[1].split("```")[0].strip()
+            
+        try:
+            parsed = json.loads(cleaned_reply)
+            return parsed
+        except json.JSONDecodeError as je:
+            print(f"FAILED TO PARSE JSON: {reply}")
+            raise HTTPException(status_code=500, detail=f"Invalid JSON from AI: {str(je)}")
         
     except Exception as e:
         import traceback
-        print(f"Extraction error: {str(e)}\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
+        error_detail = f"{type(e).__name__}: {str(e)}"
+        print(f"Extraction error: {error_detail}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=error_detail)
 
 @router.post("/tts")
 def text_to_speech(req: TTSRequest):
