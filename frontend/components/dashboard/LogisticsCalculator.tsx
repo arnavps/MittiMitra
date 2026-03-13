@@ -46,38 +46,62 @@ export function LogisticsCalculator({
 
     const getLoadingInfo = (vehicleId: string, currentCrop: string) => {
         const cropLower = currentCrop.toLowerCase();
+        console.log(`[Logistics] selectedId: ${vehicleId}, crop: ${currentCrop}`);
         
         if (cropLower.includes('potato') || cropLower.includes('onion')) {
-            if (vehicleId === 'Open Trolley') {
+            if (vehicleId.toLowerCase().includes('trolley')) {
                 return {
                     title: "Chimney Pattern Stacking",
                     description: "Stack in 3x3 rows with a hollow center column for maximum core cooling.",
                     img: "/loading_guide.png",
-                    goal: "Prevents internal rot by 22% on long trips."
+                    goal: "Prevents internal rot by 22% on long trips.",
+                    layout: 'grid'
+                };
+            }
+            if (vehicleId.toLowerCase().includes('truck')) {
+                return {
+                    title: "Layered Stacking",
+                    description: "Use 4-inch straw padding and limit to 4 layers to prevent bottom-layer bruising.",
+                    img: "/stacking_padding.png",
+                    goal: "Reduces 'silent profit leaks' from Mandis.",
+                    layout: 'stack'
                 };
             }
             return {
-                title: "Layered Stacking with Padding",
-                description: "Use 4-inch straw padding and limit to 4 layers to prevent bottom-layer bruising.",
-                img: "/stacking_padding.png",
-                goal: "Reduces 'silent profit leaks' fromMandis."
+                title: "Secure Single Load",
+                description: "Ensure load is centered behind the rider. Use high-tension ropes and avoid rear-heavy placement.",
+                img: "/bike_loading.png",
+                goal: "Ensures rider safety and zero transit spill.",
+                layout: 'bike'
             };
         }
 
         if (cropLower.includes('tomato')) {
+            if (vehicleId.toLowerCase().includes('pickup') || vehicleId.toLowerCase().includes('wheeler')) {
+                return {
+                    title: "Compact Crate Stacking",
+                    description: "Secure crates in a 1x2 column. Ensure load does not disrupt vehicle balance.",
+                    img: "/bike_loading.png",
+                    goal: "Safe transport for high-value small loads.",
+                    layout: 'bike'
+                };
+            }
             return {
                 title: "Interlocking Crate Stacking",
                 description: "Use plastic crates with interlocking lids. Do not exceed vehicle sideboard height.",
                 img: "/tomato_crating.png",
-                goal: "Prevents sun-scald and crushing during transit."
+                goal: "Prevents sun-scald and crushing during transit.",
+                layout: 'stack'
             };
         }
 
         return {
             title: "Balanced Distribution",
             description: "Distribute load evenly across the vehicle floor to maintain balance and airflow.",
-            img: "/loading_guide.png", // Fallback
-            goal: "Ensures vehicle stability and basic heat dissipation."
+            img: vehicleId.toLowerCase().includes('trolley') ? "/loading_guide.png" : "/bike_loading.png",
+            goal: "Ensures vehicle stability and basic heat dissipation.",
+            layout: vehicleId.toLowerCase().includes('trolley') ? 'grid' : 
+                    vehicleId.toLowerCase().includes('truck') ? 'stack' : 'bike'
         };
     };
 
@@ -180,16 +204,45 @@ export function LogisticsCalculator({
                     <div className="flex gap-4 items-start">
                         {/* CSS-based Chimney Pattern Diagram */}
                         <div className="w-24 h-24 bg-forest/80 rounded-lg border border-white/10 p-2 flex flex-col gap-1 shrink-0 shadow-inner">
-                            <div className="grid grid-cols-3 gap-1 flex-1">
-                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-                                    <div 
-                                        key={i} 
-                                        className={`rounded-sm border ${loadingInfo.title.includes('Chimney') && i === 5 ? 'bg-transparent border-dashed border-mint/50' : 'bg-mint/30 border-mint/50 animate-pulse'}`}
-                                        style={{ animationDelay: `${i * 0.1}s` }}
-                                    ></div>
-                                ))}
-                            </div>
-                            <p className="text-[7px] text-mint font-bold text-center uppercase tracking-tighter">{loadingInfo.title.split(' ')[0]} Pattern</p>
+                            {loadingInfo.layout === 'grid' ? (
+                                <div className="grid grid-cols-3 gap-1 flex-1">
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+                                        <div 
+                                            key={i} 
+                                            className={`rounded-sm border ${loadingInfo.title.includes('Chimney') && i === 5 ? 'bg-transparent border-dashed border-mint/50' : 'bg-mint/30 border-mint/50 animate-pulse'}`}
+                                            style={{ animationDelay: `${i * 0.1}s` }}
+                                        ></div>
+                                    ))}
+                                </div>
+                            ) : loadingInfo.layout === 'stack' ? (
+                                <div className="flex flex-col-reverse gap-1.5 flex-1 justify-center items-center px-4">
+                                    {[1, 2, 3].map((i) => (
+                                        <div 
+                                            key={i} 
+                                            className="w-full h-4 rounded-sm border bg-mint/30 border-mint/50 animate-bounce"
+                                            style={{ animationDelay: `${i * 0.2}s` }}
+                                        ></div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex-1 flex flex-col items-center justify-center pt-2">
+                                    {/* Simplified Bike Silhouette */}
+                                    <div className="relative w-16 h-8 bg-white/5 rounded-t-lg mb-1 flex items-end justify-center">
+                                        <div className="w-12 h-6 bg-mint/20 border-t border-x border-mint/40 rounded-t-md relative z-10 animate-pulse">
+                                            {/* Single Load */}
+                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-3 bg-mint/60 rounded-sm border border-mint shadow-[0_0_10px_rgba(32,255,189,0.3)]"></div>
+                                        </div>
+                                    </div>
+                                    <div className="flex space-x-4">
+                                        <div className="w-4 h-4 rounded-full border-2 border-mint/40 animate-spin-slow"></div>
+                                        <div className="w-4 h-4 rounded-full border-2 border-mint/40 animate-spin-slow"></div>
+                                    </div>
+                                </div>
+                            )}
+                            <p className="text-[7px] text-mint font-bold text-center uppercase tracking-tighter">
+                                {loadingInfo.layout === 'grid' ? 'Chimney Pattern' : 
+                                 loadingInfo.layout === 'stack' ? 'Layered Stack' : 'Bike/Pickup Load'}
+                            </p>
                         </div>
 
                         <div className="flex-1">
