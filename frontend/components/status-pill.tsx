@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { GlassCard } from '@/components/glass-card';
 
-export function StatusPill({ status, message }: { status: "GREEN" | "YELLOW" | "RED", message: string }) {
+export function StatusPill({ status, message, className = "" }: { status: "GREEN" | "YELLOW" | "RED", message: string, className?: string }) {
     const getColors = () => {
         switch (status) {
             case "GREEN": return "bg-mint/20 text-mint border-mint/50";
@@ -26,7 +26,7 @@ export function StatusPill({ status, message }: { status: "GREEN" | "YELLOW" | "
     };
 
     return (
-        <div className={`flex items-center px-4 py-2 rounded-full border ${getColors()} font-semibold shadow-sm`}>
+        <div className={`flex items-center px-4 py-2 rounded-full border ${getColors()} font-semibold shadow-sm ${className}`}>
             {getIcon()}
             {message}
         </div>

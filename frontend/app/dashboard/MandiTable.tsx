@@ -20,10 +20,10 @@ export function MandiTable({ mandis }: { mandis: Mandi[] }) {
             <table className="w-full text-left text-sm text-gray-200">
                 <thead className="bg-forest/50 text-xs uppercase text-gray-300 border-b border-glass-border">
                     <tr>
-                        <th scope="col" className="px-6 py-4">{t('mandi')}</th>
-                        <th scope="col" className="px-6 py-4">{t('dist')}</th>
-                        <th scope="col" className="px-6 py-4">{t('price')}</th>
-                        <th scope="col" className="px-6 py-4 font-bold text-mint">{t('estimatedTakeHome') || 'Net Take-Home'}</th>
+                        <th scope="col" className="px-2 py-3 font-black text-gray-500 text-[10px] uppercase tracking-wider">{t('mandi') || 'Mandi'}</th>
+                        <th scope="col" className="px-2 py-3 font-black text-gray-500 text-[10px] uppercase tracking-wider">{t('dist') || 'Dist'}</th>
+                        <th scope="col" className="px-2 py-3 font-black text-gray-500 text-[10px] uppercase tracking-wider">{t('price') || 'Price'}</th>
+                        <th scope="col" className="px-2 py-3 font-black text-mint text-[10px] uppercase tracking-wider whitespace-nowrap">{t('netProfit') || 'Net Profit'}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,13 +35,13 @@ export function MandiTable({ mandis }: { mandis: Mandi[] }) {
                                 : ''
                                 }`}
                         >
-                            <td className="px-6 py-4 font-medium flex items-center whitespace-nowrap">
-                                {mandi.isOptimal && <span className="w-2 h-2 rounded-full bg-mint mr-2 animate-pulse shadow-[0_0_8px_#20FFBD]"></span>}
+                            <td className="px-2 py-3 font-bold flex items-center whitespace-nowrap text-white text-xs">
+                                {mandi.isOptimal && <span className="w-1.5 h-1.5 rounded-full bg-mint mr-1 animate-pulse shadow-[0_0_8px_#20FFBD]"></span>}
                                 {mandi.name}
                             </td>
-                            <td className="px-6 py-4">{n(mandi.distanceKm)} {t('km') || 'km'}</td>
-                            <td className="px-6 py-4">₹{n(mandi.currentPrice)}</td>
-                            <td className={`px-6 py-4 font-bold ${mandi.isOptimal ? 'text-mint' : 'text-white'}`}>
+                            <td className="px-2 py-3 text-gray-400 font-medium whitespace-nowrap text-xs">{n(mandi.distanceKm)}{t('km') || 'km'}</td>
+                            <td className="px-2 py-3 text-gray-400 font-medium whitespace-nowrap text-xs">₹{n(mandi.currentPrice)}</td>
+                            <td className={`px-2 py-3 font-black whitespace-nowrap text-xs ${mandi.isOptimal ? 'text-mint' : 'text-white'}`}>
                                 ₹{n(mandi.netProfit)}
                             </td>
                         </tr>

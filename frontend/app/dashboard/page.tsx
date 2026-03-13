@@ -362,10 +362,10 @@ export default function DashboardPage() {
                 <div className="lg:col-span-4 space-y-6 flex flex-col group">
                     {/* Market Orbit - Desktop & Mobile Order Priority */}
                     <div className="order-1 lg:order-1">
-                        <GlassCard className="h-full">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-lg font-bold text-white">{t('marketOrbit')}</h3>
-                                <StatusPill status="GREEN" message={t('liveData')} />
+                        <GlassCard className="h-full !p-4">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
+                                <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Market Orbit</h3>
+                                <StatusPill status="GREEN" message={t('liveData')} className="scale-75 origin-right" />
                             </div>
 
                             <p className="text-sm text-gray-400 mb-6">{t('mandiDesc')}</p>
