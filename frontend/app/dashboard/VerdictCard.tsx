@@ -13,6 +13,7 @@ import { MaturityClock } from '@/components/dashboard/MaturityClock';
 import { HarvestScorecard } from '@/components/dashboard/HarvestScorecard';
 import { getClusterMaturityHeatmap } from '@/services/supplyOrchestrator';
 import { getWeatherForecast } from '@/services/weatherService';
+import Link from 'next/link';
 
 export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData }: VerdictCardProps) {
     const { t, n } = useLanguage();
@@ -161,52 +162,43 @@ export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData
                 </div>
             )}
 
-            {/* Harvest Oracle: Ripeness & Tactical Verdict */}
+            {/* Harvest Oracle: Simplified Dashboard View */}
             {oracleData && (
                 <div className="z-10 w-full mb-6 mt-4 p-5 bg-white/[0.03] border border-white/10 rounded-2xl relative group overflow-hidden">
-                    <div className="absolute top-0 right-0 p-3 flex space-x-2">
-                        {oracleData.oracle_verdict?.confidence_score && (
-                            <div className="px-2 py-0.5 bg-mint/20 border border-mint/30 rounded text-[8px] font-black text-mint tracking-widest">
-                                {oracleData.oracle_verdict.confidence_score}% CONFIDENCE
-                            </div>
-                        )}
-                    </div>
-                    
-                    <div className="flex justify-between items-end mb-2">
-                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">Crop Tactics Engine</span>
-                        <span className="text-sm font-black text-mint">
-                             {oracleData.oracle_verdict?.verdict || 'MONITOR'}
-                        </span>
+                    <div className="flex justify-between items-end mb-3">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black mb-1">Harvest Oracle</span>
+                            <span className="text-xl font-black text-white">{oracleData.current_maturity_pct}% <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest tracking-tighter">Ripe</span></span>
+                        </div>
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] text-mint uppercase tracking-widest font-black mb-1">Tactics</span>
+                            <span className="text-sm font-black text-mint">
+                                 {oracleData.oracle_verdict?.verdict || 'MONITOR'}
+                            </span>
+                        </div>
                     </div>
 
-                    {/* New Transparency Scorecard */}
-                    <HarvestScorecard 
-                        maturityPct={oracleData.current_maturity_pct}
-                        syncPanicDays={oracleData.tactical_context?.sync_panic_days || []}
-                        weatherForecast={oracleData.tactical_context?.weather_forecast || []}
-                        verdict={oracleData.oracle_verdict}
-                    />
-
-                    {/* Classy Glassy Ripeness Bar */}
-                    <div className="h-3 w-full bg-white/5 rounded-full p-0.5 border border-white/10 shadow-inner mb-4">
+                    {/* Classy Glassy Ripeness Bar - Simplified */}
+                    <div className="h-2 w-full bg-white/5 rounded-full p-0.5 border border-white/10 shadow-inner mb-4">
                         <div 
                             className="h-full rounded-full transition-all duration-1500 ease-out bg-gradient-to-r from-mint via-emerald-400 to-mint animate-shimmer"
                             style={{ 
                                 width: `${oracleData.current_maturity_pct}%`,
                                 backgroundSize: '200% 100%',
-                                boxShadow: '0 0 15px rgba(32,255,189,0.3)'
+                                boxShadow: '0 0 10px rgba(32,255,189,0.2)'
                             }}
                         ></div>
                     </div>
 
-                    {oracleData.oracle_verdict?.explanation && (
-                        <div className="mt-4 pt-4 border-t border-white/5 text-left bg-black/20 p-3 rounded-xl">
-                            <p className="text-[10px] text-mint uppercase tracking-widest font-black mb-2 opacity-60">Logic Audit Log</p>
-                            <p className="text-xs text-white/90 font-bold leading-relaxed italic border-l-2 border-mint/30 pl-3">
-                                {oracleData.oracle_verdict.explanation}
-                            </p>
-                        </div>
-                    )}
+                    <Link 
+                        href="/dashboard/harvest-oracle" 
+                        className="w-full flex items-center justify-center py-2 bg-mint/10 border border-mint/20 rounded-xl text-[10px] text-mint font-black uppercase tracking-widest hover:bg-mint hover:text-forest transition-all"
+                    >
+                        Learn More Logic
+                        <svg className="w-3 h-3 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </Link>
                 </div>
             )}
 
