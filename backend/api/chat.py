@@ -54,6 +54,12 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     shock = context.get("shock_alert", {})
     routing = context.get("routing_data", {})
     
+    # Phase 7: Harvest Oracle
+    oracle = context.get("oracle", {})
+    maturity_pct = oracle.get("maturity", {}).get("current_maturity_pct", "Unknown")
+    oracle_verdict = oracle.get("verdict", {}).get("verdict", "Unknown")
+    maturity_advice = oracle.get("maturity", {}).get("advice", "")
+
     # Phase 3: Logistics Orchestration
     logistics_rec = context.get("logistics_recommendations", [])
     best_vehicle = logistics_rec[0]["name"] if logistics_rec else context.get("logistics_setup", "Open Trolley")
@@ -131,8 +137,11 @@ If the dashboard context includes a `priority_action` under `preservation`, you 
 
 If `logistics_audit.is_high_risk` is true, you MUST explicitly state the following (translated to {language}): "Vakeel found a profit leak. Your current setup ({context.get("logistics_audit", {}).get("current_setup")}) is costing you ₹{context.get("logistics_audit", {}).get("leak_inr_per_hour")} per hour in spoilage compared to the ideal setup ({context.get("logistics_audit", {}).get("ideal_setup")})."
 
-ROUTING CONTEXT:
+- ROUTING CONTEXT:
 {route_info}
+
+- HARVEST ORACLE (MATURITY): {maturity_pct}% Ripe. Oracle Verdict: {oracle_verdict}. 
+- MATURITY ADVICE: {maturity_advice}
 """
     if shock and shock.get("is_shock"):
         prompt += f"\nCRITICAL SHOCK ALERT ACTIVE: {shock.get('message')}. Pivot Advice: {shock.get('pivot_advice')}\n"
@@ -157,10 +166,11 @@ def generate_vakeel_brief(context: Dict[str, Any], language: str = "Regional") -
     best_mandi = context.get("best_mandi", "Unknown")
     
     prompt = f"""You are MittiMitra AI. 
-    Task: Summarize why the farmer should {status} based on {best_mandi} and a profit of ₹{total_profit}.
+    Task: Summarize why the farmer should {status} based on {best_mandi}, profit of ₹{total_profit}, and maturity of {context.get('oracle', {}).get('maturity', {}).get('current_maturity_pct', 'unknown')}% ripeness.
     Constraint: ONE SENTENCE ONLY. Use the language: {language}.
     If {language} is not English, use the native script and address politely.
-    Focus on the main driver (e.g., price dip, high spoilage, or shock alert).
+    Focus on the main driver (Price dip? High spoilage? Immature crop? Shock Alert?).
+    If maturity is low (<85%), mention that the crop needs more time for weight gain.
     """
     
     try:

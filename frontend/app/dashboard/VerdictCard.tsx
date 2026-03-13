@@ -85,7 +85,11 @@ export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData
                         <h3 className="text-8xl lg:text-9xl font-black text-amber-500 mb-2 drop-shadow-[0_0_35px_rgba(245,158,11,0.6)] tracking-tighter italic">
                             {t('wait') || 'WAIT'}
                         </h3>
-                        <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">{t('waitDesc') || 'Supply overflow. Waiting 48h increases profit probability.'}</p>
+                        <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">
+                            {data.shock_alert?.status === 'MATURITY_LOCK' 
+                                ? data.shock_alert.message 
+                                : (t('waitDesc') || 'Supply overflow. Waiting 48h increases profit probability.')}
+                        </p>
                     </div>
                 ) : (
                     <div className="animate-in fade-in zoom-in duration-500">

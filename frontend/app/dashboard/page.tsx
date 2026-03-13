@@ -158,7 +158,8 @@ export default function DashboardPage() {
                 location: manualLocation || (location ? { lat: location.latitude, lng: location.longitude } : (profileLocation || { lat: 18.5204, lng: 73.8567 })), // Fallback order: Manual -> GPS -> Profile -> Pune
                 yield_est_quintals: yieldEst,
                 base_spoilage_rate: 0.05,
-                language: language
+                language: language,
+                planting_date: plantingDate
             };
 
             const backendUrl = `/api/recommendation`;

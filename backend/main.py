@@ -50,6 +50,7 @@ class HarvestRequest(BaseModel):
     yield_est_quintals: float
     base_spoilage_rate: float = 0.05 # 5% base spoilage
     language: str = "en"
+    planting_date: str = None # ISO format
     storage_type: str = "Open Field"
     transport_type: str = "Open Trolley"
 
@@ -64,6 +65,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
     1. Fetches weather and mandi info.
     2. Runs profit calc and decay logic.
     3. Runs shock analyzer for Black Swan events.
+    4. Integrates Harvest Oracle for maturity-aware tactics.
     """
     try:
         # 1. Fetch Integration Data
@@ -71,6 +73,21 @@ async def get_harvest_recommendation(data: HarvestRequest):
         mandi_response = await fetch_mandi_prices(data.crop, data.location, data.language)
         primary_mandi = mandi_response["primary"]
         regional_mandis = mandi_response["regional_options"]
+        
+        # 1.5 Harvest Oracle Integration (New)
+        oracle_window = None
+        oracle_verdict = None
+        if data.planting_date:
+            from engine.oracle import calculate_harvest_window
+            from logic.harvestVerdict import calculate_harvest_verdict
+            
+            oracle_window = calculate_harvest_window(data.planting_date, data.crop)
+            oracle_verdict = calculate_harvest_verdict(
+                maturity_percentage=int(oracle_window["current_maturity_pct"]),
+                sync_panic_days=[], # TODO: Pass actual heatmap if available
+                weather_forecast=[], # TODO: Pass actual forecast
+                crop=data.crop
+            )
         
         # 2. Risk & Shock Analysis (on Primary Mandi)
         price_shock = detect_market_shock(primary_mandi["current_price"], primary_mandi["7_day_history"])
@@ -197,6 +214,22 @@ async def get_harvest_recommendation(data: HarvestRequest):
         is_selling_optimal = profit_today >= profit_48h
         status = "GREEN" if is_selling_optimal else "RED"
         
+        # 4.5 UNIFIED OVERRIDE: Maturity Protection
+        # If crop is too young (<85%), force WAIT unless Oracle says SELL (Strategic Exit)
+        if oracle_window and oracle_window["current_maturity_pct"] < 85:
+            if oracle_verdict and oracle_verdict["verdict"] != "SELL":
+                 status = "RED" # Force WAIT for growth
+                 active_shock = active_shock or {
+                     "status": "MATURITY_LOCK",
+                     "is_shock": False, # Just a logical lock
+                     "message": "Crop is still in growth phase. Harvesting now causes significant yield loss.",
+                     "pivot_advice": f"Wait {oracle_window['days_to_peak']} days for peak weight. Oracle recommends HOLD."
+                 }
+                 
+        # If Oracle says SELL (Strategic Early Exit), override to GREEN
+        if oracle_verdict and oracle_verdict["verdict"] == "SELL":
+            status = "GREEN"
+        
         pivot_mandi = None
         
         # Alternative Destination Discovery Trigger
@@ -263,7 +296,11 @@ async def get_harvest_recommendation(data: HarvestRequest):
             "shared_logistics": identify_clusters(
                 user_location=data.location,
                 target_mandi=best_mandi_name
-            )
+            ),
+            "oracle": {
+                "maturity": oracle_window,
+                "verdict": oracle_verdict
+            }
         }
         
         # Add AI brief after recommendation is formed
