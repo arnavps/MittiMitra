@@ -87,8 +87,10 @@ export function NavigationMode({ targetMandi, distanceLeft, estimatedArrival, on
                 
                 if (thermal.needs_reroute) {
                     const alertMsg = "Alert! Thermal safety threshold exceeded. Recalculating cooler path.";
-                    speak(alertMsg);
-                    window.dispatchEvent(new CustomEvent('agriVakeelIntervention', { detail: { message: alertMsg, title: "THERMAL ALERT" } }));
+                    // VoiceAssistant handles the speech via the intervention event
+                    window.dispatchEvent(new CustomEvent('agriVakeelIntervention', { 
+                        detail: { message: alertMsg, title: "THERMAL ALERT" } 
+                    }));
                 }
 
                 // Mock Market Check
@@ -105,7 +107,6 @@ export function NavigationMode({ targetMandi, distanceLeft, estimatedArrival, on
 
                 if (priceDrop.alert) {
                     const alertMsg = "Alert! Market prices are falling fast in your target Mandi. Should we reroute to a more stable market?";
-                    speak(alertMsg);
                     window.dispatchEvent(new CustomEvent('agriVakeelIntervention', { 
                         detail: { 
                             message: alertMsg, 
@@ -123,16 +124,25 @@ export function NavigationMode({ targetMandi, distanceLeft, estimatedArrival, on
         return () => clearInterval(syncInterval);
     }, []);
 
-    // Mock GPS speed simulation
+    // Real GPS speed detection
     useEffect(() => {
-        const interval = setInterval(() => {
-            setSpeed(Math.floor(25 + Math.random() * 10));
-        }, 3000);
-        return () => clearInterval(interval);
+        if (!navigator.geolocation) return;
+
+        const watchId = navigator.geolocation.watchPosition(
+            (pos) => {
+                // convert m/s to kph (1 m/s = 3.6 kph)
+                const speedKph = pos.coords.speed ? Math.round(pos.coords.speed * 3.6) : 0;
+                setSpeed(speedKph);
+            },
+            (err) => console.warn("GPS Speed detection failed", err),
+            { enableHighAccuracy: true }
+        );
+
+        return () => navigator.geolocation.clearWatch(watchId);
     }, []);
 
     return (
-        <div className="fixed inset-0 z-[200] bg-[#050505] flex flex-col p-4 md:p-8">
+        <div className="fixed inset-0 z-[100000] bg-[#050505] flex flex-col p-4 md:p-8">
             {/* High Contrast Header */}
             <div className="flex justify-between items-start mb-8">
                 <div>
