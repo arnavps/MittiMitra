@@ -14,6 +14,7 @@ from engine.map_logic import calculate_spatial_profit
 from engine.shock_analyzer import detect_market_shock, detect_volume_shock
 from engine.spoilage_pro import calculate_dynamic_spoilage, get_heat_multiplier, get_preservation_actions
 from engine.audit import identify_profit_leaks
+from logic.shadowPrice import calculate_shadow_price
 from integrations.mandi_api import fetch_mandi_prices
 from integrations.weather_api import fetch_district_weather
 from engine.logistics import recommend_vehicle, identify_clusters
@@ -57,6 +58,15 @@ class HarvestRequest(BaseModel):
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "AgriChain backend is running."}
+
+@app.post("/api/shadow-price")
+def get_shadow_price(data: dict):
+    # data: {base_price: float, grade: str, spoilage_risk: float}
+    return calculate_shadow_price(
+        data.get("base_price", 2800),
+        data.get("grade", "A"),
+        data.get("spoilage_risk", 5.0)
+    )
 
 @app.post("/recommendation")
 async def get_harvest_recommendation(data: HarvestRequest):

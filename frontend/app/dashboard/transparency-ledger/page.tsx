@@ -13,11 +13,12 @@ export default function TransparencyLedgerPage() {
     const [isAuditing, setIsAuditing] = useState(false);
     const [auditStep, setAuditStep] = useState(0);
     const [auditResult, setAuditResult] = useState<QualityAuditResult | null>(null);
+    const [shadowPriceData, setShadowPriceData] = useState<any>(null);
     const [provenanceHash, setProvenanceHash] = useState<string | null>(null);
     const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // Mock data from dashboard context (In real app, this would be fetched or passed)
+    // Mock data from dashboard context
     const mockContext = {
         userId: "FARMER_77",
         crop: "Tomato",
@@ -48,6 +49,18 @@ export default function TransparencyLedgerPage() {
             // Perform Audit
             const result = await performQualityAudit();
             setAuditResult(result);
+
+            // Fetch Shadow Price from Backend
+            const spRes = await fetch('/api/shadow-price', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    base_price: mockContext.basePrice,
+                    grade: result.grade,
+                    spoilage_risk: mockContext.spoilageRisk
+                })
+            });
+            if (spRes.ok) setShadowPriceData(await spRes.json());
 
             // Generate Hash
             const hash = await generateProvenanceHash({
@@ -151,7 +164,7 @@ export default function TransparencyLedgerPage() {
                             timestamp: new Date().toISOString(),
                             qualityScore: auditResult.quality_score,
                             grade: auditResult.grade,
-                            shadowPrice: shadowPrice,
+                            shadowPrice: shadowPriceData?.shadow_price || mockContext.basePrice,
                             mandiPrice: mockContext.basePrice,
                             crop: mockContext.crop
                         }}
