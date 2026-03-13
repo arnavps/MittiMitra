@@ -187,9 +187,9 @@ export function LogisticsCalculator({
 
             {/* Diagram Modal */}
             {showDiagram && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowDiagram(false)}></div>
-                    <GlassCard className="max-w-xl w-full p-8 border-mint/30 relative z-10 animate-in zoom-in-95">
+                <div className="fixed inset-0 z-[100] flex justify-center items-start md:items-center p-4 overflow-y-auto">
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowDiagram(false)}></div>
+                    <GlassCard className="max-w-xl w-full p-6 md:p-8 border-mint/30 relative z-10 animate-in zoom-in-95 my-auto">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-bold text-white uppercase tracking-tight italic">Detailed Loading Guide</h3>
                             <button onClick={() => setShowDiagram(false)} className="text-gray-400 hover:text-white transition-colors">
@@ -198,15 +198,15 @@ export function LogisticsCalculator({
                         </div>
                         
                         <div className="space-y-6">
-                            <div className="aspect-square w-full rounded-2xl overflow-hidden border border-white/10 bg-white shadow-2xl">
+                            <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-white p-2 md:p-4 shadow-2xl">
                                 <img 
-                                    src="https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&q=80&w=800" 
+                                    src="/loading_guide.png" 
                                     alt="Chimney Pattern Loading Guide"
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-auto max-h-[40vh] md:max-h-[500px] object-contain mx-auto"
                                 />
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="p-4 rounded-xl bg-mint/5 border border-mint/20">
                                     <h4 className="text-xs font-black text-mint uppercase mb-2">The Goal</h4>
                                     <p className="text-sm text-gray-300 leading-relaxed">
