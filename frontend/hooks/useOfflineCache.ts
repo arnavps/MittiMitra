@@ -11,10 +11,13 @@ export function useOfflineCache(key: string, initialData: any = null) {
 
     // Initialize IDB
     const initDB = async () => {
-        return openDB(DB_NAME, 1, {
+        return openDB(DB_NAME, 2, {
             upgrade(db) {
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    db.createObjectStore(STORE_NAME);
+                if (!db.objectStoreNames.contains('routes')) {
+                    db.createObjectStore('routes');
+                }
+                if (!db.objectStoreNames.contains('map_tiles')) {
+                    db.createObjectStore('map_tiles');
                 }
             },
         });
@@ -92,13 +95,7 @@ export function useOfflineCache(key: string, initialData: any = null) {
 
     const cacheMapTiles = async (center: { lat: number, lng: number }, zoom: number) => {
         const TILE_STORE = 'map_tiles';
-        const db = await openDB(DB_NAME, 1, {
-            upgrade(db) {
-                if (!db.objectStoreNames.contains(TILE_STORE)) {
-                    db.createObjectStore(TILE_STORE);
-                }
-            }
-        });
+        const db = await initDB();
 
         console.log(`Pre-downloading tiles for zoom ${zoom} around ${center.lat}, ${center.lng}...`);
         
