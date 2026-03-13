@@ -184,6 +184,8 @@ export default function MarketMapsPage() {
                     {isTripActive && selectedMandi && (
                         <NavigationMode 
                             targetMandi={selectedMandi.mandi_name}
+                            startLoc={startLoc}
+                            endLoc={{ lat: selectedMandi.lat, lng: selectedMandi.lng }}
                             distanceLeft={selectedMandi.distance_km}
                             estimatedArrival="12:45 PM"
                             onExit={() => setIsTripActive(false)}
