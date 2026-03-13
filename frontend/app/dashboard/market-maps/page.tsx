@@ -13,8 +13,6 @@ const TransitMap = dynamic(() => import('@/components/dashboard/TransitMap'), {
     loading: () => <div className="h-[400px] w-full bg-forest/50 animate-pulse rounded-2xl border border-white/5" />
 });
 
-import { LogisticsCalculator } from '@/components/dashboard/LogisticsCalculator';
-
 export default function MarketMapsPage() {
     const { t, n } = useLanguage();
 
@@ -24,10 +22,6 @@ export default function MarketMapsPage() {
     const [selectedMandi, setSelectedMandi] = useState<any>(null);
     const [selectedRouteObject, setSelectedRouteObject] = useState<any>(null);
     const [isVakeelThinking, setIsVakeelThinking] = useState(false);
-
-    // Phase 3 State
-    const [selectedVehicleId, setSelectedVehicleId] = useState('');
-    const [isHired, setIsHired] = useState(true);
 
     // Get current location (from user profile or default)
     const startLoc = cachedData?.user_location || { lat: 18.5204, lng: 73.8567 };
@@ -191,25 +185,7 @@ export default function MarketMapsPage() {
 
                             {data.regional_options.map((option: any, index: number) => {
                                 const isSelected = selectedMandi?.mandi_name === option.mandi_name;
-                                
-                                // Phase 3: Dynamic Vehicle Logic
-                                const currentVehicle = cachedData?.logistics_recommendations?.find((v: any) => v.id === (selectedVehicleId || cachedData?.logistics_recommendations[0]?.id));
-                                const activeYield = cachedData?.yield_quintals || 50;
-                                
-                                let displayProfit = option.total_net_profit;
-                                let displaySpoilage = (option.transport_cost_inr || 0) + (option.quality_loss_inr || 0);
-
-                                if (currentVehicle) {
-                                    const transportCost = isHired ? currentVehicle.total_cost : currentVehicle.total_cost * 0.4;
-                                    const spoilagePct = currentVehicle.spoilage_risk_pct / 100;
-                                    const grossRev = option.market_price * activeYield;
-                                    const spoilagePenalty = spoilagePct * grossRev;
-                                    
-                                    displaySpoilage = transportCost + spoilagePenalty;
-                                    displayProfit = grossRev - displaySpoilage;
-                                }
-
-                                const hasHighSpoilage = (displaySpoilage / (option.market_price * activeYield)) > 0.05;
+                                const hasHighSpoilage = (option.quality_loss_inr || 0) > 300;
 
                                 return (
                                     <div
@@ -240,12 +216,12 @@ export default function MarketMapsPage() {
                                         <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/5">
                                             <div>
                                                 <span className="text-[9px] text-gray-500 uppercase block">Profit</span>
-                                                <span className="text-sm font-bold text-white font-mono">₹{n(Math.round(displayProfit))}</span>
+                                                <span className="text-sm font-bold text-white font-mono">₹{n(option.total_net_profit)}</span>
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-[9px] text-gray-500 uppercase block">Spoilage + Cost</span>
+                                                <span className="text-[9px] text-gray-500 uppercase block">Spoilage</span>
                                                 <span className={`text-sm font-bold font-mono ${hasHighSpoilage ? 'text-red-400' : 'text-gray-400'}`}>
-                                                    -₹{n(Math.round(displaySpoilage))}
+                                                    -₹{n((option.transport_cost_inr || 0) + (option.quality_loss_inr || 0))}
                                                 </span>
                                             </div>
                                         </div>
@@ -255,22 +231,6 @@ export default function MarketMapsPage() {
                         </div>
                     </GlassCard>
 
-
-                    {/* Phase 3: Logistics Orchestration */}
-                    {cachedData?.logistics_recommendations && (
-                        <LogisticsCalculator 
-                            recommendations={cachedData.logistics_recommendations}
-                            sharedLogistics={cachedData.shared_logistics}
-                            yieldQtl={cachedData.yield_quintals || 50}
-                            onVehicleSelect={(id) => {
-                                setSelectedVehicleId(id);
-                                // Trigger recalculation or local UI update if needed
-                            }}
-                            onTransportTypeToggle={(hired) => {
-                                setIsHired(hired);
-                            }}
-                        />
-                    )}
 
                     {/* Logic Detail Card */}
                     <GlassCard className="p-6 border-white/5 bg-white/[0.02]">
