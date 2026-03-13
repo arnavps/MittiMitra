@@ -322,7 +322,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/schemes")
+@app.post("/schemes")
 async def get_ranked_schemes(data: dict):
     # data expects: {spoilage_risk_pct: float, storage_type: str, crop: str}
     return rank_schemes(data)

@@ -33,7 +33,7 @@ export default function SchemesPage() {
                 
                 // Get recommendation data if available to get risk scores
                 // For demo/simplicity, we'll fetch from a dedicated endpoint if it exists or use defaults
-                const res = await fetch('http://127.0.0.1:8001/api/schemes', {
+                const res = await fetch('/api/schemes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -66,7 +66,7 @@ export default function SchemesPage() {
                 context_mode: "financial_advisor"
             };
 
-            const response = await fetch('http://127.0.0.1:8001/chat/explain', {
+            const response = await fetch('/api/chat/explain', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -80,7 +80,7 @@ export default function SchemesPage() {
             const data = await response.json();
             
             // TTS handling
-            const ttsUrl = `http://127.0.0.1:8001/chat/tts?text=${encodeURIComponent(data.response)}&language=${language}`;
+            const ttsUrl = `/api/chat/tts?text=${encodeURIComponent(data.response)}&language=${language}`;
             const audio = new Audio(ttsUrl);
             audio.onended = () => setVakeelExplaining(null);
             audio.play();
