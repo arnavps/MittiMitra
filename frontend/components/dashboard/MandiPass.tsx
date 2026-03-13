@@ -16,8 +16,8 @@ interface MandiPassProps {
 }
 
 export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
-    // Using a more robust QR API and ensuring it loads with proper colors
-    const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(hash)}&size=250&dark=20FFBD&light=0B1C1A&ecLevel=H`;
+    // Using standard high-contrast colors (Black on White) for maximum scannability
+    const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(hash)}&size=300&dark=000000&light=ffffff&ecLevel=H`;
 
     return (
         <div className="print-container">
@@ -72,11 +72,11 @@ export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
             <div className="p-8 space-y-8">
                 {/* QR Section */}
                 <div className="flex flex-col items-center">
-                    <div className="bg-forest/50 p-4 rounded-3xl border-2 border-mint/30 shadow-inner mb-4">
+                    <div className="bg-white p-4 rounded-3xl shadow-xl mb-4 ring-4 ring-mint/20">
                         <img 
                             src={qrUrl} 
                             alt="Provenance QR" 
-                            className="w-48 h-48 rounded-xl border border-white/10"
+                            className="w-48 h-48 rounded-lg"
                             crossOrigin="anonymous"
                         />
                     </div>
