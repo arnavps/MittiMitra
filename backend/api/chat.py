@@ -61,7 +61,7 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     # Detailed vehicle comparison for the AI
     vehicle_comparison = ""
     for v in logistics_rec:
-        vehicle_comparison += f"- {v['name']}: Total Cost ₹{v['total_cost']}, Spoilage Risk {v['spoilage_risk_pct']}%, Net Realization ₹{v['net_realization_per_qtl']}/Qtl.\n"
+        vehicle_comparison += f"- {v['name']}: Total Cost ₹{v['total_cost']}, Spoilage Risk {v['spoilage_risk_pct']}%, Net Realization ₹{v['net_realization_per_q']}/Qtl.\n"
     
     loading_advice = get_loading_instructions(context.get("crop", "Produce"), best_vehicle, yield_qtl)
     shared_logistics = context.get("shared_logistics", {})
