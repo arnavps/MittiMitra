@@ -57,6 +57,12 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     # Phase 3: Logistics Orchestration
     logistics_rec = context.get("logistics_recommendations", [])
     best_vehicle = logistics_rec[0]["name"] if logistics_rec else context.get("logistics_setup", "Open Trolley")
+    
+    # Detailed vehicle comparison for the AI
+    vehicle_comparison = ""
+    for v in logistics_rec:
+        vehicle_comparison += f"- {v['name']}: Total Cost ₹{v['total_cost']}, Spoilage Risk {v['spoilage_risk_pct']}%, Net Realization ₹{v['net_realization_per_qtl']}/Qtl.\n"
+    
     loading_advice = get_loading_instructions(context.get("crop", "Produce"), best_vehicle, yield_qtl)
     shared_logistics = context.get("shared_logistics", {})
     
@@ -106,6 +112,8 @@ NAVIGATION PERSONA:
 PHASE 3: LOADING & SHARED LOGISTICS:
 - You MUST mention the loading instruction: "{loading_advice}"
 - If sharing savings is possible (count > 0 in data), you MUST mention it: "Vakeel found {shared_logistics.get('count')} neighbors going to {shared_logistics.get('mandi')}. If you share a truck, you save ₹{shared_logistics.get('savings_per_person')} each in transport costs."
+- VEHICLE EFFICIENCY ROI: You can compare these options for the farmer:
+{vehicle_comparison}
 
 Here is the CURRENT REAL-TIME DATA for the farmer:
 - Overall Recommendation Status: {status} (GREEN=Sell, YELLOW=Hold, RED=Wait/Danger)

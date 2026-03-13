@@ -40,6 +40,7 @@ export function LogisticsCalculator({
 }: LogisticsCalculatorProps) {
     const [selectedId, setSelectedId] = useState(recommendations[0]?.id || '');
     const [isHired, setIsHired] = useState(true);
+    const [showDiagram, setShowDiagram] = useState(false);
 
     const handleSelect = (id: string) => {
         setSelectedId(id);
@@ -50,6 +51,8 @@ export function LogisticsCalculator({
         setIsHired(hired);
         onTransportTypeToggle(hired);
     };
+
+    const selectedVehicle = recommendations.find(v => v.id === selectedId);
 
     return (
         <GlassCard className="p-6 border-mint/20 relative overflow-hidden group">
@@ -125,7 +128,7 @@ export function LogisticsCalculator({
                 ))}
             </div>
 
-            {/* Loading Intelligence (New) */}
+            {/* Loading Intelligence */}
             {selectedId && (
                 <div className="mt-8 pt-6 border-t border-white/10">
                     <div className="flex items-center justify-between mb-4">
@@ -149,23 +152,92 @@ export function LogisticsCalculator({
                         </div>
 
                         <div className="flex-1">
-                            <p className="text-xs text-gray-300 leading-relaxed font-medium italic">
-                                "{recommendations.find(v => v.id === selectedId)?.id === 'Open Trolley' 
+                            <p className="text-xs text-gray-300 leading-relaxed font-medium italic mb-3">
+                                "{selectedVehicle?.id === 'Open Trolley' 
                                     ? `Stack bags in 3x3 rows with the center column empty. This creates a vertical 'chimney' that pulls heat away from the core.` 
                                     : `Apply 4-inch padding layer of straw. Do not exceed 5 levels of stacking to prevent bottom-layer compression.`}"
                             </p>
-                            <button className="mt-2 text-[10px] text-mint font-black uppercase tracking-widest flex items-center hover:underline focus:outline-none">
-                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                View Detailed Diagram
-                            </button>
+                            <div className="flex items-center space-x-4">
+                                <button 
+                                    onClick={() => setShowDiagram(true)}
+                                    className="text-[10px] text-mint font-black uppercase tracking-widest flex items-center hover:underline focus:outline-none bg-mint/5 px-2 py-1 rounded"
+                                >
+                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                    View Full Guide
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        const event = new CustomEvent('agriVakeelAsk', { 
+                                            detail: { 
+                                                query: `Why is the ${selectedVehicle?.name} recommended as the most profitable vehicle for my ${yieldQtl} Qtl harvest?` 
+                                            } 
+                                        });
+                                        window.dispatchEvent(event);
+                                    }}
+                                    className="text-[10px] text-white/70 font-black uppercase tracking-widest flex items-center hover:text-white focus:outline-none bg-white/5 px-2 py-1 rounded border border-white/5 hover:border-white/20 transition-all font-mono"
+                                >
+                                    <svg className="w-3 h-3 mr-1 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                                    Ask Why?
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
+            {/* Diagram Modal */}
+            {showDiagram && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowDiagram(false)}></div>
+                    <GlassCard className="max-w-xl w-full p-8 border-mint/30 relative z-10 animate-in zoom-in-95">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-white uppercase tracking-tight italic">Detailed Loading Guide</h3>
+                            <button onClick={() => setShowDiagram(false)} className="text-gray-400 hover:text-white transition-colors">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            <div className="aspect-square w-full rounded-2xl overflow-hidden border border-white/10 bg-white shadow-2xl">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&q=80&w=800" 
+                                    alt="Chimney Pattern Loading Guide"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 rounded-xl bg-mint/5 border border-mint/20">
+                                    <h4 className="text-xs font-black text-mint uppercase mb-2">The Goal</h4>
+                                    <p className="text-sm text-gray-300 leading-relaxed">
+                                        Core temperature management is critical. A chimney layout reduces internal rot by 22% on trips longer than 2 hours.
+                                    </p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <h4 className="text-xs font-black text-gray-400 uppercase mb-2">Next Step</h4>
+                                    <p className="text-sm text-gray-300 leading-relaxed">
+                                        Ask Agri-Vakeel for voice instructions while you stack the bags in the field.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </GlassCard>
+                </div>
+            )}
+
             {/* Shared Logistics Prompt */}
             {sharedLogistics && sharedLogistics.count > 0 && (
-                <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/10 border border-blue-400/30 animate-in slide-in-from-bottom-4 group/share cursor-pointer hover:border-blue-400/50 transition-all">
+                <div 
+                    onClick={() => {
+                        const event = new CustomEvent('agriVakeelAsk', { 
+                            detail: { 
+                                query: `Tell me more about the shared logistics option. Who are the ${sharedLogistics.count} neighbors going to ${sharedLogistics.mandi}?` 
+                            } 
+                        });
+                        window.dispatchEvent(event);
+                    }}
+                    className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/10 border border-blue-400/30 animate-in slide-in-from-bottom-4 group/share cursor-pointer hover:border-blue-400/50 transition-all shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                >
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
                             <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mr-3 border border-blue-400/40">
@@ -173,7 +245,7 @@ export function LogisticsCalculator({
                             </div>
                             <div>
                                 <p className="text-[10px] text-blue-400 uppercase font-black tracking-widest">Shared Logistics Available</p>
-                                <p className="text-white text-xs font-bold leading-tight">Combine transport to {sharedLogistics.mandi} with {sharedLogistics.count} neighbors.</p>
+                                <p className="text-white text-xs font-bold leading-tight group-hover:text-blue-300 transition-colors">Combine transport to {sharedLogistics.mandi} with {sharedLogistics.count} neighbors.</p>
                             </div>
                         </div>
                         <div className="text-right">

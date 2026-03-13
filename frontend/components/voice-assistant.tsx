@@ -55,6 +55,22 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
         }
     }, [initialQuery]);
 
+    // Handle dynamic event-based triggers (e.g., from Logistics page)
+    useEffect(() => {
+        const handleCustomAsk = (event: any) => {
+            const query = event.detail?.query;
+            if (query && !isThinking) {
+                setIsOpen(true);
+                setTranscript(query);
+                setResponse("");
+                handleAskVakeel(query);
+            }
+        };
+
+        window.addEventListener('agriVakeelAsk', handleCustomAsk);
+        return () => window.removeEventListener('agriVakeelAsk', handleCustomAsk);
+    }, [isThinking, dashboardData, language]); // Re-bind when context changes
+
     const initRecognition = () => {
         if (typeof window === "undefined") return;
 
