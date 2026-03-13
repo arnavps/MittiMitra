@@ -340,8 +340,8 @@ export default function DashboardPage() {
 
             {/* Main Content Layout - 12 Column Grid for Precision */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Left Panel: Primary Recommendation & Key Metrics (Span 8) */}
-                <div className="lg:col-span-8 space-y-8 flex flex-col">
+                {/* Left Panel: Primary Recommendation & Key Metrics (Span 7) */}
+                <div className="lg:col-span-7 space-y-8 flex flex-col">
                     <VerdictCard 
                         data={data} 
                         userCrop={userCrop} 
@@ -357,8 +357,8 @@ export default function DashboardPage() {
                     />
                 </div>
 
-                {/* Right Column: Analytics & Calibration (Span 4) */}
-                <div className="lg:col-span-4 space-y-6 flex flex-col group">
+                {/* Right Column: Analytics & Calibration (Span 5) */}
+                <div className="lg:col-span-5 space-y-6 flex flex-col group">
                     {/* Market Orbit - Desktop & Mobile Order Priority */}
                     <div className="order-1 lg:order-1">
                         <GlassCard className="h-full !p-4">
