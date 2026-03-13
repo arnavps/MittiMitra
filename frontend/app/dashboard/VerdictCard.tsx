@@ -10,6 +10,9 @@ interface VerdictCardProps {
 }
 
 import { MaturityClock } from '@/components/dashboard/MaturityClock';
+import { HarvestScorecard } from '@/components/dashboard/HarvestScorecard';
+import { getClusterMaturityHeatmap } from '@/services/supplyOrchestrator';
+import { getWeatherForecast } from '@/services/weatherService';
 
 export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData }: VerdictCardProps) {
     const { t, n } = useLanguage();
@@ -170,12 +173,22 @@ export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData
                     </div>
                     
                     <div className="flex justify-between items-end mb-2">
-                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">Crop Ripeness (GDD)</span>
-                        <span className="text-sm font-black text-mint">{oracleData.current_maturity_pct}%</span>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">Crop Tactics Engine</span>
+                        <span className="text-sm font-black text-mint">
+                             {oracleData.oracle_verdict?.verdict || 'MONITOR'}
+                        </span>
                     </div>
 
+                    {/* New Transparency Scorecard */}
+                    <HarvestScorecard 
+                        maturityPct={oracleData.current_maturity_pct}
+                        syncPanicDays={oracleData.tactical_context?.sync_panic_days || []}
+                        weatherForecast={oracleData.tactical_context?.weather_forecast || []}
+                        verdict={oracleData.oracle_verdict}
+                    />
+
                     {/* Classy Glassy Ripeness Bar */}
-                    <div className="h-3 w-full bg-white/5 rounded-full p-0.5 border border-white/10 shadow-inner">
+                    <div className="h-3 w-full bg-white/5 rounded-full p-0.5 border border-white/10 shadow-inner mb-4">
                         <div 
                             className="h-full rounded-full transition-all duration-1500 ease-out bg-gradient-to-r from-mint via-emerald-400 to-mint animate-shimmer"
                             style={{ 
@@ -187,10 +200,10 @@ export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData
                     </div>
 
                     {oracleData.oracle_verdict?.explanation && (
-                        <div className="mt-4 pt-4 border-t border-white/5 text-left">
-                            <p className="text-[10px] text-mint uppercase tracking-widest font-black mb-1 opacity-60">Oracle Tactical Logic</p>
-                            <p className="text-xs text-white/90 font-bold leading-relaxed italic">
-                                "{oracleData.oracle_verdict.explanation}"
+                        <div className="mt-4 pt-4 border-t border-white/5 text-left bg-black/20 p-3 rounded-xl">
+                            <p className="text-[10px] text-mint uppercase tracking-widest font-black mb-2 opacity-60">Logic Audit Log</p>
+                            <p className="text-xs text-white/90 font-bold leading-relaxed italic border-l-2 border-mint/30 pl-3">
+                                {oracleData.oracle_verdict.explanation}
                             </p>
                         </div>
                     )}

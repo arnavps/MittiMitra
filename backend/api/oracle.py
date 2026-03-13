@@ -29,6 +29,13 @@ def get_harvest_forecast(req: OracleRequest):
             crop=req.crop
         )
         
-        return {**base_forecast, "oracle_verdict": verdict_data}
+        return {
+            **base_forecast, 
+            "oracle_verdict": verdict_data,
+            "tactical_context": {
+                "sync_panic_days": req.sync_panic_days,
+                "weather_forecast": req.weather_forecast
+            }
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

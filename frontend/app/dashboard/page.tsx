@@ -16,6 +16,9 @@ import { AuditSummaryCard } from './AuditSummaryCard';
 import { ManualOverrideModal } from '@/components/dashboard/ManualOverrideModal';
 import { VakeelBrief } from '@/components/dashboard/VakeelBrief';
 import { auth } from '@/services/firebase';
+import { fetchProfile } from '@/services/user';
+import { getWeatherForecast } from '@/services/weatherService';
+import { getClusterMaturityHeatmap } from '@/services/supplyOrchestrator';
 
 export default function DashboardPage() {
     const { t, n, language } = useLanguage();
@@ -45,35 +48,22 @@ export default function DashboardPage() {
     ];
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const phone = auth.currentUser?.phoneNumber || localStorage.getItem('demo_phone') || "9999999999";
-                const { supabase } = await import('@/utils/supabase/client');
-                
-                const { data } = await supabase
-                    .from('profiles')
-                    .select('name, crop, yield_quintals, latitude, longitude, planting_date')
-                    .eq('phone', phone)
-                    .single();
-                if (data?.name) setProfileName(data.name);
-                if (data?.crop) setUserCrop(data.crop);
-                if (data?.planting_date) setPlantingDate(data.planting_date);
-                if (data?.yield_quintals) {
-                    setYieldEst(data.yield_quintals);
-                } else {
-                    setYieldEst(50); // ultimate fallback
-                }
-                if (data?.latitude && data?.longitude) {
-                    setProfileLocation({ lat: data.latitude, lng: data.longitude });
-                }
-                setProfileLoaded(true);
-            } catch (error) {
-                console.error("Failed to fetch profile in topbar");
+        const loadProfile = async () => {
+            const data = await fetchProfile();
+            if (data?.name) setProfileName(data.name);
+            if (data?.crop) setUserCrop(data.crop);
+            if (data?.planting_date) setPlantingDate(data.planting_date);
+            if (data?.yield_quintals) {
+                setYieldEst(data.yield_quintals);
+            } else {
                 setYieldEst(50);
-                setProfileLoaded(true);
             }
+            if (data?.latitude && data?.longitude) {
+                setProfileLocation({ lat: data.latitude, lng: data.longitude });
+            }
+            setProfileLoaded(true);
         };
-        fetchProfile();
+        loadProfile();
     }, []);
 
     // Manual Overrides State
@@ -205,13 +195,21 @@ export default function DashboardPage() {
 
                 // Fetch Oracle & Ecosystem Data in parallel
                 try {
+                    // Pre-fetch tactical context
+                    const [forecast, heatmap] = await Promise.all([
+                        getWeatherForecast(payload.location.lat, payload.location.lng),
+                        getClusterMaturityHeatmap("422201") // Mock pin
+                    ]);
+
                     const [oracleRes, clusterRes] = await Promise.all([
                         fetch('/api/oracle/forecast', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
                                 planting_date: plantingDate || data?.planting_date || new Date().toISOString().split('T')[0], 
-                                crop: userCrop || data?.crop || "Tomato" 
+                                crop: userCrop || data?.crop || "Tomato",
+                                sync_panic_days: heatmap,
+                                weather_forecast: forecast
                             })
                         }),
                         fetch('/api/ecosystem/cluster', {
