@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react';
 import { GlassCard } from '@/components/glass-card';
 
-export function StatusPill({ status, message, className = "" }: { status: "GREEN" | "YELLOW" | "RED", message: string, className?: string }) {
+export function StatusPill({ status, message, className = "" }: { status: "GREEN" | "YELLOW" | "RED" | "STABLE" | "WATCH" | "REROUTE", message: string, className?: string }) {
     const getColors = () => {
         switch (status) {
-            case "GREEN": return "bg-mint/20 text-mint border-mint/50";
-            case "YELLOW": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-            case "RED": return "bg-red-500/20 text-red-400 border-red-500/50";
+            case "GREEN":
+            case "STABLE": return "bg-mint/20 text-mint border-mint/50";
+            case "YELLOW":
+            case "WATCH": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+            case "RED":
+            case "REROUTE": return "bg-red-500/20 text-red-400 border-red-500/50";
             default: return "bg-gray-500/20 text-gray-300 border-gray-500/50";
         }
     };

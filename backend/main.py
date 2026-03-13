@@ -49,23 +49,21 @@ class HarvestRequest(BaseModel):
     crop: str = ""
     location: dict
     yield_est_quintals: float
-    base_spoilage_rate: float = 0.05 # 5% base spoilage
+    base_spoilage_rate: float = 0.05 
     language: str = "en"
-    planting_date: str = None # ISO format
+    planting_date: str = None 
     storage_type: str = "Open Field"
     transport_type: str = "Open Trolley"
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok", "message": "AgriChain backend is running."}
+    disease_severity: float = 0.0 # Phase 9
 
 @app.post("/api/shadow-price")
 def get_shadow_price(data: dict):
-    # data: {base_price: float, grade: str, spoilage_risk: float}
+    # data: {base_price: float, grade: str, spoilage_risk: float, severity_index: float}
     return calculate_shadow_price(
         data.get("base_price", 2800),
         data.get("grade", "A"),
-        data.get("spoilage_risk", 5.0)
+        data.get("spoilage_risk", 5.0),
+        data.get("severity_index", 0.0)
     )
 
 @app.post("/recommendation")

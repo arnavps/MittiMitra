@@ -2,16 +2,16 @@ import datetime
 import math
 from typing import Dict, Any, List
 
-def calculate_dynamic_spoilage(base_q10: float, current_temp: float, target_temp: float, duration_hours: float, multiplier: float) -> float:
+def calculate_dynamic_spoilage(base_q10: float, current_temp: float, target_temp: float, duration_hours: float, multiplier: float, disease_multiplier: float = 1.0) -> float:
     """
     Calculates dynamic spoilage based on the Q10 temperature coefficient formula.
-    Rate = Base_Rate * Q10 ^ ((Current_Temp - Target_Temp) / 10)
+    Rate = Base_Rate * Q10 ^ ((Current_Temp - Target_Temp) / 10) * D_m
     """
     # Standard Q10 for fresh produce is often ~2.5 to 3.0. We use 2.5 here.
     q10_factor = 2.5
     
-    # Calculate accelerated rate
-    accelerated_rate = base_q10 * math.pow(q10_factor, (current_temp - target_temp) / 10.0)
+    # Calculate accelerated rate (including Pathological Multiplier Dm)
+    accelerated_rate = base_q10 * math.pow(q10_factor, (current_temp - target_temp) / 10.0) * disease_multiplier
     
     # Apply context multipliers (e.g. Open Field vs Shaded)
     final_rate = accelerated_rate * multiplier

@@ -143,6 +143,15 @@ If `logistics_audit.is_high_risk` is true, you MUST explicitly state the followi
 - HARVEST ORACLE (MATURITY): {maturity_pct}% Ripe. Oracle Verdict: {oracle_verdict}. 
 - MATURITY ADVICE: {maturity_advice}
 """
+    # Phase 9: Pathological Alerts
+    pathology = context.get("pathology", {})
+    disease = pathology.get("disease_detected")
+    severity = pathology.get("severity_index", 0)
+    if disease and severity > 0.3:
+        prompt += f"\nURGENT BIOLOGICAL ALERT: Pathological screening detected {disease} (Severity: {round(severity*100)}%). Respiration is accelerated by 2.5x. Farmer MUST prioritize Mandis within 100km or sell locally within 6 hours to avoid 100% spoilage loss.\n"
+    elif disease:
+        prompt += f"\nNOTE: Detected minor symptoms of {disease}. Monitor closely.\n"
+
     if shock and shock.get("is_shock"):
         prompt += f"\nCRITICAL SHOCK ALERT ACTIVE: {shock.get('message')}. Pivot Advice: {shock.get('pivot_advice')}\n"
 

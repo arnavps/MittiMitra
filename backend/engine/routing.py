@@ -17,7 +17,8 @@ def calculate_path_spoilage(
     segments: List[Dict[str, Any]],
     storage_type: str,
     transport_type: str,
-    base_hourly_q10: float = 0.005
+    base_hourly_q10: float = 0.005,
+    disease_multiplier: float = 1.0
 ) -> float:
     """
     Applies Q10 formula across segments of a path.
@@ -39,7 +40,8 @@ def calculate_path_spoilage(
             current_temp=temp,
             target_temp=20.0,
             duration_hours=duration,
-            multiplier=combined_mult * vibration_mult
+            multiplier=combined_mult * vibration_mult,
+            disease_multiplier=disease_multiplier
         )
         total_loss_pct += segment_loss
         
@@ -52,7 +54,8 @@ def score_routes(
     crop: str,
     storage_type: str,
     transport_type: str,
-    fuel_cost_per_km: float = 2.0 # INR per km per quintal estimated
+    fuel_cost_per_km: float = 2.0, # INR per km per quintal estimated
+    disease_multiplier: float = 1.0
 ) -> List[Dict[str, Any]]:
     """
     Formula: Route_Score (Net Realization) = Market_Price - (Fuel_Cost + Spoilage_Penalty)
@@ -69,7 +72,7 @@ def score_routes(
         fuel_cost = dist * fuel_cost_per_km
         
         # 2. Spoilage Penalty
-        loss_pct = calculate_path_spoilage(crop, segments, storage_type, transport_type)
+        loss_pct = calculate_path_spoilage(crop, segments, storage_type, transport_type, disease_multiplier=disease_multiplier)
         spoilage_penalty = (loss_pct / 100.0) * market_price
         
         # 3. Final Score
