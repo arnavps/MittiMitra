@@ -62,3 +62,29 @@ def get_storage_roi(req: StorageROIRequest):
         return roi
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/fpo/stats")
+def get_fpo_stats():
+    """
+    Detailed aggregation for FPO Control Tower.
+    """
+    try:
+        return {
+            "total_farmers": 1250,
+            "total_yield_qtl": 15400,
+            "crop_distribution": [
+                {"crop": "Tomato", "yield": 6200, "farmers": 450, "color": "#FF4D4D"},
+                {"crop": "Onion", "yield": 4800, "farmers": 320, "color": "#DA70D6"},
+                {"crop": "Wheat", "yield": 3100, "farmers": 380, "color": "#F4D03F" }
+            ],
+            "regional_clusters": [
+                {"region": "Nashik Outer", "yield": 5200, "mandi": "Vashi", "panic": 52},
+                {"region": "Pimpalgaon", "yield": 8100, "mandi": "Pimpalgaon Hub", "panic": 115}
+            ],
+            "logistics_queue": [
+                {"id": "TR-901", "type": "3-Ton Shared", "status": "MATCHING", "savings": 4500},
+                {"id": "TR-908", "type": "10-Ton Multi", "status": "WAITING", "savings": 12000}
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

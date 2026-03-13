@@ -38,10 +38,17 @@ def test_storage():
     print(f"Storage ROI Status: {r.status_code}")
     print(json.dumps(r.json(), indent=2))
 
+def test_fpo_stats():
+    print("\nTesting FPO Stats...")
+    r = requests.get(f"{BASE_URL}/ecosystem/fpo/stats")
+    print(f"FPO Stats Status: {r.status_code}")
+    print(json.dumps(r.json(), indent=2))
+
 if __name__ == "__main__":
     try:
         test_ecosystem()
         test_oracle()
         test_storage()
+        test_fpo_stats()
     except Exception as e:
         print(f"Error connecting to server: {e}")
