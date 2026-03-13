@@ -33,6 +33,7 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
     const [language, setLanguage] = useState(langCodeToName[globalLanguage] || "Hindi");
     const [isSupported, setIsSupported] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [interventionOptions, setInterventionOptions] = useState<any[]>([]);
 
     // Sync with global language changes
     useEffect(() => {
@@ -77,6 +78,7 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
             const { message, title, options } = event.detail;
             setIsOpen(true);
             setResponse(message);
+            setInterventionOptions(options || []);
             // In a real app, we'd wait for voice "Yes/No"
             // For now, we show the message and play the voice.
             speakResponse(message);
@@ -391,8 +393,27 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
                 )}
 
                 {response && (
-                    <div className="self-start bg-mint/10 border border-mint/20 rounded-2xl rounded-tl-none py-3 px-4 max-w-[95%] text-mint whitespace-pre-wrap">
-                        {response}
+                    <div className="self-start space-y-3 w-full">
+                        <div className="bg-mint/10 border border-mint/20 rounded-2xl rounded-tl-none py-3 px-4 text-mint whitespace-pre-wrap">
+                            {response}
+                        </div>
+                        {interventionOptions.length > 0 && (
+                            <div className="flex flex-wrap gap-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-500">
+                                {interventionOptions.map((opt, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => {
+                                            setResponse(`Confirmed: ${opt.label}`);
+                                            setInterventionOptions([]);
+                                            speakResponse(`Understood. ${opt.label} initiated.`);
+                                        }}
+                                        className="bg-mint text-forest px-4 py-2 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-white transition-all shadow-lg"
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

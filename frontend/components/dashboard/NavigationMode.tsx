@@ -142,8 +142,9 @@ export function NavigationMode({ targetMandi, distanceLeft, estimatedArrival, on
     }, []);
 
     return (
-        <div className="fixed inset-0 z-[100000] bg-[#050505] flex flex-col p-4 md:p-8">
-            {/* High Contrast Header */}
+        <div className="fixed inset-0 z-[100000] bg-black/40 backdrop-blur-md flex items-center justify-center p-4 md:p-10">
+            <div className="w-full h-full max-w-7xl bg-[#050505] border-2 border-white/10 rounded-[60px] shadow-[0_0_150px_rgba(0,0,0,0.8)] flex flex-col p-6 md:p-12 overflow-y-auto relative animate-in zoom-in-95 duration-500">
+                {/* High Contrast Header */}
             <div className="flex justify-between items-start mb-8">
                 <div>
                     <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic">
@@ -219,6 +220,7 @@ export function NavigationMode({ targetMandi, distanceLeft, estimatedArrival, on
                     </div>
                 </div>
             )}
+        </div>
         </div>
     );
 }
