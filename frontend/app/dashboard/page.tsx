@@ -13,6 +13,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { VerdictCard } from './VerdictCard';
 import { MetricsGrid } from './MetricsGrid';
 import { AuditSummaryCard } from './AuditSummaryCard';
+import { LogisticsCalculator } from '@/components/dashboard/LogisticsCalculator';
 import { ManualOverrideModal } from '@/components/dashboard/ManualOverrideModal';
 import { VakeelBrief } from '@/components/dashboard/VakeelBrief';
 import { auth } from '@/services/firebase';
@@ -31,6 +32,10 @@ export default function DashboardPage() {
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
     const [manualLocation, setManualLocation] = useState<{ lat: number, lng: number } | null>(null);
     const [profileLocation, setProfileLocation] = useState<{ lat: number, lng: number } | null>(null);
+
+    // Phase 3 State
+    const [selectedVehicleId, setSelectedVehicleId] = useState('');
+    const [isHired, setIsHired] = useState(true);
 
     const availableCrops = ["Tomato", "Potato", "Onion", "Soybean", "Wheat", "Cotton"];
     const hubs = [
@@ -127,16 +132,15 @@ export default function DashboardPage() {
         updated.total_net_profit = Math.round(perQuintal * activeYield);
         updated.yield_quintals = activeYield;
 
-        if (updated.breakdown) {
-            updated.breakdown.gross_revenue = updated.mandi_stats.current_price * activeYield;
-            // Logistics cost is per-trip, so keep it flat rather than scaling wildly by yield for minor adjustments
-            updated.breakdown.logistics_cost = currentData.breakdown?.logistics_cost ?? 0;
-            // Spoilage percentage logic (from 0 to 1 scale vs % scale depending on backend format)
-            const qualityLossPct = updated.mandi_stats?.quality_loss_pct ?? 0;
-            updated.breakdown.spoilage_penalty = (qualityLossPct / 100) * updated.breakdown.gross_revenue;
-        }
+        const currentVehicle = data.logistics_recommendations?.find((v: any) => v.id === (selectedVehicleId || data.logistics_recommendations[0]?.id));
+        const transportCost = currentVehicle ? (isHired ? currentVehicle.total_cost : currentVehicle.total_cost * 0.4) : (currentData.breakdown?.logistics_cost ?? 0);
+        const spoilagePct = currentVehicle ? (currentVehicle.spoilage_risk_pct / 100) : ((updated.mandi_stats?.quality_loss_pct ?? 2) / 100);
 
-        updated.total_net_profit = (updated.breakdown?.gross_revenue ?? 0) - (updated.breakdown?.logistics_cost ?? 0) - (updated.breakdown?.spoilage_penalty ?? 0);
+        updated.breakdown.gross_revenue = updated.mandi_stats.current_price * activeYield;
+        updated.breakdown.logistics_cost = transportCost;
+        updated.breakdown.spoilage_penalty = spoilagePct * updated.breakdown.gross_revenue;
+
+        updated.total_net_profit = updated.breakdown.gross_revenue - updated.breakdown.logistics_cost - updated.breakdown.spoilage_penalty;
         updated.net_realization_inr_per_quintal = updated.total_net_profit / activeYield;
 
         updated.is_manual_override = true;
@@ -370,6 +374,25 @@ export default function DashboardPage() {
                             </div>
                         </GlassCard>
                     </div>
+
+                    {/* Logistics Orchestration (Phase 3) */}
+                    {data?.logistics_recommendations && (
+                        <div className="order-3 lg:order-3">
+                            <LogisticsCalculator 
+                                recommendations={data.logistics_recommendations}
+                                sharedLogistics={data.shared_logistics}
+                                yieldQtl={yieldEst || 50}
+                                onVehicleSelect={(id) => {
+                                    setSelectedVehicleId(id);
+                                    recalculateWithOverrides(data, overrides);
+                                }}
+                                onTransportTypeToggle={(hired) => {
+                                    setIsHired(hired);
+                                    recalculateWithOverrides(data, overrides);
+                                }}
+                            />
+                        </div>
+                    )}
 
                     {/* Logistics Audit Card (Phase 1.5) */}
                     {data?.logistics_audit && (

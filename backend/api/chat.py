@@ -7,6 +7,7 @@ from typing import Dict, Any, List
 from groq import Groq
 from dotenv import load_dotenv
 from gtts import gTTS
+from engine.logistics import get_loading_instructions
 
 load_dotenv()
 
@@ -53,6 +54,12 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     shock = context.get("shock_alert", {})
     routing = context.get("routing_data", {})
     
+    # Phase 3: Logistics Orchestration
+    logistics_rec = context.get("logistics_recommendations", [])
+    best_vehicle = logistics_rec[0]["name"] if logistics_rec else context.get("logistics_setup", "Open Trolley")
+    loading_advice = get_loading_instructions(context.get("crop", "Produce"), best_vehicle, yield_qtl)
+    shared_logistics = context.get("shared_logistics", {})
+    
     optimal_route = next((r for r in routing.get("routes", []) if r["id"] == routing.get("optimal_id")), None)
     route_info = ""
     if optimal_route:
@@ -95,6 +102,10 @@ NAVIGATION PERSONA:
 - Your role is to provide real-time updates while they drive.
 - Focus on destination price changes, weather risks on the road, and spoilage prevention.
 - Be proactive but non-intrusive.
+
+PHASE 3: LOADING & SHARED LOGISTICS:
+- You MUST mention the loading instruction: "{loading_advice}"
+- If sharing savings is possible (count > 0 in data), you MUST mention it: "Vakeel found {shared_logistics.get('count')} neighbors going to {shared_logistics.get('mandi')}. If you share a truck, you save ₹{shared_logistics.get('savings_per_person')} each in transport costs."
 
 Here is the CURRENT REAL-TIME DATA for the farmer:
 - Overall Recommendation Status: {status} (GREEN=Sell, YELLOW=Hold, RED=Wait/Danger)

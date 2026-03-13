@@ -16,6 +16,7 @@ from engine.spoilage_pro import calculate_dynamic_spoilage, get_heat_multiplier,
 from engine.audit import identify_profit_leaks
 from integrations.mandi_api import fetch_mandi_prices
 from integrations.weather_api import fetch_district_weather
+from engine.logistics import recommend_vehicle, identify_clusters
 
 app = FastAPI(title="AgriChain API", description="The Temporal Arbitrage Engine")
 
@@ -128,12 +129,20 @@ async def get_harvest_recommendation(data: HarvestRequest):
         )
         
         # 3.5 UNIFIED DECISION LOGIC: Pick the absolute BEST market today
-        # spatial_profits[0] is already sorted by total_net_profit descending
-        best_optimal_option = spatial_profits[0]
+        if not spatial_profits:
+            # Emergency fallback if no regional options pass filters
+            best_optimal_option = {
+                "mandi_name": primary_mandi["name"],
+                "distance_km": primary_mandi["distance_km"],
+                "market_price": primary_mandi["current_price"],
+                "quality_loss_pct": 2.0,
+                "total_net_profit": primary_profit
+            }
+        else:
+            best_optimal_option = spatial_profits[0]
         
-        # Promoting the BEST regional option to be our Primary recommendation baseline
-        profit_today = best_optimal_option["net_profit_per_quintal"]
-        total_profit_today = best_optimal_option["total_net_profit"]
+        profit_today = best_optimal_option.get("net_profit_per_quintal", profit_today)
+        total_profit_today = best_optimal_option.get("total_net_profit", profit_today * data.yield_est_quintals)
         best_mandi_name = best_optimal_option["mandi_name"]
         dist_best = best_optimal_option["distance_km"]
         
@@ -238,7 +247,17 @@ async def get_harvest_recommendation(data: HarvestRequest):
                 "today_profit": round(profit_today, 2),
                 "future_profit": round(profit_48h, 2),
                 "profit_difference": round(profit_today - profit_48h, 2)
-            }
+            },
+            "logistics_recommendations": recommend_vehicle(
+                calibrated_yield=data.yield_est_quintals,
+                transit_temp_forecast=temp_forecast_48h,
+                distance_km=dist_best,
+                market_price=best_optimal_option["market_price"]
+            ),
+            "shared_logistics": identify_clusters(
+                user_location=data.location,
+                target_mandi=best_mandi_name
+            )
         }
         
         # Add AI brief after recommendation is formed
