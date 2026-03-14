@@ -61,20 +61,12 @@ export default function LandingPage() {
         >
           {/* Hero Left Content */}
           <div className="flex-1 text-center lg:text-left">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6 inline-flex items-center rounded-full border border-mint/20 bg-mint/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-mint shadow-[0_0_20px_rgba(32,255,189,0.1)]"
-            >
-              <span className="w-2 h-2 rounded-full bg-mint animate-pulse mr-3"></span>
-              {t('heroBadge')}
-            </motion.div>
 
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 leading-[0.9] drop-shadow-2xl"
+              className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter mb-6 leading-[0.95] drop-shadow-2xl"
             >
               {t('heroHeading1')} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint to-blue-400">
@@ -86,7 +78,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-lg md:text-xl text-gray-400 max-w-xl mb-10 leading-relaxed font-medium"
+              className="text-base md:text-lg text-gray-400 max-w-xl mb-10 leading-relaxed font-medium"
             >
               {t('heroDescription')}
             </motion.p>
