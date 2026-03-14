@@ -307,16 +307,16 @@ export default function OnboardingPage() {
 
             {/* Main Content: Card-Based Layout */}
             {!showLanguageModal && (
-                <div className="relative z-10 w-full flex items-center justify-center p-6 lg:p-12">
-                    <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 h-[85vh]">
+                <div className="relative z-10 w-full h-screen overflow-hidden flex flex-col items-center justify-center p-4 lg:p-6">
+                    <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6 h-[75vh] max-h-[850px] min-h-[500px]">
                         
                         {/* LEFT CARD: Extraction Ledger (35%) */}
                         <motion.div 
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="lg:col-span-4 h-full"
+                            className="lg:col-span-4 h-full overflow-hidden"
                         >
-                            <GlassCard className="h-full flex flex-col p-8 border-mint/10 overflow-hidden relative group">
+                            <GlassCard className="h-full flex flex-col p-8 border-mint/10 overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                                 <div className="mb-8">
                                     <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.3em] text-mint/60 mb-4">
                                         <Terminal className="w-4 h-4" />
@@ -406,8 +406,8 @@ export default function OnboardingPage() {
                                 </div>
 
                                 <div className="mt-6 pt-6 border-t border-white/5 opacity-40">
-                                    <div className="font-mono text-[8px] tracking-widest text-mint text-center">
-                                        VERIFIER: MITTI-MITRA AGRI-NODE 01
+                                    <div className="font-mono text-[8px] tracking-widest text-mint text-center uppercase">
+                                        System Node Trace: MUM-EDG-92
                                     </div>
                                 </div>
                             </GlassCard>
@@ -419,25 +419,25 @@ export default function OnboardingPage() {
                             animate={{ opacity: 1, x: 0 }}
                             className="lg:col-span-8 h-full"
                         >
-                            <GlassCard className="h-full flex flex-col border-mint/10 overflow-hidden relative shadow-[0_0_100px_rgba(32,255,189,0.1)] bg-forest/20">
+                            <GlassCard className="h-full flex flex-col border-mint/20 overflow-hidden relative shadow-[0_30px_70px_rgba(0,0,0,0.6)] bg-forest/30">
                                 {/* Chat Header */}
-                                <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+                                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.03] backdrop-blur-md">
                                     <div className="flex items-center space-x-4">
-                                        <div className="w-10 h-10 rounded-2xl bg-mint/20 flex items-center justify-center border border-mint/20">
+                                        <div className="w-10 h-10 rounded-2xl bg-mint/20 flex items-center justify-center border border-mint/20 shadow-[0_0_20px_rgba(32,255,189,0.2)]">
                                             <Zap className="w-5 h-5 text-mint" />
                                         </div>
                                         <div>
-                                            <div className="font-black text-sm uppercase tracking-tight">Agri-Vakeel AI</div>
-                                            <div className="text-[10px] text-mint flex items-center">
+                                            <div className="font-black text-sm uppercase tracking-tight">Agri-Vakeel Interface</div>
+                                            <div className="text-[10px] text-mint flex items-center font-bold">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-mint animate-pulse mr-2" />
-                                                Live Sync Active
+                                                Data Uplink Stable
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Messages Area */}
-                                <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pb-32">
+                                <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pb-10">
                                     <AnimatePresence initial={false}>
                                         {messages.map((msg, idx) => (
                                             <motion.div
@@ -446,12 +446,14 @@ export default function OnboardingPage() {
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}
                                             >
-                                                <div className={`max-w-[85%] p-5 rounded-3xl ${
+                                                <div className={`max-w-[85%] p-6 rounded-3xl ${
                                                     msg.role === 'ai' 
-                                                        ? 'bg-white/5 border border-white/10 text-mint italic text-lg leading-relaxed rounded-bl-none shadow-xl' 
-                                                        : 'bg-mint text-forest font-bold text-base rounded-br-none shadow-lg'
+                                                        ? 'bg-white/[0.07] border border-white/10 text-white italic text-lg leading-relaxed rounded-bl-none shadow-2xl backdrop-blur-md' 
+                                                        : 'bg-mint text-forest font-black text-base rounded-br-none shadow-[0_10px_30px_rgba(32,255,189,0.3)]'
                                                 }`}>
-                                                    {msg.role === 'ai' ? `"${msg.text}"` : msg.text}
+                                                    {msg.role === 'ai' ? (
+                                                        <span className="text-mint">"{msg.text}"</span>
+                                                    ) : msg.text}
                                                 </div>
                                             </motion.div>
                                         ))}
@@ -459,35 +461,35 @@ export default function OnboardingPage() {
 
                                     {isThinking && (
                                         <div className="flex space-x-2 p-4 justify-start">
-                                            <div className="w-2 h-2 bg-mint/50 rounded-full animate-bounce" />
-                                            <div className="w-2 h-2 bg-mint/50 rounded-full animate-bounce [animation-delay:0.2s]" />
-                                            <div className="w-2 h-2 bg-mint/50 rounded-full animate-bounce [animation-delay:0.4s]" />
+                                            <div className="w-2.5 h-2.5 bg-mint/50 rounded-full animate-bounce" />
+                                            <div className="w-2.5 h-2.5 bg-mint/50 rounded-full animate-bounce [animation-delay:0.2s]" />
+                                            <div className="w-2.5 h-2.5 bg-mint/50 rounded-full animate-bounce [animation-delay:0.4s]" />
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Input Controls */}
-                                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-forest via-forest/90 to-transparent">
-                                    <div className="max-w-2xl mx-auto flex items-center space-x-4">
+                                {/* Message Input Bar - Ultra High Visibility */}
+                                <div className="p-6 lg:p-8 bg-forest/90 border-t-2 border-mint/30 backdrop-blur-3xl shadow-[0_-20px_50px_rgba(32,255,189,0.1)]">
+                                    <div className="max-w-2xl mx-auto flex items-center space-x-5">
                                         {(currentStepRef.current === 'HealthAudit' || currentStepRef.current === 'DepartureAudit') && !cameraActive ? (
                                             <button 
                                                 onClick={startCameraStep}
-                                                className="flex-1 h-16 bg-mint text-forest rounded-2xl flex items-center justify-center space-x-3 font-black uppercase tracking-[0.1em] shadow-[0_0_30px_rgba(32,255,189,0.3)] hover:scale-[1.02] active:scale-95 transition-all"
+                                                className="flex-1 h-16 bg-mint text-forest rounded-2xl flex items-center justify-center space-x-3 font-black uppercase tracking-[0.1em] shadow-[0_0_40px_rgba(32,255,189,0.4)] hover:scale-[1.03] active:scale-95 transition-all text-sm"
                                             >
-                                                <Camera className="w-5 h-5" />
-                                                <span>Start Visual Audit</span>
+                                                <Camera className="w-6 h-6" />
+                                                <span>Initialize Visual Audit</span>
                                             </button>
                                         ) : (
                                             <>
                                                 <button 
                                                     onClick={isListening ? () => recognitionRef.current?.stop() : startListening}
-                                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl ${
+                                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl shrink-0 ${
                                                         isListening 
-                                                        ? 'bg-red-500 scale-110 shadow-[0_0_40px_rgba(239,68,68,0.4)]' 
-                                                        : 'bg-mint text-forest hover:scale-105 active:scale-95'
+                                                        ? 'bg-red-500 scale-110 shadow-[0_0_50px_rgba(239,68,68,0.5)]' 
+                                                        : 'bg-mint text-forest hover:scale-110 active:scale-90 shadow-[0_10px_30px_rgba(32,255,189,0.3)]'
                                                     }`}
                                                 >
-                                                    {isListening ? <MicOff className="w-7 h-7 animate-pulse" /> : <Mic className="w-7 h-7" />}
+                                                    {isListening ? <MicOff className="w-8 h-8 animate-pulse" /> : <Mic className="w-8 h-8" />}
                                                 </button>
                                                 <form 
                                                     onSubmit={(e) => {
@@ -499,17 +501,17 @@ export default function OnboardingPage() {
                                                             input.value = "";
                                                         }
                                                     }}
-                                                    className="flex-1 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center px-6 focus-within:border-mint/50 transition-all shadow-xl backdrop-blur-3xl group"
+                                                    className="flex-1 h-16 bg-white/[0.08] border-2 border-mint/20 rounded-2xl flex items-center px-6 focus-within:border-mint/60 focus-within:bg-white/[0.12] transition-all shadow-xl group"
                                                 >
                                                     <input 
                                                         name="text-input"
                                                         type="text"
                                                         autoComplete="off"
-                                                        placeholder={isListening ? "System listening..." : "Type your message..."}
-                                                        className="bg-transparent border-none outline-none text-white text-md w-full placeholder:text-gray-500"
+                                                        placeholder={isListening ? "Listening..." : "Speak via mic or type..."}
+                                                        className="bg-transparent border-none outline-none text-white text-md w-full placeholder:text-gray-400 font-bold"
                                                     />
-                                                    <button type="submit" className="text-mint ml-4 hover:scale-110 transition-transform">
-                                                        <Send className="w-6 h-6" />
+                                                    <button type="submit" className="text-mint ml-4 hover:scale-125 transition-transform active:scale-90">
+                                                        <Send className="w-7 h-7" />
                                                     </button>
                                                 </form>
                                             </>
