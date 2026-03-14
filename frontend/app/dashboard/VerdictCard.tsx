@@ -73,58 +73,69 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                 </div>
             )}
 
-            <div className="z-10 w-full mb-6">
-                {data.status === 'GREEN' ? (
-                    <div className="animate-in fade-in zoom-in duration-500">
-                        <h3 className="text-8xl lg:text-9xl font-black text-mint mb-2 drop-shadow-[0_0_35px_rgba(32,255,189,0.6)] tracking-tighter italic">
-                            {t('sell') || 'SELL'}
-                        </h3>
-                        <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">Market peak detected. Best window for maximum realization.</p>
-                    </div>
-                ) : data.status === 'RED' ? (
-                    <div className="animate-in fade-in zoom-in duration-500">
-                        <h3 className="text-8xl lg:text-9xl font-black text-amber-500 mb-2 drop-shadow-[0_0_35px_rgba(245,158,11,0.6)] tracking-tighter italic">
-                            {t('wait') || 'WAIT'}
-                        </h3>
-                        <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">
-                            {data.shock_alert?.status === 'MATURITY_LOCK' 
-                                ? data.shock_alert.message 
-                                : isHarvested 
-                                    ? 'Market volume spike detected. Waiting 48h for price stabilization.'
-                                    : (t('waitDesc') || 'Supply overflow. Waiting 48h increases profit probability.')}
-                        </p>
-                    </div>
-                ) : (
-                    <div className="animate-in fade-in zoom-in duration-500">
-                        <h3 className="text-8xl lg:text-9xl font-black text-yellow-400 mb-2 drop-shadow-[0_0_35px_rgba(250,204,21,0.6)] tracking-tighter italic">
-                            {t('hold') || 'HOLD'}
-                        </h3>
-                        <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">{t('holdDesc') || 'Volatility mapped. Standing by for arbitrage signal.'}</p>
-                    </div>
-                )}
+            {isHarvested ? (
+                <div className="z-10 w-full mb-6">
+                    {data.status === 'GREEN' ? (
+                        <div className="animate-in fade-in zoom-in duration-500">
+                            <h3 className="text-8xl lg:text-9xl font-black text-mint mb-2 drop-shadow-[0_0_35px_rgba(32,255,189,0.6)] tracking-tighter italic">
+                                {t('sell') || 'SELL'}
+                            </h3>
+                            <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">Market peak detected. Best window for maximum realization.</p>
+                        </div>
+                    ) : data.status === 'RED' ? (
+                        <div className="animate-in fade-in zoom-in duration-500">
+                            <h3 className="text-8xl lg:text-9xl font-black text-amber-500 mb-2 drop-shadow-[0_0_35px_rgba(245,158,11,0.6)] tracking-tighter italic">
+                                {t('wait') || 'WAIT'}
+                            </h3>
+                            <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">
+                                {data.shock_alert?.status === 'MATURITY_LOCK' 
+                                    ? data.shock_alert.message 
+                                    : 'Market volume spike detected. Waiting 48h for price stabilization.'}
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="animate-in fade-in zoom-in duration-500">
+                            <h3 className="text-8xl lg:text-9xl font-black text-yellow-400 mb-2 drop-shadow-[0_0_35px_rgba(250,204,21,0.6)] tracking-tighter italic">
+                                {t('hold') || 'HOLD'}
+                            </h3>
+                            <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">{t('holdDesc') || 'Volatility mapped. Standing by for arbitrage signal.'}</p>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="z-10 w-full mb-6">
+                    <h3 className="text-6xl lg:text-7xl font-black text-white/90 mb-2 tracking-tighter italic">
+                        {oracleData?.status || 'GROWING'}
+                    </h3>
+                    <p className="text-white/60 font-bold text-sm max-w-xs mx-auto mb-8">
+                        {oracleData?.oracle_verdict?.verdict || 'Biological maturity tracked via satellite & weather nodes.'}
+                    </p>
+                    
+                    {oracleData && (
+                        <div className="mb-4 animate-in zoom-in-95 duration-700">
+                            <MaturityClock 
+                                maturityPct={oracleData.current_maturity_pct}
+                                daysToPeak={oracleData.days_to_peak}
+                                windowStart={oracleData.window_start}
+                                windowEnd={oracleData.window_end}
+                                status={oracleData.status}
+                            />
+                        </div>
+                    )}
+                </div>
+            )}
 
-                {oracleData && data.status !== 'GREEN' && (
-                    <div className="mb-8 animate-in zoom-in-95 duration-700">
-                        <MaturityClock 
-                            maturityPct={oracleData.current_maturity_pct}
-                            daysToPeak={oracleData.days_to_peak}
-                            windowStart={oracleData.window_start}
-                            windowEnd={oracleData.window_end}
-                            status={oracleData.status}
-                        />
-                    </div>
-                )}
-
-                {onExplain && (
+            {onExplain && (
+                <div className="z-10 mb-8">
                     <button
                         onClick={() => onExplain(t('askWhy') || "Explain why you recommended this action.")}
-                        className="mt-4 px-6 py-2.5 bg-white/10 hover:bg-mint text-white hover:text-forest border border-white/20 hover:border-mint rounded-full text-xs font-black transition-all flex items-center space-x-2 mx-auto uppercase tracking-widest shadow-xl group"
+                        className="px-6 py-2.5 bg-white/10 hover:bg-mint text-white hover:text-forest border border-white/20 hover:border-mint rounded-full text-xs font-black transition-all flex items-center space-x-2 mx-auto uppercase tracking-widest shadow-xl group"
                     >
                         <svg className="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         <span>{t('askVakeelWhy') || 'Ask Vakeel Why'}</span>
                     </button>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* Emergency Cold Storage Gateway */}
             {showEmergencyStorage && (
@@ -139,13 +150,15 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                     </button>
                 </div>
             )}
-            {/* Neon Profit Centerpiece */}
-            <div className="z-10 w-full mb-4">
-                <span className="text-[10px] text-gray-400 uppercase tracking-widest font-black block mb-1">{t('estimatedTakeHome') || 'Net Take-Home Payout'}</span>
-                <div className="text-6xl font-black text-mint font-mono drop-shadow-[0_0_15px_rgba(32,255,189,0.3)] tabular-nums animate-pulse-slow">
-                    ₹<AnimatedNumber value={totalTakeHome} />
+            {/* Neon Profit Centerpiece - Post-Harvest Only */}
+            {isHarvested && (
+                <div className="z-10 w-full mb-4">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-black block mb-1">{t('estimatedTakeHome') || 'Net Take-Home Payout'}</span>
+                    <div className="text-6xl font-black text-mint font-mono drop-shadow-[0_0_15px_rgba(32,255,189,0.3)] tabular-nums animate-pulse-slow">
+                        ₹<AnimatedNumber value={totalTakeHome} />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Preservation Priority Action */}
             {priorityAction && priorityAction.is_recommended && (
@@ -220,65 +233,69 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                 </div>
             )}
 
-            {/* Dynamic Spoilage Risk Bar */}
-            <div className="z-10 w-full mb-4 px-2">
-                <div className="flex justify-between items-end mb-1.5">
-                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Transit Spoilage Risk (48h)</span>
-                    <span className={`text-xs font-mono font-black ${spoilageRiskPct > 50 ? 'text-red-400' : spoilageRiskPct > 20 ? 'text-yellow-400' : 'text-mint'}`}>
-                        {n(spoilageRiskPct)}%
-                    </span>
-                </div>
-                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div 
-                        className={`h-full transition-all duration-1000 ease-out ${spoilageRiskPct > 50 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : spoilageRiskPct > 20 ? 'bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' : 'bg-mint shadow-[0_0_10px_rgba(32,255,189,0.5)]'}`}
-                        style={{ width: `${Math.min(spoilageRiskPct, 100)}%` }}
-                    ></div>
-                </div>
-            </div>
-
-            {/* Collapsible Detailed Breakdown */}
-            <div className="z-10 w-full mt-2">
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="w-full flex items-center justify-center space-x-2 text-[10px] text-gray-500 font-black uppercase tracking-widest py-2 hover:text-white transition-colors"
-                >
-                    <span>{isExpanded ? (t('hideAuditTrail') || 'Hide Audit Trail') : (t('showAuditTrail') || 'Show Audit Trail')}</span>
-                    <svg className={`w-3 h-3 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-
-                {isExpanded && (
-                    <div className="mt-4 pt-4 border-t border-white/10 space-y-4 font-mono text-sm animate-in slide-in-from-top-4 duration-300">
-                        {/* Gross */}
-                        <div className="flex justify-between items-center text-gray-300">
-                            <span className="flex items-center text-xs">
-                                <span className="w-1.5 h-1.5 bg-mint rounded-full mr-2"></span>
-                                {t('marketValue') || 'MARKET VALUE'}
-                            </span>
-                            <span className="text-white">+₹{n(grossRevenue)}</span>
-                        </div>
-
-                        {/* Logistics */}
-                        <div className="flex justify-between items-center text-gray-400">
-                            <span className="flex items-center text-xs">
-                                <span className="w-1.5 h-1.5 rounded-full bg-red-400 mr-2"></span>
-                                {t('logistics') || 'LOGISTICS'}
-                            </span>
-                            <span className="text-red-400">-₹{n(logistics)}</span>
-                        </div>
-
-                        {/* Spoilage */}
-                        <div className="flex justify-between items-center text-gray-400">
-                            <span className="flex items-center text-xs">
-                                <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></span>
-                                {t('qualityLoss') || 'QUALITY LOSS'}
-                            </span>
-                            <span className="text-red-400">-₹{n(spoilagePenalty)}</span>
-                        </div>
+            {/* Transit Spoilage Risk Bar - Post-Harvest Only */}
+            {isHarvested && (
+                <div className="z-10 w-full mb-4 px-2">
+                    <div className="flex justify-between items-end mb-1.5">
+                        <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Transit Spoilage Risk (48h)</span>
+                        <span className={`text-xs font-mono font-black ${spoilageRiskPct > 50 ? 'text-red-400' : spoilageRiskPct > 20 ? 'text-yellow-400' : 'text-mint'}`}>
+                            {n(spoilageRiskPct)}%
+                        </span>
                     </div>
-                )}
-            </div>
+                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                        <div 
+                            className={`h-full transition-all duration-1000 ease-out ${spoilageRiskPct > 50 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : spoilageRiskPct > 20 ? 'bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' : 'bg-mint shadow-[0_0_10px_rgba(32,255,189,0.5)]'}`}
+                            style={{ width: `${Math.min(spoilageRiskPct, 100)}%` }}
+                        ></div>
+                    </div>
+                </div>
+            )}
+
+            {/* Collapsible Detailed Breakdown - Post-Harvest Only */}
+            {isHarvested && (
+                <div className="z-10 w-full mt-2">
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="w-full flex items-center justify-center space-x-2 text-[10px] text-gray-500 font-black uppercase tracking-widest py-2 hover:text-white transition-colors"
+                    >
+                        <span>{isExpanded ? (t('hideAuditTrail') || 'Hide Audit Trail') : (t('showAuditTrail') || 'Show Audit Trail')}</span>
+                        <svg className={`w-3 h-3 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    {isExpanded && (
+                        <div className="mt-4 pt-4 border-t border-white/10 space-y-4 font-mono text-sm animate-in slide-in-from-top-4 duration-300">
+                            {/* Gross */}
+                            <div className="flex justify-between items-center text-gray-300">
+                                <span className="flex items-center text-xs">
+                                    <span className="w-1.5 h-1.5 bg-mint rounded-full mr-2"></span>
+                                    {t('marketValue') || 'MARKET VALUE'}
+                                </span>
+                                <span className="text-white">+₹{n(grossRevenue)}</span>
+                            </div>
+
+                            {/* Logistics */}
+                            <div className="flex justify-between items-center text-gray-400">
+                                <span className="flex items-center text-xs">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-400 mr-2"></span>
+                                    {t('logistics') || 'LOGISTICS'}
+                                </span>
+                                <span className="text-red-400">-₹{n(logistics)}</span>
+                            </div>
+
+                            {/* Spoilage */}
+                            <div className="flex justify-between items-center text-gray-400">
+                                <span className="flex items-center text-xs">
+                                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></span>
+                                    {t('qualityLoss') || 'QUALITY LOSS'}
+                                </span>
+                                <span className="text-red-400">-₹{n(spoilagePenalty)}</span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Real-time Heartbeat */}
             <div className="absolute bottom-4 left-0 right-0 z-10 flex justify-center">

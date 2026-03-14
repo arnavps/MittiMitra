@@ -369,6 +369,7 @@ export default function DashboardPage() {
                     
                     <MetricsGrid 
                         data={data} 
+                        isHarvested={isHarvested}
                         onMetricClick={handleMetricClick} 
                         onExplain={(q: string) => setVakeelQuery(q)}
                     />
@@ -376,47 +377,55 @@ export default function DashboardPage() {
 
                 {/* Right Column: Analytics & Calibration (Span 5) */}
                 <div className="lg:col-span-5 space-y-6 flex flex-col group">
-                    {/* Market Orbit - Desktop & Mobile Order Priority */}
-                    <div className="order-1 lg:order-1">
-                        <GlassCard className="h-full !p-4">
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
-                                <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Market Orbit</h3>
-                                <StatusPill status="GREEN" message={t('liveData')} className="scale-75 origin-right" />
-                            </div>
+                    {/* Market Orbit / Growth Summary Duality */}
+                    {!isHarvested ? (
+                        <div className="order-1 lg:order-1">
+                            <VakeelBrief brief={data?.vakeel_brief} />
+                        </div>
+                    ) : (
+                        <div className="order-1 lg:order-1">
+                            <GlassCard className="h-full !p-4">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Market Orbit</h3>
+                                    <StatusPill status="GREEN" message={t('liveData')} className="scale-75 origin-right" />
+                                </div>
 
-                            <p className="text-sm text-gray-400 mb-6">{t('mandiDesc')}</p>
-                            <MandiTable mandis={mandiList} />
-                        </GlassCard>
-                    </div>
+                                <p className="text-sm text-gray-400 mb-6">{t('mandiDesc')}</p>
+                                <MandiTable mandis={mandiList} />
+                            </GlassCard>
+                        </div>
+                    )}
 
-                    {/* Yield Calibration Card */}
-                    <div className="order-2 lg:order-2">
-                        <GlassCard className="p-6">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-sm font-bold text-white uppercase tracking-wider">{t('yieldCalibration') || 'Yield Calibration'}</h3>
-                                <span className="text-mint font-mono font-bold text-xl">{n(yieldEst || 50)} {t('qtl') || 'Qtl'}</span>
-                            </div>
-                            <input
-                                type="range"
-                                min="1"
-                                max="500"
-                                value={yieldEst || 50}
-                                onChange={(e) => {
-                                    const val = parseFloat(e.target.value) || 0;
-                                    setYieldEst(val);
-                                    recalculateWithOverrides(data, overrides, val);
-                                }}
-                                onMouseUp={() => fetchRecommendation()}
-                                onTouchEnd={() => fetchRecommendation()}
-                                className="w-full h-1.5 bg-mint/20 rounded-lg appearance-none cursor-pointer accent-mint mb-2"
-                            />
-                            <div className="flex justify-between text-[10px] text-gray-500 font-bold">
-                                <span>{n(1)} {t('qtl') || 'QTL'}</span>
-                                <span>{t('totalFieldEst') || 'TOTAL FIELD ESTIMATE'}</span>
-                                <span>{n(500)} {t('qtl') || 'QTL'}</span>
-                            </div>
-                        </GlassCard>
-                    </div>
+                    {/* Yield Calibration Card - Post-Harvest Only */}
+                    {isHarvested && (
+                        <div className="order-2 lg:order-2">
+                            <GlassCard className="p-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">{t('yieldCalibration') || 'Yield Calibration'}</h3>
+                                    <span className="text-mint font-mono font-bold text-xl">{n(yieldEst || 50)} {t('qtl') || 'Qtl'}</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="500"
+                                    value={yieldEst || 50}
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value) || 0;
+                                        setYieldEst(val);
+                                        recalculateWithOverrides(data, overrides, val);
+                                    }}
+                                    onMouseUp={() => fetchRecommendation()}
+                                    onTouchEnd={() => fetchRecommendation()}
+                                    className="w-full h-1.5 bg-mint/20 rounded-lg appearance-none cursor-pointer accent-mint mb-2"
+                                />
+                                <div className="flex justify-between text-[10px] text-gray-500 font-bold">
+                                    <span>{n(1)} {t('qtl') || 'QTL'}</span>
+                                    <span>{t('totalFieldEst') || 'TOTAL FIELD ESTIMATE'}</span>
+                                    <span>{n(500)} {t('qtl') || 'QTL'}</span>
+                                </div>
+                            </GlassCard>
+                        </div>
+                    )}
 
 
                     {/* Logistics Audit Card (Phase 1.5) */}
@@ -428,8 +437,8 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* AI Contextual Summary (Vakeel Brief) */}
-            <VakeelBrief brief={data?.vakeel_brief} />
+            {/* AI Summary - Separate for Post-Harvest */}
+            {isHarvested && <VakeelBrief brief={data?.vakeel_brief} />}
 
             {/* Floating Voice Assistant */}
             <VoiceAssistant dashboardData={data} initialQuery={vakeelQuery} />

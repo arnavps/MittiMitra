@@ -4,11 +4,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MetricsGridProps {
     data: any;
+    isHarvested?: boolean;
     onMetricClick: (metric: string, value: number, unit: string) => void;
     onExplain?: (query: string) => void;
 }
 
-export function MetricsGrid({ data, onMetricClick, onExplain }: MetricsGridProps) {
+export function MetricsGrid({ data, isHarvested, onMetricClick, onExplain }: MetricsGridProps) {
     const { t, n } = useLanguage();
 
     if (!data) return null;
@@ -24,23 +25,25 @@ export function MetricsGrid({ data, onMetricClick, onExplain }: MetricsGridProps
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Market Price */}
-            <div
-                onClick={() => onMetricClick(t('price') || 'Market Price', marketPrice, '₹')}
-                className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md p-4 flex flex-col items-center justify-center text-center shadow-inner hover:bg-white/10 transition-all cursor-pointer group active:scale-95 border-mint/20"
-            >
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="w-3 h-3 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+            {/* Market Price - Post-Harvest Only */}
+            {isHarvested && (
+                <div
+                    onClick={() => onMetricClick(t('price') || 'Market Price', marketPrice, '₹')}
+                    className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md p-4 flex flex-col items-center justify-center text-center shadow-inner hover:bg-white/10 transition-all cursor-pointer group active:scale-95 border-mint/20"
+                >
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg className="w-3 h-3 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    </div>
+                    <svg className="w-8 h-8 text-mint mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <p className="text-2xl font-bold text-white tracking-tight">₹{n(marketPrice)}</p>
+                    <div className="flex flex-col items-center">
+                        <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">{t('price') || 'MARKET PRICE'}</p>
+                        <p className="text-[8px] text-mint/50 uppercase font-bold tracking-tighter mt-1">
+                            {t('sourceEnam') || 'Source: e-NAM (Live)'}
+                        </p>
+                    </div>
                 </div>
-                <svg className="w-8 h-8 text-mint mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <p className="text-2xl font-bold text-white tracking-tight">₹{n(marketPrice)}</p>
-                <div className="flex flex-col items-center">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">{t('price') || 'MARKET PRICE'}</p>
-                    <p className="text-[8px] text-mint/50 uppercase font-bold tracking-tighter mt-1">
-                        {t('sourceEnam') || 'Source: e-NAM (Live)'}
-                    </p>
-                </div>
-            </div>
+            )}
             {/* Avg Temperature */}
             <div
                 onClick={() => onMetricClick(t('temp') || 'Temperature', temperature, '°C')}

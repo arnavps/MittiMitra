@@ -258,22 +258,28 @@ def onboarding_extract(req: OnboardingExtractRequest):
         if req.step == "Consent":
             schema_instructions = """Return JSON with: {'consent_granted': true/false/null, 'ai_reply': 'string'}.
 - Set consent_granted to true if they say ANY affirmative.
-- If consent_granted is true, acknowledge and ask what crop they are growing today.
+- If consent_granted is true, acknowledge and ask ONLY: "What crop are you growing today?"
+- Grok MUST NOT ask about yield yet.
 - Grok is free to phrase this creatively in """ + req.language + " script."
         elif req.step == "CropName":
             schema_instructions = """Return JSON with: {'crop': string/null, 'ai_reply': 'string'}.
 - Extract the crop name.
-- If crop is present, acknowledge and ask for their estimated yield in quintals.
+- If crop is present, acknowledge it and ask ONLY: "What is your estimated yield for this crop in quintals?"
 - Grok is free to phrase this creatively in """ + req.language + " script."
         elif req.step == "YieldVolume":
             schema_instructions = """Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}.
 - Extract the yield volume (number only).
-- If yield is present, acknowledge and ask if the crop is already harvested or not.
+- If yield is present, acknowledge and ask if they are okay with sharing their GPS location to find local mandis.
+- Grok is free to phrase this creatively in """ + req.language + " script."
+        elif req.step == "LocationPermission":
+            schema_instructions = """Return JSON with: {'ai_reply': 'string'}.
+- Acknowledge the location access.
+- Ask: "Is your crop already harvested, or are you still waiting for it to ripen?"
 - Grok is free to phrase this creatively in """ + req.language + " script."
         elif req.step == "HarvestStatus":
             schema_instructions = """Return JSON with: {'harvest_status': 'already_harvested'/'not_yet_harvested'/null, 'ai_reply': 'string'}.
 - If 'already_harvested', ask where they are keeping the harvest (Open field, shed, or cold storage).
-- If 'not_yet_harvested', ask when they sowed the seeds to check maturity.
+- If 'not_yet_harvested', ask when they sowed the seeds so we can check maturity.
 - Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "StorageAudit":
              schema_instructions = """Return JSON with: {'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'health_issue': boolean/null, 'ai_reply': 'string'}.
@@ -293,7 +299,7 @@ def onboarding_extract(req: OnboardingExtractRequest):
         elif req.step == "TransitConfig":
              schema_instructions = """Return JSON with: {'transport_type': 'Two Wheeler'/'Tractor'/'Pickup'/'Covered Van'/null, 'ai_reply': 'string'}.
 - If extracted, congratulate them and say you are taking them to the main dashboard.
-- If the user says "no issues" or "ignore health" here, set transport_type to null and move on.
+- If the user says "no issues" or "ignore health" here, move on.
 - Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "FinalVerdict":
              schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}. If yield is present, ask the success question."

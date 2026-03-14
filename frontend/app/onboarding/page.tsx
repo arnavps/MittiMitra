@@ -29,9 +29,10 @@ import {
 type Step = 
   | 'Language' 
   | 'Consent'           // Phase 1 - Step 1
-  | 'CropName'          // Phase 1 - Step 2 (Split)
-  | 'YieldVolume'       // Phase 1 - Step 2.5 (Split)
-  | 'HarvestStatus'     // Phase 2 - Step 3
+  | 'CropName'          // Phase 1 - Step 2
+  | 'YieldVolume'       // Phase 1 - Step 3
+  | 'LocationPermission' // Phase 1 - Step 4
+  | 'HarvestStatus'     // Phase 2 - Step 5
   | 'StorageAudit'      // Branch A - Step A3
   | 'HealthAudit'       // Branch A - Step A4 (Camera)
   | 'MaturityCheck'     // Branch B - Step B3
@@ -185,10 +186,12 @@ export default function OnboardingPage() {
         } else if (currentStepRef.current === 'YieldVolume') {
             if (data.yield_quintals) {
                 setYieldAmount(data.yield_quintals);
-                // Trigger GPS request before proceeding to HarvestStatus
-                requestLocation();
-                setCurrentStep('HarvestStatus');
+                setCurrentStep('LocationPermission');
             }
+        } else if (currentStepRef.current === 'LocationPermission') {
+            // This step is explicitly for triggering location permission
+            requestLocation();
+            setCurrentStep('HarvestStatus');
         } else if (currentStepRef.current === 'HarvestStatus') {
             if (data.harvest_status === 'already_harvested') {
                 setHarvestStatus('Already Harvested');
