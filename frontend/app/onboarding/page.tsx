@@ -103,8 +103,10 @@ export default function OnboardingPage() {
                 
                 recognitionRef.current.onresult = (event: any) => {
                     const text = event.results[event.results.length - 1][0].transcript;
-                    setMessages(prev => [...prev, { id: Date.now(), role: 'user', text }]);
-                    processAIExtraction(text);
+                    if (text && text.trim()) {
+                        setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: text.trim() }]);
+                        processAIExtraction(text.trim());
+                    }
                 };
 
                 recognitionRef.current.onend = () => setIsListening(false);
@@ -499,7 +501,9 @@ export default function OnboardingPage() {
                                                 }`}>
                                                     {msg.role === 'ai' ? (
                                                         <span className="text-mint">"{msg.text}"</span>
-                                                    ) : (msg.text || "...")}
+                                                    ) : (
+                                                        <span>{msg.text}</span>
+                                                    )}
                                                 </div>
                                             </motion.div>
                                         ))}
