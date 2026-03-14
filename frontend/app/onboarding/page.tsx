@@ -29,16 +29,15 @@ import {
 type Step = 
   | 'Language' 
   | 'Consent'           // Phase 1 - Step 1
-  | 'CropIdentity'      // Phase 1 - Step 2
-  | 'HarvestStatus'     // Phase 2 - Step 2.5
+  | 'CropName'          // Phase 1 - Step 2 (Split)
+  | 'YieldVolume'       // Phase 1 - Step 2.5 (Split)
+  | 'HarvestStatus'     // Phase 2 - Step 3
   | 'StorageAudit'      // Branch A - Step A3
   | 'HealthAudit'       // Branch A - Step A4 (Camera)
   | 'MaturityCheck'     // Branch B - Step B3
   | 'OracleVerdict'     // Branch B - Step B4
   | 'TransitConfig'     // Phase 3 - Step 6
-  | 'DepartureAudit'    // Phase 3 - Step 7 (Camera)
-  | 'FinalVerdict'      // Phase 3 - Step 8
-  | 'Success';          // Phase 3 - Step 9
+  | 'Success';          // Phase 3 - Step 9 (Dashboard)
 
 export default function OnboardingPage() {
     const router = useRouter();
@@ -133,8 +132,8 @@ export default function OnboardingPage() {
         setCurrentStep('Consent');
         
         const greeting = name === "Hindi" 
-            ? "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खिड़कियां खोजने के लिए, मुझे आपके जीपीएस और फसल डेटा का उपयोग करने की आवश्यकता है। क्या मुझे आगे बढ़ने के लिए डीपीपीए अधिनियम 2023 के तहत आपकी अनुमति है?"
-            : "Namaste! I am MittiMitra. To find you the best profit windows, I need to use your GPS and crop data. Do I have your permission under the DPDP Act 2023 to proceed?";
+            ? "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खिड़कियां खोजने के लिए, मुझे आपके जीपीएस और फसल डेटा का उपयोग करने की आवश्यकता है। क्या मुझे आगे बढ़ने के लिए आपकी अनुमति है?"
+            : "Namaste! I am MittiMitra. To find you the best profit windows, I need to use your GPS and crop data. Do I have your permission to proceed?";
         
         setMessages([{ role: 'ai', text: greeting }]);
         speakResponse(greeting, name, () => startListening());
@@ -174,12 +173,16 @@ export default function OnboardingPage() {
         if (currentStepRef.current === 'Consent') {
             if (data.consent_granted) {
                 setConsentGranted(true);
-                setCurrentStep('CropIdentity');
+                setCurrentStep('CropName');
             }
-        } else if (currentStepRef.current === 'CropIdentity') {
+        } else if (currentStepRef.current === 'CropName') {
             if (data.crop) {
                 setCrop(data.crop);
-                setYieldAmount(data.yield_quintals || "");
+                setCurrentStep('YieldVolume');
+            }
+        } else if (currentStepRef.current === 'YieldVolume') {
+            if (data.yield_quintals) {
+                setYieldAmount(data.yield_quintals);
                 setCurrentStep('HarvestStatus');
             }
         } else if (currentStepRef.current === 'HarvestStatus') {
@@ -198,20 +201,18 @@ export default function OnboardingPage() {
         } else if (currentStepRef.current === 'MaturityCheck') {
             if (data.sowing_date) {
                 setSowingDate(data.sowing_date);
-                setCurrentStep('OracleVerdict');
+                setCurrentStep('Success'); // Directly to success for immature crops
             }
         } else if (currentStepRef.current === 'TransitConfig') {
             if (data.transport_type) {
                 setTransportType(data.transport_type);
-                setCurrentStep('DepartureAudit');
+                setCurrentStep('Success'); // Simplified flow: End of onboarding
             }
-        } else if (currentStepRef.current === 'FinalVerdict') {
-            setCurrentStep('Success');
         }
 
         speakResponse(data.ai_reply, langStr, () => {
             const nextStep = currentStepRef.current;
-            if (nextStep !== 'HealthAudit' && nextStep !== 'DepartureAudit' && nextStep !== 'Success') {
+            if (nextStep !== 'HealthAudit' && nextStep !== 'Success') {
                 startListening();
             }
         });
@@ -236,12 +237,7 @@ export default function OnboardingPage() {
 
         if (currentStepRef.current === 'HealthAudit') {
             setCurrentStep('TransitConfig');
-            const nextMsg = "Quality verified. Now, will you transport these in a tractor, a pickup truck, or a covered van?";
-            setMessages(prev => [...prev, { role: 'ai', text: nextMsg }]);
-            speakResponse(nextMsg, langStr, () => startListening());
-        } else if (currentStepRef.current === 'DepartureAudit') {
-            setCurrentStep('FinalVerdict');
-            const nextMsg = "Grade-A Quality Proof Locked. Based on live Mandi rates, Vashi market is your best bet today. Ready to start navigation?";
+            const nextMsg = "Quality data analyzed. How will you be transporting your produce? Two wheeler, tractor, or pickup truck?";
             setMessages(prev => [...prev, { role: 'ai', text: nextMsg }]);
             speakResponse(nextMsg, langStr, () => startListening());
         }
@@ -338,15 +334,15 @@ export default function OnboardingPage() {
                                         icon={<ShieldCheck className="w-4 h-4" />}
                                     />
                                     <LedgerItem 
-                                        label="Crop Identity" 
+                                        label="Crop Name" 
                                         value={crop || "Waiting..."} 
-                                        status={crop ? 'locked' : (currentStepRef.current === 'CropIdentity' ? 'active' : 'pending')}
+                                        status={crop ? 'locked' : (currentStepRef.current === 'CropName' ? 'active' : 'pending')}
                                         icon={<RefreshCw className="w-4 h-4" />}
                                     />
                                     <LedgerItem 
                                         label="Yield Volume" 
                                         value={yieldAmount ? `${yieldAmount} Quintals` : "---"} 
-                                        status={yieldAmount ? 'locked' : (currentStepRef.current === 'CropIdentity' ? 'active' : 'pending')}
+                                        status={yieldAmount ? 'locked' : (currentStepRef.current === 'YieldVolume' ? 'active' : 'pending')}
                                         icon={<Zap className="w-4 h-4" />}
                                     />
                                     <LedgerItem 
@@ -473,7 +469,7 @@ export default function OnboardingPage() {
                                 {/* Message Input Bar - Ultra High Visibility */}
                                 <div className="p-6 lg:p-8 bg-forest/90 border-t-2 border-mint/30 backdrop-blur-3xl shadow-[0_-20px_50px_rgba(32,255,189,0.1)]">
                                     <div className="max-w-2xl mx-auto flex items-center space-x-5">
-                                        {(currentStepRef.current === 'HealthAudit' || currentStepRef.current === 'DepartureAudit') && !cameraActive ? (
+                                        {currentStepRef.current === 'HealthAudit' && !cameraActive ? (
                                             <button 
                                                 onClick={startCameraStep}
                                                 className="flex-1 h-16 bg-mint text-forest rounded-2xl flex items-center justify-center space-x-3 font-black uppercase tracking-[0.1em] shadow-[0_0_40px_rgba(32,255,189,0.4)] hover:scale-[1.03] active:scale-95 transition-all text-sm"

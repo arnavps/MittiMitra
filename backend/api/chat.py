@@ -257,32 +257,36 @@ def onboarding_extract(req: OnboardingExtractRequest):
     try:
         if req.step == "Consent":
             schema_instructions = """Return JSON with: {'consent_granted': true/false/null, 'ai_reply': 'string'}.
-EXTRACT CONSENT: 
 - Set consent_granted to true if they say ANY affirmative.
-- If consent_granted is true, the 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the next question: "What crop are we working with today, and what is your estimated yield?"
-- 'ai_reply' MUST be in """ + req.language + " script only."
-        elif req.step == "CropIdentity":
-            schema_instructions = """Return JSON with: {'name': string/null, 'crop': string/null, 'land_size': number/null, 'ai_reply': 'string'}.
-- Extract person's name, crop name, and land size (acres).
-- If ALL info (crop and land size) is present, 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the Phase 2 question: "Are these [crop] already harvested, or are you still deciding when to start cutting them?"
-- 'ai_reply' MUST be in """ + req.language + " script."
+- If consent_granted is true, acknowledge and ask what crop they are growing today.
+- Grok is free to phrase this creatively in """ + req.language + " script."
+        elif req.step == "CropName":
+            schema_instructions = """Return JSON with: {'crop': string/null, 'ai_reply': 'string'}.
+- Extract the crop name.
+- If crop is present, acknowledge and ask for their estimated yield in quintals.
+- Grok is free to phrase this creatively in """ + req.language + " script."
+        elif req.step == "YieldVolume":
+            schema_instructions = """Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}.
+- Extract the yield volume (number only).
+- If yield is present, acknowledge and ask if the crop is already harvested or not.
+- Grok is free to phrase this creatively in """ + req.language + " script."
         elif req.step == "HarvestStatus":
             schema_instructions = """Return JSON with: {'harvest_status': 'already_harvested'/'not_yet_harvested'/null, 'ai_reply': 'string'}.
-- If 'already_harvested', 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the Branch A question: "Where are the crates kept right now? Open field, under a shed, or in cold storage?"
-- If 'not_yet_harvested', 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the Branch B question: "When did you sow the seeds?"
-- 'ai_reply' MUST be in """ + req.language + " script only."
+- If 'already_harvested', suggest taking them to the dashboard for storage and transit planning.
+- If 'not_yet_harvested', ask when they sowed the seeds to check maturity.
+- Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "StorageAudit":
              schema_instructions = """Return JSON with: {'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'ai_reply': 'string'}.
-- If storage_type is extracted, 'ai_reply' MUST acknowledge and then IMMEDIATELY ask: "Do they look healthy, or have you noticed any spots or irregularities?"
-- 'ai_reply' MUST be in """ + req.language + " script only."
+- If extracted, acknowledge and ask if they noticed any spots or health issues with the crop.
+- Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "MaturityCheck":
              schema_instructions = """Return JSON with: {'sowing_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}.
-- If sowing_date is extracted, 'ai_reply' MUST provide the Oracle Verdict (maturity check) and then say "I'll let you know once it's time to harvest." and move to Success.
-- 'ai_reply' MUST be in """ + req.language + " script only."
+- If extracted, Provide maturity insight and say you'll notify them when it's harvest time.
+- Moving to Success Dashboard."""
         elif req.step == "TransitConfig":
-             schema_instructions = """Return JSON with: {'transport_type': 'Tractor'/'Pickup'/'Covered Van'/null, 'ai_reply': 'string'}.
-- If transport_type is extracted, 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the mandatory Departure Audit: "One last thing—take a 360° photo of the crates as they are loaded. I am locking in your Grade-A Quality Proof."
-- 'ai_reply' MUST be in """ + req.language + " script only."
+             schema_instructions = """Return JSON with: {'transport_type': 'Two Wheeler'/'Tractor'/'Pickup'/'Covered Van'/null, 'ai_reply': 'string'}.
+- If extracted, congratulate them and say you are taking them to the main dashboard.
+- Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "FinalVerdict":
              schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}. If yield is present, ask the success question."
         else:
