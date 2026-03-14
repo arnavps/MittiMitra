@@ -144,16 +144,22 @@ export default function LandingPage() {
       </section>
 
       {/* --- EDGE LEDGER ENGINE --- */}
-      <EdgeLedgerEngine />
+      <div id="solutions">
+        <EdgeLedgerEngine />
+      </div>
 
       {/* --- TECH DEEP DIVE --- */}
-      <TechDeepDive />
+      <div id="about">
+        <TechDeepDive />
+      </div>
 
       {/* --- IMPACT SECTION --- */}
       <ImpactSection />
 
       {/* --- FOOTER --- */}
-      <Footer />
+      <div id="contact">
+        <Footer />
+      </div>
     </div>
   );
 }

@@ -26,7 +26,7 @@ export function Navbar() {
   );
 
   return (
-    <div className="fixed top-6 left-0 right-0 z-50 px-4 md:px-12 flex justify-center pointer-events-none">
+    <div className="absolute top-6 left-0 right-0 z-50 px-4 md:px-12 flex justify-center pointer-events-none">
       <nav className="pointer-events-auto flex items-center justify-between w-full max-w-6xl h-16 px-4 md:px-6 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100">
         {/* Logo Section */}
         <div className="flex items-center space-x-2">
@@ -39,7 +39,7 @@ export function Navbar() {
             />
           </div>
           <span className="text-xl font-bold tracking-tight text-gray-900">
-            <span className="text-[#2D5A27]">Agro</span> Grow
+            <span className="text-[#2D5A27]">Mitti</span>Mitra
           </span>
         </div>
 
@@ -48,16 +48,16 @@ export function Navbar() {
           <Link href="/" className="text-sm font-semibold text-gray-900 hover:text-gray-600 transition-colors">
             {t('home')}
           </Link>
-          <Link href="#about" className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+          <Link href="#about" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
             {t('about')}
           </Link>
-          <Link href="#solutions" className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+          <Link href="#solutions" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
             {t('solutions')}
           </Link>
-          <Link href="#blog" className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
-            {t('blog')}
+          <Link href="#features" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+            {t('features')}
           </Link>
-          <Link href="#contact" className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+          <Link href="#contact" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
             {t('contactUs')}
           </Link>
         </div>
