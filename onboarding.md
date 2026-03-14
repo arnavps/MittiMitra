@@ -53,20 +53,14 @@ $\rightarrow$ GO TO PHASE 3
 ## Phase 3: Execution & Protection (Convergence)
 
 ### Step 6: Transit Configuration
-- **AI:** "Will you transport these in a tractor, a pickup truck, or a covered van?"
+- **AI:** "Will you transport these in a two wheeler, a pickup truck, or a covered van?"
 - **User:** "Open tractor trolley."
 - **Action:** Calculate Transit Spoilage Risk based on vehicle exposure.
 
-### Step 7: Departure Audit (Mandatory)
-- **AI:** "One last thing—take a 360° photo of the crates as they are loaded. I am locking in your Grade-A Quality Proof."
-- **Action:** Generate SHA-256 Hash; store on Immutable Ledger.
+and take to the dashboard
 
-### Step 8: The Final Verdict & Co-Pilot
-- **AI:** "Based on live Mandi rates, the Vashi market is your best bet today. I've mapped the 'Path of Least Spoilage' for you. Ready to start navigation?"
-- **User:** "Yes, let's go."
 
-### Step 9: Success Dashboard (The Aftermath)
+### Step 7:
+
+### Step : Success Dashboard (The Aftermath)
 **Display Cards:**
-- **Shadow Price Certificate:** Verification of verified value.
-- **Community Cargo:** Shared truck options nearby.
-- **Kisan Sahayata:** Relevant government schemes (e.g., transport subsidies).

@@ -307,8 +307,8 @@ export default function OnboardingPage() {
 
             {/* Main Content: Card-Based Layout */}
             {!showLanguageModal && (
-                <div className="relative z-10 w-full h-screen overflow-hidden flex flex-col items-center justify-center p-4 lg:p-6">
-                    <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6 h-[75vh] max-h-[850px] min-h-[500px]">
+                <div className="relative z-10 w-full h-screen min-h-screen overflow-hidden flex flex-col items-center justify-center p-2 lg:p-4">
+                    <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 h-[92vh] max-h-none">
                         
                         {/* LEFT CARD: Extraction Ledger (35%) */}
                         <motion.div 
@@ -316,9 +316,9 @@ export default function OnboardingPage() {
                             animate={{ opacity: 1, x: 0 }}
                             className="lg:col-span-4 h-full overflow-hidden"
                         >
-                            <GlassCard className="h-full flex flex-col p-8 border-mint/10 overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                                <div className="mb-8">
-                                    <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.3em] text-mint/60 mb-4">
+                            <GlassCard className="h-full flex flex-col p-6 lg:p-10 border-mint/10 overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                                <div className="mb-6">
+                                    <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.3em] text-mint/60 mb-3">
                                         <Terminal className="w-4 h-4" />
                                         <span>Extraction Ledger</span>
                                     </div>
@@ -421,7 +421,7 @@ export default function OnboardingPage() {
                         >
                             <GlassCard className="h-full flex flex-col border-mint/20 overflow-hidden relative shadow-[0_30px_70px_rgba(0,0,0,0.6)] bg-forest/30">
                                 {/* Chat Header */}
-                                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.03] backdrop-blur-md">
+                                <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.03] backdrop-blur-md">
                                     <div className="flex items-center space-x-4">
                                         <div className="w-10 h-10 rounded-2xl bg-mint/20 flex items-center justify-center border border-mint/20 shadow-[0_0_20px_rgba(32,255,189,0.2)]">
                                             <Zap className="w-5 h-5 text-mint" />
@@ -437,7 +437,7 @@ export default function OnboardingPage() {
                                 </div>
 
                                 {/* Messages Area - Sliding Window (Last 2 Messages) */}
-                                <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pb-10">
+                                <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 custom-scrollbar pb-10">
                                     <AnimatePresence initial={false} mode="popLayout">
                                         {messages.slice(-2).map((msg, idx) => (
                                             <motion.div
