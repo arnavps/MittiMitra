@@ -196,14 +196,14 @@ export default function OnboardingPage() {
         } else if (currentStepRef.current === 'StorageAudit') {
             if (data.storage_type) {
                 setStorageType(data.storage_type);
-                if (data.health_issue === false) {
-                    setCurrentStep('TransitConfig');
-                } else {
-                    setCurrentStep('HealthAudit');
-                }
+            }
+            if (data.health_issue === true) {
+                setCurrentStep('HealthAudit');
+            } else if (data.health_issue === false) {
+                setCurrentStep('TransitConfig');
             }
         } else if (currentStepRef.current === 'HealthAudit') {
-            if (data.health_issue === false || (data.ai_reply && data.ai_reply.toLowerCase().includes("transport"))) {
+            if (data.health_issue === false || (data.ai_reply && (data.ai_reply.toLowerCase().includes("transport") || data.ai_reply.toLowerCase().includes("transit")))) {
                 setCurrentStep('TransitConfig');
             }
         } else if (currentStepRef.current === 'MaturityCheck') {
@@ -477,7 +477,7 @@ export default function OnboardingPage() {
                                 {/* Message Input Bar - Ultra High Visibility */}
                                 <div className="p-6 lg:p-8 bg-forest/90 border-t-2 border-mint/30 backdrop-blur-3xl shadow-[0_-20px_50px_rgba(32,255,189,0.1)]">
                                     <div className="max-w-2xl mx-auto flex items-center space-x-5">
-                                        {currentStepRef.current === 'HealthAudit' && !cameraActive ? (
+                                        {currentStep === 'HealthAudit' && !cameraActive ? (
                                             <button 
                                                 onClick={startCameraStep}
                                                 className="flex-1 h-16 bg-mint text-forest rounded-2xl flex items-center justify-center space-x-3 font-black uppercase tracking-[0.1em] shadow-[0_0_40px_rgba(32,255,189,0.4)] hover:scale-[1.03] active:scale-95 transition-all text-sm"
