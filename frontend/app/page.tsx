@@ -46,9 +46,9 @@ export default function LandingPage() {
           <img
             src="/bg-img.jpg"
             alt="Farm Background"
-            className="w-full h-full object-cover opacity-40"
+            className="w-full h-full object-cover opacity-1000"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-forest/20 via-forest/60 to-forest"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-forest/10 via-forest/40 to-forest"></div>
         </motion.div>
 
         {/* Dynamic Blobs */}

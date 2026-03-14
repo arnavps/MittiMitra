@@ -65,7 +65,7 @@ export function Navbar() {
         {/* Action Buttons */}
         <div className="flex items-center space-x-3">
             <div className="hidden sm:block">
-                <LanguageSwitcher direction="down" />
+                <LanguageSwitcher direction="down" textColor="text-gray-900" iconColor="text-gray-900" />
             </div>
           <Link
             href="/login"

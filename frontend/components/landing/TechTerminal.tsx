@@ -73,7 +73,7 @@ export function TechTerminal() {
       {/* Terminal Content */}
       <div 
         ref={scrollRef}
-        className="p-4 h-[250px] overflow-y-auto scrollbar-hide space-y-1 bg-black/20"
+        className="p-4 h-[250px] overflow-hidden space-y-1 bg-black/80 md:bg-black/40"
       >
         <AnimatePresence>
           {logs.map((log) => (
