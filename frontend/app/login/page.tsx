@@ -127,7 +127,7 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen bg-forest overflow-hidden selection:bg-mint selection:text-forest">
             {/* --- LEFT SIDE: HERO (60%) --- */}
-            <div className="hidden lg:flex lg:w-3/5 relative overflow-hidden">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
                 <motion.div 
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
@@ -140,7 +140,7 @@ export default function LoginPage() {
                         className="w-full h-full object-cover opacity-60 grayscale-[20%]"
                     />
                 </motion.div>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-forest/40 to-forest z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-forest/20 z-10" />
                 <div className="absolute inset-0 backdrop-blur-[2px] z-0" />
 
                 <div className="relative z-20 w-full p-20 flex flex-col justify-between">
@@ -183,8 +183,8 @@ export default function LoginPage() {
                 </div>
             </div>
 
-            {/* --- RIGHT SIDE: LOGIN (40%) --- */}
-            <div className="w-full lg:w-2/5 flex flex-col items-center justify-center p-8 md:p-16 relative bg-forest lg:bg-transparent">
+            {/* --- RIGHT SIDE: LOGIN (50%) --- */}
+            <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 md:p-16 relative bg-forest lg:bg-transparent">
                 {/* Language Switcher Position */}
                 <div className="absolute top-8 right-8 z-50">
                     <LanguageSwitcher direction="down" />
@@ -203,8 +203,7 @@ export default function LoginPage() {
 
                     {/* Glass Login Card */}
                     <motion.div 
-                        layout
-                        className={`glass-panel rounded-3xl p-8 relative transition-all duration-500 overflow-hidden ${isFocused ? 'shadow-[0_0_50px_rgba(32,255,189,0.15)] border-mint/30' : ''}`}
+                        className={`glass-panel rounded-3xl p-8 relative transition-all duration-500 overflow-hidden shadow-none bg-white/5 ${isFocused ? 'border-mint/50' : ''}`}
                     >
                         {/* Focus Glow Overlay */}
                         <AnimatePresence>
@@ -331,7 +330,7 @@ function TickerBox({ icon, label, value, trend }: { icon: any, label: string, va
         <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-panel p-4 rounded-2xl flex items-center space-x-4 min-w-[180px]"
+            className="glass-panel p-4 rounded-2xl flex items-center space-x-4 min-w-[180px] shadow-none bg-white/5"
         >
             <div className="p-2 rounded-xl bg-white/5 border border-white/10">
                 {icon}
