@@ -277,9 +277,14 @@ def onboarding_extract(req: OnboardingExtractRequest):
 - Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "StorageAudit":
              schema_instructions = """Return JSON with: {'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'health_issue': boolean/null, 'ai_reply': 'string'}.
-- Extract storage_type and whether they mentioned ANY health issues, spots, or problems (health_issue).
-- If health_issue is FALSE, acknowledge and IMMEDIATELY ask about their transport plans (TransitConfig).
-- If health_issue is TRUE, acknowledge and suggest they take a photo to analyze (HealthAudit).
+- Extract storage_type.
+- You MUST explicitly ask the farmer: "Are there any health issues, spots, or problems on your crop?"
+- DO NOT proceed to TransitConfig or ask about transport until the farmer confirms if there are problems or not.
+- If they mention problems, set health_issue to true. If they say "no problems", set it to false.
+- Grok is free to phrase the question creatively in """ + req.language + " script only."
+        elif req.step == "HealthAudit":
+             schema_instructions = """Return JSON with: {'ai_reply': 'string'}.
+- Acknowledge that you are waiting for a photo of the crop issues.
 - Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "MaturityCheck":
              schema_instructions = """Return JSON with: {'sowing_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}.

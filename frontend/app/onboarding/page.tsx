@@ -495,11 +495,11 @@ export default function OnboardingPage() {
                                                 <div className={`max-w-[85%] p-6 rounded-3xl ${
                                                     msg.role === 'ai' 
                                                         ? 'bg-white/[0.07] border border-white/10 text-white italic text-lg leading-relaxed rounded-bl-none shadow-2xl backdrop-blur-md' 
-                                                        : 'bg-mint text-forest font-black text-base rounded-br-none shadow-[0_10px_30px_rgba(32,255,189,0.3)]'
+                                                        : 'bg-mint text-black font-bold text-base rounded-br-none shadow-[0_10px_30px_rgba(32,255,189,0.3)]'
                                                 }`}>
                                                     {msg.role === 'ai' ? (
                                                         <span className="text-mint">"{msg.text}"</span>
-                                                    ) : msg.text}
+                                                    ) : (msg.text || "...")}
                                                 </div>
                                             </motion.div>
                                         ))}
