@@ -436,14 +436,16 @@ export default function OnboardingPage() {
                                     </div>
                                 </div>
 
-                                {/* Messages Area */}
+                                {/* Messages Area - Sliding Window (Last 2 Messages) */}
                                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pb-10">
-                                    <AnimatePresence initial={false}>
-                                        {messages.map((msg, idx) => (
+                                    <AnimatePresence initial={false} mode="popLayout">
+                                        {messages.slice(-2).map((msg, idx) => (
                                             <motion.div
-                                                key={idx}
-                                                initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                key={`msg-${msg.role}-${idx}-${messages.length}`}
+                                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                                                transition={{ type: "spring", damping: 25, stiffness: 200 }}
                                                 className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}
                                             >
                                                 <div className={`max-w-[85%] p-6 rounded-3xl ${
