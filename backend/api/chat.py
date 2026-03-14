@@ -276,8 +276,10 @@ def onboarding_extract(req: OnboardingExtractRequest):
 - If 'not_yet_harvested', ask when they sowed the seeds to check maturity.
 - Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "StorageAudit":
-             schema_instructions = """Return JSON with: {'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'ai_reply': 'string'}.
-- If extracted, acknowledge and ask if they noticed any spots or health issues with the crop.
+             schema_instructions = """Return JSON with: {'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'health_issue': boolean/null, 'ai_reply': 'string'}.
+- Extract storage_type and whether they mentioned ANY health issues, spots, or problems (health_issue).
+- If health_issue is FALSE, acknowledge and IMMEDIATELY ask about their transport plans (TransitConfig).
+- If health_issue is TRUE, acknowledge and suggest they take a photo to analyze (HealthAudit).
 - Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "MaturityCheck":
              schema_instructions = """Return JSON with: {'sowing_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}.
@@ -286,6 +288,7 @@ def onboarding_extract(req: OnboardingExtractRequest):
         elif req.step == "TransitConfig":
              schema_instructions = """Return JSON with: {'transport_type': 'Two Wheeler'/'Tractor'/'Pickup'/'Covered Van'/null, 'ai_reply': 'string'}.
 - If extracted, congratulate them and say you are taking them to the main dashboard.
+- If the user says "no issues" or "ignore health" here, set transport_type to null and move on.
 - Grok is free to phrase this creatively in """ + req.language + " script only."
         elif req.step == "FinalVerdict":
              schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}. If yield is present, ask the success question."

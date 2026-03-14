@@ -196,7 +196,15 @@ export default function OnboardingPage() {
         } else if (currentStepRef.current === 'StorageAudit') {
             if (data.storage_type) {
                 setStorageType(data.storage_type);
-                setCurrentStep('HealthAudit');
+                if (data.health_issue === false) {
+                    setCurrentStep('TransitConfig');
+                } else {
+                    setCurrentStep('HealthAudit');
+                }
+            }
+        } else if (currentStepRef.current === 'HealthAudit') {
+            if (data.health_issue === false || (data.ai_reply && data.ai_reply.toLowerCase().includes("transport"))) {
+                setCurrentStep('TransitConfig');
             }
         } else if (currentStepRef.current === 'MaturityCheck') {
             if (data.sowing_date) {
