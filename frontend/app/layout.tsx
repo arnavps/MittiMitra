@@ -5,6 +5,13 @@ import { ServiceWorkerKiller } from "@/components/ServiceWorkerKiller";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 
+// Google Fonts
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/inter/900.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/700.css";
+
 export const metadata: Metadata = {
   title: "MittiMitra (AgriChain)",
   description: "The Temporal Arbitrage Engine for Farmers",
