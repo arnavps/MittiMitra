@@ -66,7 +66,7 @@ export default function OnboardingPage() {
     const videoRef = useRef<HTMLVideoElement>(null);
 
     // AI/UI States
-    const [messages, setMessages] = useState<{ role: 'ai' | 'user', text: string }[]>([]);
+    const [messages, setMessages] = useState<{ id: number, role: 'ai' | 'user', text: string }[]>([]);
     const [isListening, setIsListening] = useState(false);
     const [isThinking, setIsThinking] = useState(false);
     const [showLanguageModal, setShowLanguageModal] = useState(true);
@@ -103,7 +103,7 @@ export default function OnboardingPage() {
                 
                 recognitionRef.current.onresult = (event: any) => {
                     const text = event.results[event.results.length - 1][0].transcript;
-                    setMessages(prev => [...prev, { role: 'user', text }]);
+                    setMessages(prev => [...prev, { id: Date.now(), role: 'user', text }]);
                     processAIExtraction(text);
                 };
 
@@ -135,7 +135,7 @@ export default function OnboardingPage() {
             ? "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खिड़कियां खोजने के लिए, मुझे आपके जीपीएस और फसल डेटा का उपयोग करने की आवश्यकता है। क्या मुझे आगे बढ़ने के लिए आपकी अनुमति है?"
             : "Namaste! I am MittiMitra. To find you the best profit windows, I need to use your GPS and crop data. Do I have your permission to proceed?";
         
-        setMessages([{ role: 'ai', text: greeting }]);
+        setMessages([{ id: Date.now(), role: 'ai', text: greeting }]);
         speakResponse(greeting, name, () => startListening());
     };
 
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
 
         const data = await res.json();
         setIsThinking(false);
-        setMessages(prev => [...prev, { role: 'ai', text: data.ai_reply }]);
+        setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: data.ai_reply }]);
 
         // Logic for state transitions based on onboarding.md
         if (currentStepRef.current === 'Consent') {
@@ -246,7 +246,7 @@ export default function OnboardingPage() {
         if (currentStepRef.current === 'HealthAudit') {
             setCurrentStep('TransitConfig');
             const nextMsg = "Quality data analyzed. How will you be transporting your produce? Two wheeler, tractor, or pickup truck?";
-            setMessages(prev => [...prev, { role: 'ai', text: nextMsg }]);
+            setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: nextMsg }]);
             speakResponse(nextMsg, langStr, () => startListening());
         }
     };
@@ -443,9 +443,9 @@ export default function OnboardingPage() {
                                 {/* Messages Area - Sliding Window (Last 2 Messages) */}
                                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 custom-scrollbar pb-10">
                                     <AnimatePresence initial={false} mode="popLayout">
-                                        {messages.slice(-2).map((msg, idx) => (
+                                        {messages.slice(-2).map((msg) => (
                                             <motion.div
-                                                key={`msg-${msg.role}-${idx}-${messages.length}`}
+                                                key={`msg-${msg.id}`}
                                                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                                 exit={{ opacity: 0, scale: 0.9, y: -20 }}
@@ -502,7 +502,7 @@ export default function OnboardingPage() {
                                                         e.preventDefault();
                                                         const input = e.currentTarget.elements.namedItem('text-input') as HTMLInputElement;
                                                         if (input.value) {
-                                                            setMessages(prev => [...prev, { role: 'user', text: input.value }]);
+                                                            setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: input.value }]);
                                                             processAIExtraction(input.value);
                                                             input.value = "";
                                                         }
