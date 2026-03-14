@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface VerdictCardProps {
     data: any;
     userCrop?: string;
+    isHarvested?: boolean;
     onExplain?: (query: string) => void;
     oracleData?: any;
     clusterData?: any;
@@ -15,7 +16,7 @@ import { getClusterMaturityHeatmap } from '@/services/supplyOrchestrator';
 import { getWeatherForecast } from '@/services/weatherService';
 import Link from 'next/link';
 
-export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData }: VerdictCardProps) {
+export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData, clusterData }: VerdictCardProps) {
     const { t, n } = useLanguage();
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -88,7 +89,9 @@ export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData
                         <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">
                             {data.shock_alert?.status === 'MATURITY_LOCK' 
                                 ? data.shock_alert.message 
-                                : (t('waitDesc') || 'Supply overflow. Waiting 48h increases profit probability.')}
+                                : isHarvested 
+                                    ? 'Market volume spike detected. Waiting 48h for price stabilization.'
+                                    : (t('waitDesc') || 'Supply overflow. Waiting 48h increases profit probability.')}
                         </p>
                     </div>
                 ) : (
@@ -167,7 +170,7 @@ export function VerdictCard({ data, userCrop, onExplain, oracleData, clusterData
             )}
 
             {/* Harvest Oracle: Simplified Dashboard View */}
-            {oracleData && (
+            {oracleData && !isHarvested && (
                 <div className="z-10 w-full mb-6 mt-4 p-5 bg-white/[0.03] border border-white/10 rounded-2xl relative group overflow-hidden">
                     <div className="flex justify-between items-end mb-3">
                         <div className="flex flex-col">

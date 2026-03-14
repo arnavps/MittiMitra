@@ -207,17 +207,27 @@ export default function DashboardPage() {
                         getClusterMaturityHeatmap("422201") // Mock pin
                     ]);
 
-                    const [oracleRes, clusterRes] = await Promise.all([
-                        fetch('/api/oracle/forecast', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                planting_date: plantingDate || data?.planting_date || new Date().toISOString().split('T')[0], 
-                                crop: userCrop || data?.crop || "Tomato",
-                                sync_panic_days: heatmap,
-                                weather_forecast: forecast
-                            })
-                        }),
+                    const secondaryFetches = [];
+                    
+                    // Only fetch oracle if NOT harvested
+                    if (!isHarvested) {
+                        secondaryFetches.push(
+                            fetch('/api/oracle/forecast', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ 
+                                    planting_date: plantingDate || data?.planting_date || new Date().toISOString().split('T')[0], 
+                                    crop: userCrop || data?.crop || "Tomato",
+                                    sync_panic_days: heatmap,
+                                    weather_forecast: forecast
+                                })
+                            }).then(res => res.ok ? res.json() : null)
+                        );
+                    } else {
+                        secondaryFetches.push(Promise.resolve(null));
+                    }
+
+                    secondaryFetches.push(
                         fetch('/api/ecosystem/cluster', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -229,11 +239,12 @@ export default function DashboardPage() {
                                 user_yield_qtl: yieldEst || 50,
                                 market_price: json.mandi_stats.current_price
                             })
-                        })
-                    ]);
-                    
-                    if (oracleRes.ok) setOracleData(await oracleRes.json());
-                    if (clusterRes.ok) setClusterData(await clusterRes.json());
+                        }).then(res => res.ok ? res.json() : null)
+                    );
+
+                    const [oracle, cluster] = await Promise.all(secondaryFetches);
+                    if (oracle) setOracleData(oracle);
+                    if (cluster) setClusterData(cluster);
                 } catch (err) {
                     console.error("Secondary data fetch failed", err);
                 }
@@ -349,8 +360,9 @@ export default function DashboardPage() {
                 <div className="lg:col-span-7 space-y-8 flex flex-col">
                     <VerdictCard 
                         data={data} 
-                        userCrop={userCrop} 
-                        onExplain={(q) => setVakeelQuery(q)} 
+                        userCrop={userCrop}
+                        isHarvested={isHarvested}
+                        onExplain={(q) => setVakeelQuery(q)}
                         oracleData={oracleData}
                         clusterData={clusterData}
                     />
