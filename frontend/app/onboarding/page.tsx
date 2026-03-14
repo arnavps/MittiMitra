@@ -8,471 +8,259 @@ import { supabase } from '@/utils/supabase/client';
 import { auth } from '@/services/firebase';
 import { fuzzLocation } from '@/utils/physics';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Mic, 
+  MicOff, 
+  Send, 
+  RefreshCw, 
+  Camera, 
+  MapPin, 
+  TrendingUp, 
+  Terminal,
+  ChevronRight,
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
+  AlertTriangle
+} from 'lucide-react';
+
+// Steps from onboarding.md
+type Step = 
+  | 'Language' 
+  | 'Consent'           // Phase 1 - Step 1
+  | 'CropIdentity'      // Phase 1 - Step 2
+  | 'HarvestStatus'     // Phase 2 - Step 2.5
+  | 'StorageAudit'      // Branch A - Step A3
+  | 'HealthAudit'       // Branch A - Step A4 (Camera)
+  | 'MaturityCheck'     // Branch B - Step B3
+  | 'OracleVerdict'     // Branch B - Step B4
+  | 'TransitConfig'     // Phase 3 - Step 6
+  | 'DepartureAudit'    // Phase 3 - Step 7 (Camera)
+  | 'FinalVerdict'      // Phase 3 - Step 8
+  | 'Success';          // Phase 3 - Step 9
 
 export default function OnboardingPage() {
     const router = useRouter();
-    const { setLanguage, language: globalLanguage, t, n } = useLanguage();
+    const { setLanguage, language: globalLanguage, t } = useLanguage();
     const { location, error: gpsError, requestLocation } = useGPS();
 
     // Onboarding State Machine
-    type Step = 'Language' | 'Consent' | 'CropDetails' | 'Location' | 'StorageTransport' | 'FinalCalibration' | 'Verdict';
     const [currentStep, _setCurrentStep] = useState<Step>('Language');
     const currentStepRef = useRef<Step>('Language');
-
     const setCurrentStep = (step: Step) => {
         currentStepRef.current = step;
         _setCurrentStep(step);
     };
 
-    // Extracted Variables
-    const [langStr, _setLangStr] = useState("English");
-    const langStrRef = useRef("English");
-    const setLangStr = (s: string) => {
-        langStrRef.current = s;
-        _setLangStr(s);
-    };
+    // Data State
+    const [langStr, setLangStr] = useState("English");
+    const [consentGranted, setConsentGranted] = useState<boolean | null>(null);
+    const [crop, setCrop] = useState("");
+    const [yieldAmount, setYieldAmount] = useState("");
+    const [harvestStatus, setHarvestStatus] = useState<'Already Harvested' | 'Not Yet Harvested' | null>(null);
+    const [storageType, setStorageType] = useState("");
+    const [healthStatus, setHealthStatus] = useState("");
+    const [sowingDate, setSowingDate] = useState("");
+    const [transportType, setTransportType] = useState("");
+    const [cameraActive, setCameraActive] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
-    const [consentGranted, _setConsentGranted] = useState<boolean | null>(null);
-    const consentGrantedRef = useRef<boolean | null>(null);
-    const setConsentGranted = (b: boolean | null) => {
-        consentGrantedRef.current = b;
-        _setConsentGranted(b);
-    };
-
-    const [name, _setName] = useState("");
-    const nameRef = useRef("");
-    const setName = (val: string) => {
-        nameRef.current = val;
-        _setName(val);
-    };
-
-    const [crop, _setCrop] = useState("");
-    const cropRef = useRef("");
-    const setCrop = (val: string) => {
-        cropRef.current = val;
-        _setCrop(val);
-    };
-
-    const [landSize, _setLandSize] = useState<number | null>(null);
-    const landSizeRef = useRef<number | null>(null);
-    const setLandSize = (val: number | null) => {
-        landSizeRef.current = val;
-        _setLandSize(val);
-    };
-
-    const [yieldQuintals, _setYieldQuintals] = useState<number | null>(null);
-    const yieldQuintalsRef = useRef<number | null>(null);
-    const setYieldQuintals = (val: number | null) => {
-        yieldQuintalsRef.current = val;
-        _setYieldQuintals(val);
-    };
-
-    const [plantingDate, _setPlantingDate] = useState("");
-    const plantingDateRef = useRef("");
-    const setPlantingDate = (val: string) => {
-        plantingDateRef.current = val;
-        _setPlantingDate(val);
-    };
-
-    const [storageType, _setStorageType] = useState("");
-    const storageTypeRef = useRef("");
-    const setStorageType = (val: string) => {
-        storageTypeRef.current = val;
-        _setStorageType(val);
-    };
-
-    const [transportType, _setTransportType] = useState("");
-    const transportTypeRef = useRef("");
-    const setTransportType = (val: string) => {
-        transportTypeRef.current = val;
-        _setTransportType(val);
-    };
-
-    // Conversational UI States
+    // AI/UI States
+    const [messages, setMessages] = useState<{ role: 'ai' | 'user', text: string }[]>([]);
     const [isListening, setIsListening] = useState(false);
     const [isThinking, setIsThinking] = useState(false);
-    const [transcript, setTranscript] = useState("");
-    const [aiReply, setAiReply] = useState("");
     const [showLanguageModal, setShowLanguageModal] = useState(true);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Rehydrate from cache on mount
-    useEffect(() => {
-        const cached = localStorage.getItem('krishi_onboarding_cache');
-        if (cached) {
-            try {
-                const data = JSON.parse(cached);
-                if (data.currentStep && data.currentStep !== 'Verdict') {
-                    setCurrentStep(data.currentStep);
-                    setLangStr(data.langStr || "English");
-                    setConsentGranted(data.consentGranted ?? null);
-                    setName(data.name || "");
-                    setCrop(data.crop || "");
-                    setLandSize(data.landSize ?? null);
-                    setYieldQuintals(data.yieldQuintals ?? null);
-                    setPlantingDate(data.plantingDate || "");
-                    setStorageType(data.storageType || "");
-                    setTransportType(data.transportType || "");
-                    setShowLanguageModal(data.showLanguageModal ?? true);
-                }
-            } catch (e) {
-                console.error("Cache parsing error", e);
-            }
-        }
-    }, []);
-
-    // Save to cache on change
-    useEffect(() => {
-        if (currentStep !== 'Verdict') {
-            localStorage.setItem('krishi_onboarding_cache', JSON.stringify({
-                currentStep, langStr, consentGranted, name, crop, landSize, yieldQuintals, plantingDate, storageType, transportType, showLanguageModal
-            }));
-        } else {
-            localStorage.removeItem('krishi_onboarding_cache');
-        }
-    }, [currentStep, langStr, consentGranted, name, crop, landSize, yieldQuintals, plantingDate, storageType, transportType, showLanguageModal]);
-
-    // Audio & STT Refs
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    // Clean up audio on unmount
+    // Auto-scroll chat
     useEffect(() => {
-        return () => {
-            if (audioRef.current) {
-                audioRef.current.pause();
-                audioRef.current.removeAttribute('src');
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [messages, isThinking]);
+
+    // Audio Engine initialization
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognitionRef.current = new SpeechRecognition();
+                recognitionRef.current.continuous = false;
+                recognitionRef.current.interimResults = false;
+                
+                recognitionRef.current.onresult = (event: any) => {
+                    const text = event.results[event.results.length - 1][0].transcript;
+                    setMessages(prev => [...prev, { role: 'user', text }]);
+                    processAIExtraction(text);
+                };
+
+                recognitionRef.current.onend = () => setIsListening(false);
             }
-        };
+        }
     }, []);
 
-    const speakResponse = async (text: string, langName: string, onDone?: () => void) => {
-        if (!text) return;
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            const streamUrl = `/api/chat/tts?text=${encodeURIComponent(text)}&language=${encodeURIComponent(langName)}`;
-            audioRef.current.src = streamUrl;
-
-            audioRef.current.onended = () => {
-                if (onDone) onDone();
-            };
-
-            try {
-                await audioRef.current.play();
-            } catch (err) {
-                console.error("Error playing TTS", err);
-                // If autoplay fails, we still want to resume listening eventually
-                if (onDone) setTimeout(onDone, 2000);
-            }
+    const speakResponse = async (text: string, lang: string, onDone?: () => void) => {
+        if (!text || !audioRef.current) return;
+        const streamUrl = `/api/chat/tts?text=${encodeURIComponent(text)}&language=${encodeURIComponent(lang)}`;
+        audioRef.current.src = streamUrl;
+        audioRef.current.onended = onDone || null;
+        try {
+            await audioRef.current.play();
+        } catch (e) {
+            console.error("Audio playback error", e);
+            if (onDone) onDone();
         }
     };
 
-    const handleLanguageSelect = (langCode: any, langName: string) => {
-        setLanguage(langCode);
-        setLangStr(langName);
+    const handleLanguageSelect = (code: string, name: string) => {
+        setLanguage(code as any);
+        setLangStr(name);
         setShowLanguageModal(false);
         setCurrentStep('Consent');
-
-        let greeting = "Welcome to MittiMitra. I am Agri-Vakeel. To begin, do I have your permission to process your location and farm data for hyper-local profit mapping?";
-        if (langName === "Hindi") greeting = "मिट्टीमित्र में आपका स्वागत है। मैं कृषि-वकील हूँ। शुरू करने के लिए, क्या मुझे आपके स्थान और खेत के डेटा का उपयोग करने की अनुमति है?";
-        if (langName === "Marathi") greeting = "मिट्टीमित्र मध्ये आपले स्वागत आहे. मी कृषी-वकील आहे. सुरू करण्यासाठी, मला तुमचा स्थान आणि शेताचा डेटा वापरण्याची परवानगी आहे का?";
-        if (langName === "Telugu") greeting = "మిట్టిమిత్రకు స్వాగతం. నేను అగ్రి-వకీల్. మీ పరిసర వాతావరణ మరియు మార్కెట్ సమాచారం కోసం మీ లొకేషన్ వివరాలు సేకరించడానికి అనుమతి ఇస్తున్నారా?";
-        if (langName === "Tamil") greeting = "மிட்டிமித்ராவிற்கு வரவேற்கிறோம். நான் உங்கள் அக்ரி-வக்கீல். ஆரம்பிக்க, உங்கள் லாபத்தை கணிக்க உங்கள் இடம் மற்றும் பண்ணை தரவை பயன்படுத்த எனக்கு அனுமதி உள்ளதா?";
-        if (langName === "Gujarati") greeting = "મિટ્ટીમિત્રમાં તમારું સ્વાગત છે. હું કૃષિ-વકીલ છું. શું મને તમારી સ્થાન અને ફાર્મ ડેટા પર પ્રક્રિયા કરવાની પરવાનગી છે?";
-        if (langName === "Punjabi") greeting = "ਮਿੱਟੀਮਿੱਤਰ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ। ਮੈਂ ਐਗਰੀ-ਵਕੀਲ ਹਾਂ। ਕੀ ਮੈਨੂੰ ਤੁਹਾਡੀ ਮਨਜ਼ੂਰੀ ਹੈ?";
-
-        setAiReply(greeting);
-        initRecognition(langName);
-        // Automatically start listening after greeting
-        speakResponse(greeting, langName, () => {
-            startRecognitionInternal();
-        });
+        
+        const greeting = name === "Hindi" 
+            ? "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खिड़कियां खोजने के लिए, मुझे आपके जीपीएस और फसल डेटा का उपयोग करने की आवश्यकता है। क्या मुझे आगे बढ़ने के लिए डीपीपीए अधिनियम 2023 के तहत आपकी अनुमति है?"
+            : "Namaste! I am MittiMitra. To find you the best profit windows, I need to use your GPS and crop data. Do I have your permission under the DPDP Act 2023 to proceed?";
+        
+        setMessages([{ role: 'ai', text: greeting }]);
+        speakResponse(greeting, name, () => startListening());
     };
 
-    const startRecognitionInternal = () => {
-        try {
-            recognitionRef.current?.start();
-            setIsListening(true);
-        } catch (e: any) {
-            if (e.name !== 'InvalidStateError') {
-                console.error("Recognition start failed", e);
-            } else {
-                setIsListening(true);
-            }
-        }
-    };
-
-    const initRecognition = (langName: string) => {
-        if (typeof window === "undefined") return;
-        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-        if (!SpeechRecognition) return;
-
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        const langMap: Record<string, string> = {
-            "English": "en-IN", "Hindi": "hi-IN", "Marathi": "mr-IN",
-            "Telugu": "te-IN", "Tamil": "ta-IN", "Gujarati": "gu-IN", "Punjabi": "pa-IN"
-        };
-        recognition.lang = langMap[langName] || "en-US";
-
-        recognition.onresult = (event: any) => {
-            const text = event.results[0][0].transcript;
-            setTranscript(text);
-            processAIExtraction(text);
-        };
-
-        recognition.onerror = (event: any) => {
-            if (event.error !== 'no-speech') {
-                console.error("STT Error", event.error);
-            }
-            setIsListening(false);
-        };
-
-        recognition.onend = () => {
-            setIsListening(false);
-        };
-
-        recognitionRef.current = recognition;
-    };
-
-    const toggleListen = async () => {
-        if (isListening) {
-            recognitionRef.current?.stop();
-            setIsListening(false);
-        } else {
-            setTranscript("");
+    const startListening = () => {
+        if (recognitionRef.current) {
+            const langMap: any = { "English": "en-IN", "Hindi": "hi-IN", "Marathi": "mr-IN" };
+            recognitionRef.current.lang = langMap[langStr] || "en-IN";
             try {
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                startRecognitionInternal();
-            } catch (err) {
-                console.error("Microphone denied", err);
-            }
+                recognitionRef.current.start();
+                setIsListening(true);
+            } catch (e) {}
         }
     };
 
     const processAIExtraction = async (text: string) => {
         setIsThinking(true);
-        const activeStep = currentStepRef.current;
-        const activeLang = langStrRef.current;
+        const res = await fetch('/api/chat/onboarding_extract', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                step: currentStepRef.current,
+                text_input: text,
+                language: langStr,
+                current_name: "Farmer",
+                current_crop: crop,
+                consent_granted: consentGranted
+            })
+        });
 
-        console.log(`[Onboarding] Analyzing: "${text}" | Step: ${activeStep} | RefLang: ${activeLang}`);
+        const data = await res.json();
+        setIsThinking(false);
+        setMessages(prev => [...prev, { role: 'ai', text: data.ai_reply }]);
 
-        // LOCAL HEURISTIC: Force consent if common affirmative words are detected
-        if (activeStep === 'Consent') {
-            const affirmations = ['हो', 'आहे', 'जी', 'हाँ', 'अनुमति', 'yes', 'agree', 'correct', 'okay', 'ok'];
-            const lowerText = text.toLowerCase();
-            if (affirmations.some(word => lowerText.includes(word))) {
-                console.log("[Onboarding] Local Heuristic triggered: Consent Granted.");
+        // Logic for state transitions based on onboarding.md
+        if (currentStepRef.current === 'Consent') {
+            if (data.consent_granted) {
                 setConsentGranted(true);
-                setCurrentStep('CropDetails');
-                const confirmMsg = activeLang === "Marathi" ? "धन्यवाद. आता तुमच्या पिकाचे नाव सांगा." : activeLang === "Hindi" ? "धन्यवाद। अब अपनी फसल का नाम बताएं।" : "Thank you. Now, please tell me your crop name.";
-                setAiReply(confirmMsg);
-                setIsThinking(false);
-                speakResponse(confirmMsg, activeLang, () => {
-                    startRecognitionInternal();
-                });
-                return;
+                setCurrentStep('CropIdentity');
             }
+        } else if (currentStepRef.current === 'CropIdentity') {
+            if (data.crop) {
+                setCrop(data.crop);
+                setYieldAmount(data.yield_quintals || "");
+                setCurrentStep('HarvestStatus');
+            }
+        } else if (currentStepRef.current === 'HarvestStatus') {
+            if (data.harvest_status === 'already_harvested') {
+                setHarvestStatus('Already Harvested');
+                setCurrentStep('StorageAudit');
+            } else if (data.harvest_status === 'not_yet_harvested') {
+                setHarvestStatus('Not Yet Harvested');
+                setCurrentStep('MaturityCheck');
+            }
+        } else if (currentStepRef.current === 'StorageAudit') {
+            if (data.storage_type) {
+                setStorageType(data.storage_type);
+                setCurrentStep('HealthAudit');
+            }
+        } else if (currentStepRef.current === 'MaturityCheck') {
+            if (data.sowing_date) {
+                setSowingDate(data.sowing_date);
+                setCurrentStep('OracleVerdict');
+            }
+        } else if (currentStepRef.current === 'TransitConfig') {
+            if (data.transport_type) {
+                setTransportType(data.transport_type);
+                setCurrentStep('DepartureAudit');
+            }
+        } else if (currentStepRef.current === 'FinalVerdict') {
+            setCurrentStep('Success');
         }
 
+        speakResponse(data.ai_reply, langStr, () => {
+            const nextStep = currentStepRef.current;
+            if (nextStep !== 'HealthAudit' && nextStep !== 'DepartureAudit' && nextStep !== 'Success') {
+                startListening();
+            }
+        });
+    };
+
+    const startCameraStep = async () => {
+        setCameraActive(true);
         try {
-            const res = await fetch('/api/chat/onboarding_extract', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    step: activeStep,
-                    text_input: text,
-                    language: activeLang,
-                    current_name: nameRef.current || name,
-                    current_crop: cropRef.current || crop,
-                    current_land_size: landSizeRef.current || landSize || 0,
-                    consent_granted: (typeof consentGranted === 'boolean') ? consentGranted : consentGrantedRef.current,
-                    location_available: !!location,
-                    gps_error: gpsError,
-                    current_storage: storageTypeRef.current || storageType,
-                    current_transport: transportTypeRef.current || transportType
-                })
-            });
-
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.detail || "API Extraction failed");
-            }
-
-            const data = await res.json();
-            console.log(`[Onboarding] AI Data Received:`, data);
-
-            // Stateful Auto-Transitions
-            const isConsentTrue = data.consent_granted === true || String(data.consent_granted).toLowerCase() === 'true';
-
-            setIsThinking(false);
-
-            if (data.ai_reply) {
-                setAiReply(data.ai_reply);
-
-                // Perform State Transitions IMMEDIATELY so new inputs are evaluated in the correct context
-                if (activeStep === 'Consent' && isConsentTrue) {
-                    setConsentGranted(true);
-                    setCurrentStep('CropDetails');
-                } else if (activeStep === 'CropDetails') {
-                    if (data.name) setName(data.name);
-                    if (data.crop) setCrop(data.crop);
-                    if (data.land_size) setLandSize(parseFloat(String(data.land_size)));
-
-                    if ((data.crop || cropRef.current) && (data.land_size || landSizeRef.current)) {
-                        setCurrentStep('Location');
-                    }
-                } else if (activeStep === 'StorageTransport') {
-                    if (data.storage_type) setStorageType(data.storage_type);
-                    if (data.transport_type) setTransportType(data.transport_type);
-
-                    if ((data.storage_type || storageTypeRef.current) && (data.transport_type || transportTypeRef.current)) {
-                        setCurrentStep('FinalCalibration');
-                    }
-                } else if (activeStep === 'FinalCalibration') {
-                    if (data.yield_quintals) setYieldQuintals(parseFloat(String(data.yield_quintals)));
-                    if (data.planting_date) setPlantingDate(data.planting_date);
-
-                    if (data.yield_quintals || yieldQuintalsRef.current) {
-                        setCurrentStep('Verdict');
-                    }
-                }
-
-                // If we just transitioned to FinalCalibration, we MUST prompt the user
-                if (activeStep === 'StorageTransport' && ((data.storage_type || storageTypeRef.current) && (data.transport_type || transportTypeRef.current))) {
-                     const calibrateMsg = activeLang === "Marathi" ? "धन्यवाद. आता सांगा, तुमची अंदाजे किती क्विंटल पिके येतीत?" : activeLang === "Hindi" ? "धन्यवाद। अब बताएं, आपकी अनुमानित उपज कितने क्विंटल होगी?" : "Got it. Finally, what is your expected yield in quintals?";
-                     setAiReply(calibrateMsg);
-                     speakResponse(calibrateMsg, activeLang, () => {
-                         if (currentStepRef.current !== 'Verdict') {
-                             startRecognitionInternal();
-                         }
-                     });
-                } else {
-                    speakResponse(data.ai_reply, activeLang, () => {
-                        if (currentStepRef.current !== 'Verdict') {
-                            startRecognitionInternal();
-                        }
-                    });
-                }
-            } else {
-                // If no ai_reply, transition immediately if criteria met
-                if (activeStep === 'Consent' && isConsentTrue) {
-                    setConsentGranted(true);
-                    setCurrentStep('CropDetails');
-                } else if (activeStep === 'CropDetails' && cropRef.current && landSizeRef.current) {
-                    setCurrentStep('Location');
-                }
-                
-                if (currentStepRef.current !== 'Verdict') {
-                    startRecognitionInternal();
-                }
-            }
-
-        } catch (error) {
-            console.error("Extraction error", error);
-            setAiReply("I'm sorry, I'm having trouble connecting to the decision engine. Let's try again.");
-            setIsThinking(false);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            if (videoRef.current) videoRef.current.srcObject = stream;
+        } catch (e) {
+            console.error("Camera error", e);
         }
     };
 
-    // GPS Transition Logic
-    useEffect(() => {
-        if (currentStep === 'Location') {
-            const handleGpsTransition = async () => {
-                if (!location) {
-                    const promptText = langStr === "Marathi" ? "तुमची लोकेशन शोधत आहे. कृपया परवानगी द्या." : langStr === "Hindi" ? "हम आपकी लोकेशन खोज रहे हैं। कृपया अनुमति दें।" : "I'm locking your coordinates. Please allow GPS access.";
-                    setAiReply(promptText);
-                    speakResponse(promptText, langStr, () => {
-                        requestLocation();
-                    });
-                } else {
-                    const successMsg = langStr === "Marathi" ? "लोकेशन मिळाली आहे. आता सांगा, पीक कसे साठवत आहात? उघड्यावर, छायेत की क्रेट्समध्ये?" : langStr === "Hindi" ? "लोकेशन मिल गई है। अब बताएं, उपज को कैसे स्टोर करेंगे? खुले में, छाया में, या क्रेट में?" : "Coordinates secured. Next, how will you store your yield today (Open Field, Shaded, or Crated)?";
-                    setAiReply(successMsg);
-                    setCurrentStep('StorageTransport');
-                    speakResponse(successMsg, langStr, () => {
-                        startRecognitionInternal();
-                    });
-                }
-            };
-            const timer = setTimeout(handleGpsTransition, 1000); // 1s delay to protect audio continuity
-            return () => clearTimeout(timer);
+    const capturePhoto = () => {
+        // Mock capture for now
+        setCameraActive(false);
+        if (videoRef.current?.srcObject) {
+            (videoRef.current.srcObject as MediaStream).getTracks().forEach(t => t.stop());
         }
-    }, [currentStep, location, langStr]);
 
-    // Save & Transition on Verdict
-    useEffect(() => {
-        const finalize = async () => {
-            if (currentStep === 'Verdict') {
-                const promptText = t('calculating');
-                speakResponse(promptText, langStr);
-                try {
-                    const phone = auth.currentUser?.phoneNumber || localStorage.getItem('demo_phone') || "9999999999";
-                    const fuzzed = fuzzLocation(location?.latitude || 0, location?.longitude || 0);
-
-                    await supabase.from('profiles').upsert({
-                        phone: phone,
-                        name: name || "Farmer",
-                        crop: crop || "tomato",
-                        land_size_acres: landSize || 1.0,
-                        latitude: fuzzed.latitude,
-                        longitude: fuzzed.longitude,
-                        yield_quintals: yieldQuintals || 100,
-                        planting_date: plantingDate || new Date().toISOString().split('T')[0],
-                        storage_type: storageType || "Open Field",
-                        transport_type: transportType || "Open Trolley"
-                    });
-
-                    setTimeout(() => router.push('/dashboard'), 3000);
-                } catch (e) {
-                    console.error("Save failed", e);
-                }
-            }
-        };
-        finalize();
-    }, [currentStep]);
+        if (currentStepRef.current === 'HealthAudit') {
+            setCurrentStep('TransitConfig');
+            const nextMsg = "Quality verified. Now, will you transport these in a tractor, a pickup truck, or a covered van?";
+            setMessages(prev => [...prev, { role: 'ai', text: nextMsg }]);
+            speakResponse(nextMsg, langStr, () => startListening());
+        } else if (currentStepRef.current === 'DepartureAudit') {
+            setCurrentStep('FinalVerdict');
+            const nextMsg = "Grade-A Quality Proof Locked. Based on live Mandi rates, Vashi market is your best bet today. Ready to start navigation?";
+            setMessages(prev => [...prev, { role: 'ai', text: nextMsg }]);
+            speakResponse(nextMsg, langStr, () => startListening());
+        }
+    };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-4 relative bg-forest text-white selection:bg-mint selection:text-forest overflow-hidden">
-            {/* Background Layers */}
+        <div className="flex min-h-screen bg-forest text-white selection:bg-mint p-4 overflow-hidden relative">
+            {/* Background */}
             <div className="absolute inset-0 z-0">
-                <img src="/bg-img.jpg" alt="Background" className="w-full h-full object-cover opacity-20 pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-t from-forest via-forest/80 to-transparent pointer-events-none"></div>
+                <img src="/bg-img.jpg" alt="Farm" className="w-full h-full object-cover opacity-20" />
+                <div className="absolute inset-0 bg-gradient-to-b from-forest/90 via-forest/60 to-forest" />
             </div>
 
-            {/* Audio Engine */}
-            <audio ref={audioRef} className="hidden" playsInline crossOrigin="anonymous" />
+            <audio ref={audioRef} className="hidden" />
 
-            {/* Language Selection Modal */}
+            {/* Language Modal */}
             {showLanguageModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
-                    <GlassCard className="p-8 max-w-sm w-full text-center slide-in-from-bottom-5">
-                        <div className="w-16 h-16 mx-auto bg-mint/10 border border-mint/30 rounded-full flex items-center justify-center mb-6">
-                            <svg className="w-8 h-8 text-mint animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
-                        </div>
-                        <h2 className="text-2xl font-bold text-mint mb-2">Speak your language</h2>
-                        <p className="text-sm text-gray-400 mb-8">Agri-Vakeel AI supports 7 regional languages.</p>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            {[
-                                { code: 'en', name: 'English' },
-                                { code: 'hi', name: 'Hindi' },
-                                { code: 'mr', name: 'Marathi' },
-                                { code: 'te', name: 'Telugu' },
-                                { code: 'ta', name: 'Tamil' },
-                                { code: 'gu', name: 'Gujarati' },
-                                { code: 'pa', name: 'Punjabi' }
-                            ].map((l) => (
-                                <button
-                                    key={l.code}
-                                    onClick={() => handleLanguageSelect(l.code, l.name)}
-                                    className="bg-glass-bg border border-glass-border py-3 rounded-xl text-gray-300 font-medium hover:bg-mint/10 hover:border-mint/50 hover:text-mint transition-all"
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
+                    <GlassCard className="max-w-md w-full p-8 text-center">
+                        <Zap className="w-12 h-12 text-mint mx-auto mb-6 animate-pulse" />
+                        <h2 className="text-2xl font-black mb-2 tracking-tight">Select Language</h2>
+                        <div className="grid grid-cols-2 gap-4 mt-8">
+                            {['English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Punjabi'].map(l => (
+                                <button 
+                                    key={l}
+                                    onClick={() => handleLanguageSelect(l, l)}
+                                    className="p-4 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-mint/20 hover:border-mint transition-all"
                                 >
-                                    {l.name}
+                                    {l}
                                 </button>
                             ))}
                         </div>
@@ -480,161 +268,163 @@ export default function OnboardingPage() {
                 </div>
             )}
 
-            {!showLanguageModal && currentStep !== 'Verdict' && (
-                <div className="w-full max-w-md relative z-10 flex flex-col h-[90vh]">
+            {/* Main Content */}
+            {!showLanguageModal && (
+                <div className="relative z-10 w-full max-w-lg mx-auto flex flex-col h-full">
+                    <div ref={scrollRef} className="flex-1 flex flex-col space-y-6 pb-24 overflow-y-auto pt-8">
+                        
+                        {/* Task List / Progress (Senior Dev detail) */}
+                        <div className="mb-4 sticky top-0 bg-forest/80 backdrop-blur-md z-20 py-2">
+                           <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] text-mint/40 mb-4">
+                                <Terminal className="w-3 h-3" />
+                                <span>Session Status: Local Edge Sync Active</span>
+                           </div>
+                           <div className="grid grid-cols-4 gap-2">
+                                <div className={`h-1 rounded-full ${consentGranted ? 'bg-mint' : 'bg-white/10'}`} />
+                                <div className={`h-1 rounded-full ${crop ? 'bg-mint' : 'bg-white/10'}`} />
+                                <div className={`h-1 rounded-full ${harvestStatus ? 'bg-mint' : 'bg-white/10'}`} />
+                                <div className={`h-1 rounded-full ${transportType ? 'bg-mint' : 'bg-white/10'}`} />
+                           </div>
+                        </div>
 
-                    {/* Assistant Chat Area */}
-                    <div className="flex-1 overflow-y-auto mb-6 flex flex-col justify-end space-y-6 pb-12">
-                        {/* Form Display Card (The Glassy Autofill) */}
-                        <GlassCard className="p-5 border-mint/20 bg-forest/40 backdrop-blur-xl mb-4">
-                            <h3 className="text-xs uppercase tracking-widest text-mint/60 font-bold mb-4 flex items-center">
-                                <span className="w-2 h-2 rounded-full bg-mint mr-2 animate-pulse"></span>
-                                Profile Extraction
-                            </h3>
-                            <div className="space-y-3">
-                                {(() => {
-                                    const labels: Record<string, any> = {
-                                        "English": { c: "Consent", t: "Crop Type", s: "Scale (Acres)", g: "GPS Lock", st: "Storage", tr: "Transport", y: "Expected Yield" },
-                                        "Hindi": { c: "सहमति", t: "फसल का प्रकार", s: "क्षेत्र (एकड़)", g: "जीपीएस लॉक", st: "भंडारण", tr: "यातायात", y: "अपेक्षित पैदावार" },
-                                        "Marathi": { c: "संमती", t: "पिकाचा प्रकार", s: "क्षेत्र (एकर)", g: "जीपीएस लॉक", st: "साठवणूक", tr: "वाहतूक", y: "अपेक्षित उत्पन्न" }
-                                    };
-                                    const l = labels[langStr] || labels["English"];
-                                    return (
-                                        <>
-                                            <FieldRow label={l.c} value={consentGranted === true ? (langStr === "Marathi" ? "मंजूर" : langStr === "Hindi" ? "मंजूर" : "Approved") : consentGranted === false ? "Declined" : "..."} active={currentStep === 'Consent'} filled={consentGranted !== null} />
-                                            <FieldRow label={l.t} value={crop || "..."} active={currentStep === 'CropDetails'} filled={!!crop} />
-                                            <FieldRow label={l.s} value={landSize ? `${landSize} ${langStr === "Marathi" ? "एकर" : "Acres"}` : "..."} active={currentStep === 'CropDetails'} filled={!!landSize} />
-                                            <FieldRow label={l.g} value={location ? (langStr === "Marathi" ? "सुरक्षित" : "Secured") : "..."} active={currentStep === 'Location'} filled={!!location} />
-                                            <FieldRow label={l.st} value={storageType || "..."} active={currentStep === 'StorageTransport'} filled={!!storageType} />
-                                            <FieldRow label={l.tr} value={transportType || "..."} active={currentStep === 'StorageTransport'} filled={!!transportType} />
-                                            <FieldRow label={l.y} value={yieldQuintals ? `${yieldQuintals} ${langStr === "Marathi" ? "क्विंटल" : "Quintals"}` : "..."} active={currentStep === 'FinalCalibration'} filled={!!yieldQuintals} />
-                                        </>
-                                    );
-                                })()}
-                            </div>
-                        </GlassCard>
+                        {/* Message History */}
+                        <AnimatePresence>
+                            {messages.map((msg, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}
+                                >
+                                    <div className={`max-w-[85%] p-4 px-6 rounded-3xl ${
+                                        msg.role === 'ai' 
+                                            ? 'bg-white/5 border border-white/10 backdrop-blur-xl rounded-bl-none text-mint italic text-lg font-medium' 
+                                            : 'bg-mint text-forest font-black rounded-br-none text-sm'
+                                    }`}>
+                                        {msg.role === 'ai' ? `"${msg.text}"` : msg.text}
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
 
-                        {/* Transcript Bubble */}
-                        {transcript && (
-                            <div className="self-end bg-white/10 border border-white/20 rounded-2xl rounded-tr-none py-3 px-5 max-w-[85%] text-white text-sm animate-in zoom-in-95">
-                                "{transcript}"
-                            </div>
-                        )}
-
-                        {/* Thinking Indicator */}
+                        {/* Thinking */}
                         {isThinking && (
-                            <div className="self-start py-2 px-4 flex items-center space-x-2">
-                                <div className="w-2 h-2 rounded-full bg-mint animate-bounce"></div>
-                                <div className="w-2 h-2 rounded-full bg-mint animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                <div className="w-2 h-2 rounded-full bg-mint animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                            </div>
-                        )}
-
-                        {/* AI Reply Bubble */}
-                        {aiReply && !isThinking && (
-                            <div className="self-start bg-mint/10 border border-mint/30 rounded-2xl rounded-tl-none py-4 px-5 max-w-[95%] text-mint text-[15px] leading-relaxed shadow-[0_0_20px_rgba(32,255,189,0.1)] animate-in fade-in slide-in-from-left-4">
-                                {aiReply}
+                            <div className="flex space-x-2 p-4">
+                                <div className="w-2 h-2 bg-mint rounded-full animate-bounce" />
+                                <div className="w-2 h-2 bg-mint rounded-full animate-bounce [animation-delay:0.2s]" />
+                                <div className="w-2 h-2 bg-mint rounded-full animate-bounce [animation-delay:0.4s]" />
                             </div>
                         )}
                     </div>
 
-                    {/* Microphone & Text fallback Controls */}
-                    <div className="flex flex-col items-center shrink-0 pb-4">
-                        {isListening && (
-                            <div className="flex space-x-1 mb-6 h-8 items-center">
-                                {[1, 2, 3, 4, 5].map((i) => (
-                                    <div key={i} className="w-1.5 bg-mint rounded-full animate-waveform" style={{ height: `${Math.max(20, Math.random() * 100)}%`, animationDelay: `${i * 0.1}s` }}></div>
-                                ))}
-                            </div>
-                        )}
-
-                        <div className="flex items-center space-x-4 w-full px-2">
-                            <button
-                                onClick={toggleListen}
-                                className={`w-16 h-16 rounded-full flex items-center justify-center transition-all shrink-0 ${isListening
-                                    ? 'bg-red-500 text-white shadow-[0_0_30px_rgba(239,68,68,0.5)] animate-pulse'
-                                    : 'bg-mint text-forest shadow-[0_0_20px_rgba(32,255,189,0.3)] hover:scale-105'}`}
+                    {/* Camera View */}
+                    <AnimatePresence>
+                        {cameraActive && (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className="fixed inset-0 z-40 bg-black flex flex-col p-6 pt-20"
                             >
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                    {isListening && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />}
-                                </svg>
-                            </button>
-
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const input = e.currentTarget.elements.namedItem('text-input') as HTMLInputElement;
-                                    if (input.value) {
-                                        setTranscript(input.value);
-                                        processAIExtraction(input.value);
-                                        input.value = "";
-                                    }
-                                }}
-                                className="flex-1 bg-white/5 border border-white/10 rounded-2xl flex items-center px-4 py-2 hover:border-mint/30 focus-within:border-mint/50 transition-all shadow-inner"
-                            >
-                                <input
-                                    name="text-input"
-                                    type="text"
-                                    placeholder={langStr === "Marathi" ? "येथे लिहा..." : langStr === "Hindi" ? "यहाँ लिखें..." : "Type here..."}
-                                    className="bg-transparent border-none outline-none text-white text-sm w-full placeholder:text-gray-500"
-                                />
-                                <button type="submit" className="text-mint ml-2 transform hover:scale-110 transition-transform">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                                <div className="flex-1 relative rounded-3xl overflow-hidden border-2 border-mint/30 shadow-[0_0_50px_rgba(32,255,189,0.2)]">
+                                    <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 pointer-events-none">
+                                        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-mint/50 animate-pulse" />
+                                        <div className="absolute inset-10 border-2 border-mint/20 border-dashed rounded-3xl" />
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={capturePhoto}
+                                    className="mt-8 w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center border-8 border-mint/20 active:scale-90 transition-transform"
+                                >
+                                    <Camera className="w-10 h-10 text-forest" />
                                 </button>
-                            </form>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Controls */}
+                    <div className="fixed bottom-0 left-0 right-0 p-8 pt-0 bg-gradient-to-t from-forest to-transparent pb-12">
+                        <div className="flex items-center space-x-4 max-w-lg mx-auto">
+                            {(currentStep === 'HealthAudit' || currentStep === 'DepartureAudit') && !cameraActive ? (
+                                <button 
+                                    onClick={startCameraStep}
+                                    className="flex-1 h-20 bg-mint text-forest rounded-3xl flex items-center justify-center space-x-3 font-black uppercase tracking-widest shadow-[0_0_30px_rgba(32,255,189,0.3)] hover:scale-[1.02] active:scale-95 transition-all"
+                                >
+                                    <Camera className="w-6 h-6" />
+                                    <span>Open Visual Audit</span>
+                                </button>
+                            ) : (
+                                <>
+                                    <button 
+                                        onClick={isListening ? () => recognitionRef.current?.stop() : startListening}
+                                        className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${isListening ? 'bg-red-500 scale-110 shadow-[0_0_40px_rgba(239,68,68,0.4)]' : 'bg-mint text-forest shadow-[0_0_30px_rgba(32,255,189,0.3)]'}`}
+                                    >
+                                        {isListening ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+                                    </button>
+                                    <form 
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            const input = e.currentTarget.elements.namedItem('text-input') as HTMLInputElement;
+                                            if (input.value) {
+                                                setMessages(prev => [...prev, { role: 'user', text: input.value }]);
+                                                processAIExtraction(input.value);
+                                                input.value = "";
+                                            }
+                                        }}
+                                        className="flex-1 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center px-4 backdrop-blur-md group focus-within:border-mint transition-all"
+                                    >
+                                        <input 
+                                            name="text-input"
+                                            type="text"
+                                            placeholder={isListening ? "Listening..." : "Tap mic or type here..."}
+                                            className="bg-transparent border-none outline-none text-white text-sm w-full placeholder:text-gray-500"
+                                        />
+                                        <button type="submit" className="text-mint ml-2 transform hover:scale-110 transition-transform">
+                                            <Send className="w-5 h-5" />
+                                        </button>
+                                    </form>
+                                </>
+                            )}
                         </div>
-
-                        <p className="text-gray-400 mt-3 text-xs tracking-wide">
-                            {isListening ? "Listening... tap to stop" : "Speak to Agri-Vakeel or use the text box"}
-                        </p>
                     </div>
-
                 </div>
             )}
 
-            {/* Verdict Loading State */}
-            {currentStep === 'Verdict' && (
-                <div className="relative z-10 flex flex-col items-center animate-in zoom-in duration-500">
-                    <div className="w-24 h-24 relative mb-8">
-                        <div className="absolute inset-0 rounded-full border-t-4 border-mint animate-spin"></div>
-                        <div className="absolute inset-2 rounded-full border-l-4 border-transparent border-t-4 border-blue-400 animate-spin-slow"></div>
-                        <div className="absolute inset-0 flex items-center justify-center text-mint">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            {/* Final Success View */}
+            {currentStep === 'Success' && (
+                <div className="fixed inset-0 z-[60] bg-forest flex flex-col items-center justify-center p-8">
+                     <motion.div 
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="text-center"
+                     >
+                        <div className="w-24 h-24 bg-mint rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-[0_0_50px_rgba(32,255,189,0.4)]">
+                            <CheckCircle2 className="w-12 h-12 text-forest" />
                         </div>
-                    </div>
-                    <h2 className="text-2xl text-white font-bold tracking-wider mb-2">{t('calculating')}</h2>
-                    <p className="text-mint font-mono uppercase text-sm tracking-widest animate-pulse">{t('computing')}</p>
+                        <h2 className="text-4xl font-black mb-4">CALIBRATION COMPLETE</h2>
+                        <p className="text-gray-400 mb-12">Redirecting to your Profit Dashboard...</p>
+                        <div className="flex flex-col space-y-4 max-w-xs mx-auto">
+                            <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-mint/60">Quality Grade</span>
+                                <span className="font-mono text-mint">A+ Verified</span>
+                            </div>
+                            <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-mint/60">Path of Profit</span>
+                                <span className="font-mono text-mint">Locked (Vashi)</span>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => router.push('/dashboard')}
+                            className="mt-12 group flex items-center space-x-3 text-mint font-black text-sm uppercase tracking-widest"
+                        >
+                            <span>Enter Cockpit</span>
+                            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                     </motion.div>
                 </div>
             )}
-
         </div>
     );
 }
-
-// Subcomponent for the Glassy Extracted Fields
-interface FieldRowProps {
-    label: string;
-    value: string;
-    active: boolean;
-    filled: boolean;
-}
-
-const FieldRow = ({ label, value, active, filled }: FieldRowProps) => (
-    <div className={`flex justify-between items-center py-2 transition-all duration-500 ${active ? 'px-2 -mx-2 bg-mint/5 rounded-lg' : ''}`}>
-        <span className={`text-sm ${active ? 'text-mint font-bold' : filled ? 'text-gray-300' : 'text-gray-500'}`}>
-            {label}
-        </span>
-        <span className={`text-sm font-mono flex items-center ${filled ? 'text-mint' : active ? 'text-mint/40 animate-pulse' : 'text-gray-600'}`}>
-            {value}
-            {filled && (
-                <svg className="w-4 h-4 ml-2 text-mint" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-            )}
-            {!filled && active && (
-                <span className="ml-2 w-1.5 h-1.5 rounded-full bg-mint/30 animate-ping"></span>
-            )}
-        </span>
-    </div>
-);

@@ -258,31 +258,33 @@ def onboarding_extract(req: OnboardingExtractRequest):
         if req.step == "Consent":
             schema_instructions = """Return JSON with: {'consent_granted': true/false/null, 'ai_reply': 'string'}.
 EXTRACT CONSENT: 
-- Set consent_granted to true if they say ANY affirmative like "Yes", "同意", "जी", "हाँ", "अनुमति है", "ठीक है", "बिल्कुल" (Hindi) or "हो", "आहे", "हो आहे", "नक्कीच" (Marathi).
-- Set to false if they say no/nay.
-- 'ai_reply' MUST be a very short acknowledgement in """ + req.language + " script only."
-        elif req.step == "CropDetails":
+- Set consent_granted to true if they say ANY affirmative.
+- If consent_granted is true, the 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the next question: "What crop are we working with today, and what is your estimated yield?"
+- 'ai_reply' MUST be in """ + req.language + " script only."
+        elif req.step == "CropIdentity":
             schema_instructions = """Return JSON with: {'name': string/null, 'crop': string/null, 'land_size': number/null, 'ai_reply': 'string'}.
 - Extract person's name, crop name, and land size (acres).
-- CRITICAL: Name MUST be extracted in English/Roman script (e.g., 'Arnav' instead of 'अर्णव') regardless of the input language.
-- Map regional crop names to English equivalents:
-  - 'Kanda' -> 'onion'
-  - 'Batata' -> 'potato'
-  - 'Soyabin'/'Soybean' -> 'soybean'
-  - 'Kapus'/'Kapaas' -> 'cotton'
-  - 'Gahu'/'Gehun' -> 'wheat'
-  - 'Tandul'/'Chawal' -> 'rice'
-  - 'Tamatar' -> 'tomato'
-- 'ai_reply' MUST be in """ + req.language + """ script.
-- If you have some info but not all (e.g. you have 5 acres but no crop), the 'ai_reply' MUST acknowledge the 5 acres and specifically ask for the missing crop.
-- If ALL info (crop and land size) is present, 'ai_reply' should be a brief success message like "Thank you."."""
-        elif req.step == "StorageTransport":
-             schema_instructions = """Return JSON with: {'storage_type': string/null, 'transport_type': string/null, 'ai_reply': 'string'}.
-- Extract storage type (must map to exactly one of: 'Open Field', 'Shaded', 'Crated'). Default to 'Open Field' if unclear but present.
-- Extract transport type (must map to exactly one of: 'Open Trolley', 'Covered Pickup'). Default to 'Open Trolley' if unclear but present.
-- 'ai_reply' MUST be in """ + req.language + """ script only. If missing one, ask for the other briefly. If both are present, say "Thank you."."""
-        elif req.step == "FinalCalibration":
-             schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'planting_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}. Extract yield as number. 'ai_reply' MUST be in " + req.language + " script only."
+- If ALL info (crop and land size) is present, 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the Phase 2 question: "Are these [crop] already harvested, or are you still deciding when to start cutting them?"
+- 'ai_reply' MUST be in """ + req.language + " script."
+        elif req.step == "HarvestStatus":
+            schema_instructions = """Return JSON with: {'harvest_status': 'already_harvested'/'not_yet_harvested'/null, 'ai_reply': 'string'}.
+- If 'already_harvested', 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the Branch A question: "Where are the crates kept right now? Open field, under a shed, or in cold storage?"
+- If 'not_yet_harvested', 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the Branch B question: "When did you sow the seeds?"
+- 'ai_reply' MUST be in """ + req.language + " script only."
+        elif req.step == "StorageAudit":
+             schema_instructions = """Return JSON with: {'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'ai_reply': 'string'}.
+- If storage_type is extracted, 'ai_reply' MUST acknowledge and then IMMEDIATELY ask: "Do they look healthy, or have you noticed any spots or irregularities?"
+- 'ai_reply' MUST be in """ + req.language + " script only."
+        elif req.step == "MaturityCheck":
+             schema_instructions = """Return JSON with: {'sowing_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}.
+- If sowing_date is extracted, 'ai_reply' MUST provide the Oracle Verdict (maturity check) and then say "I'll let you know once it's time to harvest." and move to Success.
+- 'ai_reply' MUST be in """ + req.language + " script only."
+        elif req.step == "TransitConfig":
+             schema_instructions = """Return JSON with: {'transport_type': 'Tractor'/'Pickup'/'Covered Van'/null, 'ai_reply': 'string'}.
+- If transport_type is extracted, 'ai_reply' MUST acknowledge and then IMMEDIATELY ask the mandatory Departure Audit: "One last thing—take a 360° photo of the crates as they are loaded. I am locking in your Grade-A Quality Proof."
+- 'ai_reply' MUST be in """ + req.language + " script only."
+        elif req.step == "FinalVerdict":
+             schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}. If yield is present, ask the success question."
         else:
              schema_instructions = "Return JSON with: {'ai_reply': 'string'}"
 
