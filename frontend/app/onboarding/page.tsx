@@ -76,12 +76,22 @@ export default function OnboardingPage() {
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
+    const ledgerScrollRef = useRef<HTMLDivElement>(null);
+
     // Auto-scroll chat
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages, isThinking]);
+
+    // Auto-scroll ledger to active item
+    useEffect(() => {
+        const activeItem = document.querySelector('[data-ledger-status="active"]');
+        if (activeItem && ledgerScrollRef.current) {
+            activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [currentStep, harvestStatus, consentGranted, crop, yieldAmount]);
 
     // Audio Engine initialization
     useEffect(() => {
@@ -239,10 +249,30 @@ export default function OnboardingPage() {
 
     return (
         <div className="flex min-h-screen bg-forest text-white selection:bg-mint overflow-hidden relative">
-            {/* Background */}
-            <div className="absolute inset-0 z-0">
-                <img src="/bg-img.jpg" alt="Farm" className="w-full h-full object-cover opacity-20" />
-                <div className="absolute inset-0 bg-gradient-to-b from-forest/90 via-forest/60 to-forest" />
+            {/* Professional Background with Depth */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <img src="/bg-img.jpg" alt="Farm" className="w-full h-full object-cover opacity-[0.07] scale-105 blur-sm" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-forest via-forest/80 to-forest/40" />
+                
+                {/* Animated Depth Blobs */}
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.2, 1],
+                        x: [0, 100, 0],
+                        y: [0, -50, 0]
+                    }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-mint/5 rounded-full blur-[120px]" 
+                />
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.3, 1],
+                        x: [0, -120, 0],
+                        y: [0, 80, 0]
+                    }}
+                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                    className="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%] bg-mint/5 rounded-full blur-[120px]" 
+                />
             </div>
 
             <audio ref={audioRef} className="hidden" />
@@ -275,216 +305,222 @@ export default function OnboardingPage() {
                 )}
             </AnimatePresence>
 
-            {/* Main Content: Split Screen */}
+            {/* Main Content: Card-Based Layout */}
             {!showLanguageModal && (
-                <div className="relative z-10 w-full flex h-screen overflow-hidden">
-                    
-                    {/* LEFT PANEL: The Extraction Ledger (40%) */}
-                    <div className="hidden lg:flex w-[40%] flex-col border-r border-white/5 bg-forest/40 backdrop-blur-3xl overflow-y-auto p-12 space-y-12 shadow-[20px_0_50px_rgba(0,0,0,0.5)]">
-                        <div>
-                            <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.3em] text-mint/60 mb-6">
-                                <Terminal className="w-4 h-4" />
-                                <span>Core Extraction Ledger</span>
-                            </div>
-                            <h2 className="text-4xl font-black tracking-tighter leading-none mb-4 uppercase">
-                                Data <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint to-teal-400">Calibration</span>
-                            </h2>
-                            <p className="text-gray-500 text-xs font-medium leading-relaxed max-w-[280px]">
-                                Real-time telemetry extraction from the Agri-Vakeel conversational interface.
-                            </p>
-                        </div>
-
-                        <div className="space-y-4">
-                            <LedgerItem 
-                                label="DPDP Consent" 
-                                value={consentGranted ? "Granted ✅" : "Pending..."} 
-                                status={consentGranted ? 'locked' : (currentStepRef.current === 'Consent' ? 'active' : 'pending')}
-                                icon={<ShieldCheck className="w-4 h-4" />}
-                            />
-                            <LedgerItem 
-                                label="Crop Identity" 
-                                value={crop || "Waiting for audio..."} 
-                                status={crop ? 'locked' : (currentStepRef.current === 'CropIdentity' ? 'active' : 'pending')}
-                                icon={<RefreshCw className="w-4 h-4" />}
-                            />
-                            <LedgerItem 
-                                label="Yield Volume" 
-                                value={yieldAmount ? `${yieldAmount} Quintals` : "---"} 
-                                status={yieldAmount ? 'locked' : (currentStepRef.current === 'CropIdentity' ? 'active' : 'pending')}
-                                icon={<Zap className="w-4 h-4" />}
-                            />
-                            <LedgerItem 
-                                label="Harvest Node" 
-                                value={harvestStatus || "Detecting phase..."} 
-                                status={harvestStatus ? 'locked' : (currentStepRef.current === 'HarvestStatus' ? 'active' : 'pending')}
-                                icon={<TrendingUp className="w-4 h-4" />}
-                            />
-
-                            {/* LOGISTICS BRANCH */}
-                            <AnimatePresence>
-                                {(harvestStatus === 'Already Harvested' || !harvestStatus) && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="space-y-4 pt-4 border-t border-white/5"
-                                    >
-                                        <div className="text-[9px] font-bold uppercase text-gray-600 tracking-widest pl-2">Branch: Logistics</div>
-                                        <LedgerItem 
-                                            label="Storage Environment" 
-                                            value={storageType || "Awaiting audit..."} 
-                                            status={storageType ? 'locked' : (currentStepRef.current === 'StorageAudit' ? 'active' : 'pending')}
-                                            icon={<MapPin className="w-4 h-4" />}
-                                        />
-                                        <LedgerItem 
-                                            label="Transit Assets" 
-                                            value={transportType || "---"} 
-                                            status={transportType ? 'locked' : (currentStepRef.current === 'TransitConfig' ? 'active' : 'pending')}
-                                            icon={<CheckCircle2 className="w-4 h-4" />}
-                                        />
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                            {/* ORACLE BRANCH */}
-                            <AnimatePresence>
-                                {harvestStatus === 'Not Yet Harvested' && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="space-y-4 pt-4 border-t border-white/5"
-                                    >
-                                        <div className="text-[9px] font-bold uppercase text-gray-600 tracking-widest pl-2">Branch: Oracle</div>
-                                        <LedgerItem 
-                                            label="Sowing Timestamp" 
-                                            value={sowingDate || "---"} 
-                                            status={sowingDate ? 'locked' : (currentStepRef.current === 'MaturityCheck' ? 'active' : 'pending')}
-                                            icon={<Zap className="w-4 h-4" />}
-                                        />
-                                        <LedgerItem 
-                                            label="Profit Window" 
-                                            value="Calculating..." 
-                                            status={currentStepRef.current === 'OracleVerdict' ? 'active' : 'pending'}
-                                            icon={<TrendingUp className="w-4 h-4" />}
-                                        />
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Environment Footer */}
-                        <div className="mt-auto opacity-30">
-                            <div className="font-mono text-[9px] tracking-tighter text-white">
-                                [OVERSIGHT ACTIVE] <br />
-                                32-EDGE-MUM-NODE-B1 <br />
-                                VERIFIER: AGRI-VAKEEL v2.1
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* RIGHT PANEL: The Agri-Vakeel Terminal (60%) */}
-                    <div className="flex-1 flex flex-col h-full relative">
-                        <div ref={scrollRef} className="flex-1 flex flex-col space-y-6 px-8 lg:px-20 pb-40 overflow-y-auto pt-16 scroll-smooth">
-                            
-                            {/* Mobile Info Overlay (Hides on Desktop) */}
-                            <div className="lg:hidden mb-4 p-6 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-xl">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase text-mint/60 tracking-widest">Extraction Progress</span>
-                                    <span className="text-[10px] font-mono text-gray-500 uppercase">Node: MUMBAI-1</span>
+                <div className="relative z-10 w-full flex items-center justify-center p-6 lg:p-12">
+                    <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 h-[85vh]">
+                        
+                        {/* LEFT CARD: Extraction Ledger (35%) */}
+                        <motion.div 
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="lg:col-span-4 h-full"
+                        >
+                            <GlassCard className="h-full flex flex-col p-8 border-mint/10 overflow-hidden relative group">
+                                <div className="mb-8">
+                                    <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.3em] text-mint/60 mb-4">
+                                        <Terminal className="w-4 h-4" />
+                                        <span>Extraction Ledger</span>
+                                    </div>
+                                    <h2 className="text-3xl font-black tracking-tighter leading-none uppercase">
+                                        Data <span className="text-mint">Calibration</span>
+                                    </h2>
                                 </div>
-                                <div className="grid grid-cols-4 gap-2 mt-4">
-                                    <div className={`h-1.5 rounded-full transition-colors duration-500 ${consentGranted ? 'bg-mint' : 'bg-white/10'}`} />
-                                    <div className={`h-1.5 rounded-full transition-colors duration-500 ${crop ? 'bg-mint' : 'bg-white/10'}`} />
-                                    <div className={`h-1.5 rounded-full transition-colors duration-500 ${harvestStatus ? 'bg-mint' : 'bg-white/10'}`} />
-                                    <div className={`h-1.5 rounded-full transition-colors duration-500 ${transportType ? 'bg-mint' : 'bg-white/10'}`} />
-                                </div>
-                            </div>
 
-                            {/* Message History */}
-                            <AnimatePresence initial={false}>
-                                {messages.map((msg, idx) => (
-                                    <motion.div
-                                        key={idx}
-                                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}
-                                    >
-                                        <div className={`max-w-[90%] md:max-w-[85%] p-6 rounded-[2rem] ${
-                                            msg.role === 'ai' 
-                                                ? 'bg-white/5 border border-white/10 backdrop-blur-2xl rounded-bl-none text-mint italic text-xl font-medium shadow-[0_10px_40px_rgba(0,0,0,0.3)]' 
-                                                : 'bg-mint text-forest font-bold rounded-br-none text-base shadow-[0_10px_30px_rgba(32,255,189,0.2)]'
-                                        }`}>
-                                            {msg.role === 'ai' ? `"${msg.text}"` : msg.text}
+                                <div 
+                                    ref={ledgerScrollRef}
+                                    className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar"
+                                >
+                                    <LedgerItem 
+                                        label="DPDP Consent" 
+                                        value={consentGranted ? "Granted ✅" : "Pending..."} 
+                                        status={consentGranted ? 'locked' : (currentStepRef.current === 'Consent' ? 'active' : 'pending')}
+                                        icon={<ShieldCheck className="w-4 h-4" />}
+                                    />
+                                    <LedgerItem 
+                                        label="Crop Identity" 
+                                        value={crop || "Waiting..."} 
+                                        status={crop ? 'locked' : (currentStepRef.current === 'CropIdentity' ? 'active' : 'pending')}
+                                        icon={<RefreshCw className="w-4 h-4" />}
+                                    />
+                                    <LedgerItem 
+                                        label="Yield Volume" 
+                                        value={yieldAmount ? `${yieldAmount} Quintals` : "---"} 
+                                        status={yieldAmount ? 'locked' : (currentStepRef.current === 'CropIdentity' ? 'active' : 'pending')}
+                                        icon={<Zap className="w-4 h-4" />}
+                                    />
+                                    <LedgerItem 
+                                        label="Harvest Node" 
+                                        value={harvestStatus || "Detecting..."} 
+                                        status={harvestStatus ? 'locked' : (currentStepRef.current === 'HarvestStatus' ? 'active' : 'pending')}
+                                        icon={<TrendingUp className="w-4 h-4" />}
+                                    />
+
+                                    <AnimatePresence>
+                                        {(harvestStatus === 'Already Harvested' || !harvestStatus) && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="space-y-4 pt-4 border-t border-white/5"
+                                            >
+                                                <LedgerItem 
+                                                    label="Storage" 
+                                                    value={storageType || "Pending..."} 
+                                                    status={storageType ? 'locked' : (currentStepRef.current === 'StorageAudit' ? 'active' : 'pending')}
+                                                    icon={<MapPin className="w-4 h-4" />}
+                                                />
+                                                <LedgerItem 
+                                                    label="Transit" 
+                                                    value={transportType || "---"} 
+                                                    status={transportType ? 'locked' : (currentStepRef.current === 'TransitConfig' ? 'active' : 'pending')}
+                                                    icon={<CheckCircle2 className="w-4 h-4" />}
+                                                />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+
+                                    <AnimatePresence>
+                                        {harvestStatus === 'Not Yet Harvested' && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="space-y-4 pt-4 border-t border-white/5"
+                                            >
+                                                <LedgerItem 
+                                                    label="Sowing Date" 
+                                                    value={sowingDate || "---"} 
+                                                    status={sowingDate ? 'locked' : (currentStepRef.current === 'MaturityCheck' ? 'active' : 'pending')}
+                                                    icon={<Zap className="w-4 h-4" />}
+                                                />
+                                                <LedgerItem 
+                                                    label="Oracle" 
+                                                    value="Syncing..." 
+                                                    status={currentStepRef.current === 'OracleVerdict' ? 'active' : 'pending'}
+                                                    icon={<TrendingUp className="w-4 h-4" />}
+                                                />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                <div className="mt-6 pt-6 border-t border-white/5 opacity-40">
+                                    <div className="font-mono text-[8px] tracking-widest text-mint text-center">
+                                        VERIFIER: MITTI-MITRA AGRI-NODE 01
+                                    </div>
+                                </div>
+                            </GlassCard>
+                        </motion.div>
+
+                        {/* RIGHT CARD: Agri-Vakeel Terminal (65%) */}
+                        <motion.div 
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="lg:col-span-8 h-full"
+                        >
+                            <GlassCard className="h-full flex flex-col border-mint/10 overflow-hidden relative shadow-[0_0_100px_rgba(32,255,189,0.1)] bg-forest/20">
+                                {/* Chat Header */}
+                                <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-10 h-10 rounded-2xl bg-mint/20 flex items-center justify-center border border-mint/20">
+                                            <Zap className="w-5 h-5 text-mint" />
                                         </div>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-
-                            {/* Thinking State */}
-                            {isThinking && (
-                                <div className="flex space-x-2 p-6 justify-start">
-                                    <div className="w-2.5 h-2.5 bg-mint/50 rounded-full animate-bounce [animation-duration:0.6s]" />
-                                    <div className="w-2.5 h-2.5 bg-mint/50 rounded-full animate-bounce [animation-duration:0.6s] [animation-delay:0.2s]" />
-                                    <div className="w-2.5 h-2.5 bg-mint/50 rounded-full animate-bounce [animation-duration:0.6s] [animation-delay:0.4s]" />
+                                        <div>
+                                            <div className="font-black text-sm uppercase tracking-tight">Agri-Vakeel AI</div>
+                                            <div className="text-[10px] text-mint flex items-center">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-mint animate-pulse mr-2" />
+                                                Live Sync Active
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
 
-                        {/* Controls Fixed at Bottom of Right Panel */}
-                        <div className="absolute bottom-0 left-0 right-0 p-8 pt-0 bg-gradient-to-t from-forest via-forest/95 to-transparent pb-12 z-30 pointer-events-none">
-                            <div className="max-w-2xl mx-auto flex items-center space-x-4 pointer-events-auto">
-                                {(currentStepRef.current === 'HealthAudit' || currentStepRef.current === 'DepartureAudit') && !cameraActive ? (
-                                    <button 
-                                        onClick={startCameraStep}
-                                        className="flex-1 h-20 bg-mint text-forest rounded-[2rem] flex items-center justify-center space-x-3 font-black uppercase tracking-[0.2em] shadow-[0_0_50px_rgba(32,255,189,0.4)] hover:scale-[1.02] active:scale-95 transition-all"
-                                    >
-                                        <Camera className="w-6 h-6" />
-                                        <span>INITIATE VISUAL AUDIT</span>
-                                    </button>
-                                ) : (
-                                    <>
-                                        <button 
-                                            onClick={isListening ? () => recognitionRef.current?.stop() : startListening}
-                                            className={`w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 shadow-2xl ${
-                                                isListening 
-                                                ? 'bg-red-500 scale-110 shadow-[0_0_60px_rgba(239,68,68,0.5)]' 
-                                                : 'bg-mint text-forest hover:scale-105 active:scale-95'
-                                            }`}
-                                        >
-                                            {isListening ? <MicOff className="w-10 h-10 animate-pulse" /> : <Mic className="w-10 h-10" />}
-                                        </button>
-                                        <form 
-                                            onSubmit={(e) => {
-                                                e.preventDefault();
-                                                const input = e.currentTarget.elements.namedItem('text-input') as HTMLInputElement;
-                                                if (input.value) {
-                                                    setMessages(prev => [...prev, { role: 'user', text: input.value }]);
-                                                    processAIExtraction(input.value);
-                                                    input.value = "";
-                                                }
-                                            }}
-                                            className="flex-1 h-20 bg-white/5 border border-white/10 rounded-[2rem] flex items-center px-8 backdrop-blur-2xl group focus-within:border-mint transition-all duration-500 shadow-2xl"
-                                        >
-                                            <input 
-                                                name="text-input"
-                                                type="text"
-                                                autoComplete="off"
-                                                placeholder={isListening ? "System Listening..." : "Communicate with Agri-Vakeel..."}
-                                                className="bg-transparent border-none outline-none text-white text-lg w-full placeholder:text-gray-500 font-medium"
-                                            />
-                                            <button type="submit" className="text-mint ml-4 transform hover:scale-125 transition-all">
-                                                <Send className="w-7 h-7" />
+                                {/* Messages Area */}
+                                <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pb-32">
+                                    <AnimatePresence initial={false}>
+                                        {messages.map((msg, idx) => (
+                                            <motion.div
+                                                key={idx}
+                                                initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}
+                                            >
+                                                <div className={`max-w-[85%] p-5 rounded-3xl ${
+                                                    msg.role === 'ai' 
+                                                        ? 'bg-white/5 border border-white/10 text-mint italic text-lg leading-relaxed rounded-bl-none shadow-xl' 
+                                                        : 'bg-mint text-forest font-bold text-base rounded-br-none shadow-lg'
+                                                }`}>
+                                                    {msg.role === 'ai' ? `"${msg.text}"` : msg.text}
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
+
+                                    {isThinking && (
+                                        <div className="flex space-x-2 p-4 justify-start">
+                                            <div className="w-2 h-2 bg-mint/50 rounded-full animate-bounce" />
+                                            <div className="w-2 h-2 bg-mint/50 rounded-full animate-bounce [animation-delay:0.2s]" />
+                                            <div className="w-2 h-2 bg-mint/50 rounded-full animate-bounce [animation-delay:0.4s]" />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Input Controls */}
+                                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-forest via-forest/90 to-transparent">
+                                    <div className="max-w-2xl mx-auto flex items-center space-x-4">
+                                        {(currentStepRef.current === 'HealthAudit' || currentStepRef.current === 'DepartureAudit') && !cameraActive ? (
+                                            <button 
+                                                onClick={startCameraStep}
+                                                className="flex-1 h-16 bg-mint text-forest rounded-2xl flex items-center justify-center space-x-3 font-black uppercase tracking-[0.1em] shadow-[0_0_30px_rgba(32,255,189,0.3)] hover:scale-[1.02] active:scale-95 transition-all"
+                                            >
+                                                <Camera className="w-5 h-5" />
+                                                <span>Start Visual Audit</span>
                                             </button>
-                                        </form>
-                                    </>
-                                )}
-                            </div>
-                        </div>
+                                        ) : (
+                                            <>
+                                                <button 
+                                                    onClick={isListening ? () => recognitionRef.current?.stop() : startListening}
+                                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl ${
+                                                        isListening 
+                                                        ? 'bg-red-500 scale-110 shadow-[0_0_40px_rgba(239,68,68,0.4)]' 
+                                                        : 'bg-mint text-forest hover:scale-105 active:scale-95'
+                                                    }`}
+                                                >
+                                                    {isListening ? <MicOff className="w-7 h-7 animate-pulse" /> : <Mic className="w-7 h-7" />}
+                                                </button>
+                                                <form 
+                                                    onSubmit={(e) => {
+                                                        e.preventDefault();
+                                                        const input = e.currentTarget.elements.namedItem('text-input') as HTMLInputElement;
+                                                        if (input.value) {
+                                                            setMessages(prev => [...prev, { role: 'user', text: input.value }]);
+                                                            processAIExtraction(input.value);
+                                                            input.value = "";
+                                                        }
+                                                    }}
+                                                    className="flex-1 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center px-6 focus-within:border-mint/50 transition-all shadow-xl backdrop-blur-3xl group"
+                                                >
+                                                    <input 
+                                                        name="text-input"
+                                                        type="text"
+                                                        autoComplete="off"
+                                                        placeholder={isListening ? "System listening..." : "Type your message..."}
+                                                        className="bg-transparent border-none outline-none text-white text-md w-full placeholder:text-gray-500"
+                                                    />
+                                                    <button type="submit" className="text-mint ml-4 hover:scale-110 transition-transform">
+                                                        <Send className="w-6 h-6" />
+                                                    </button>
+                                                </form>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </GlassCard>
+                        </motion.div>
                     </div>
 
-                    {/* Camera Overlay (Global Full-Screen) */}
+                    {/* Camera Overlay */}
                     <AnimatePresence>
                         {cameraActive && (
                             <motion.div 
@@ -493,23 +529,17 @@ export default function OnboardingPage() {
                                 exit={{ opacity: 0 }}
                                 className="fixed inset-0 z-[200] bg-black flex flex-col p-6 pt-20"
                             >
-                                <div className="flex-1 relative rounded-[3rem] overflow-hidden border-4 border-mint/20 shadow-[0_0_100px_rgba(32,255,189,0.3)]">
+                                <div className="flex-1 relative rounded-3xl overflow-hidden border-2 border-mint/20">
                                     <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 pointer-events-none">
-                                        <div className="absolute top-1/2 left-0 right-0 h-1 bg-mint/40" style={{ animation: 'scan 2s linear infinite' }} />
-                                        <div className="absolute inset-20 border-2 border-mint/20 border-dashed rounded-[3rem]" />
-                                        <div className="absolute bottom-12 left-0 right-0 text-center">
-                                            <span className="bg-black/60 backdrop-blur-md px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-mint shadow-2xl border border-mint/20">
-                                                Running Quality Extraction Sync
-                                            </span>
-                                        </div>
+                                        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-mint/50 shadow-[0_0_15px_rgba(32,255,189,0.5)]" style={{ animation: 'scan 2s linear infinite' }} />
                                     </div>
                                 </div>
                                 <button 
                                     onClick={capturePhoto}
-                                    className="mt-12 w-32 h-32 bg-white rounded-full mx-auto flex items-center justify-center border-[14px] border-mint/20 active:scale-90 transition-all shadow-[0_0_120px_rgba(255,255,255,0.2)]"
+                                    className="mt-8 w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center border-8 border-mint/20 active:scale-90 transition-all shadow-2xl"
                                 >
-                                    <Camera className="w-14 h-14 text-forest" />
+                                    <Camera className="w-10 h-10 text-forest" />
                                 </button>
                             </motion.div>
                         )}
@@ -573,31 +603,46 @@ function LedgerItem({ label, value, status, icon }: { label: string, value: stri
         <motion.div 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            className={`group relative p-5 rounded-3xl border transition-all duration-500 ${
+            data-ledger-status={status}
+            className={`group relative p-5 rounded-3xl border transition-all duration-500 cursor-default ${
                 status === 'locked' 
                     ? 'bg-mint/5 border-mint/20' 
-                    : (status === 'active' ? 'bg-white/10 border-mint shadow-[0_0_30px_rgba(32,255,189,0.15)]' : 'bg-white/5 border-white/5 opacity-40')
-            }`}
+                    : (status === 'active' ? 'bg-white/10 border-mint shadow-[0_0_40px_rgba(32,255,189,0.1)]' : 'bg-white/5 border-white/5 opacity-40')
+            } hover:scale-[1.02] active:scale-[0.98]`}
         >
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-xl transition-colors ${status === 'locked' ? 'bg-mint text-forest' : 'bg-white/5 text-gray-500'}`}>
+                    <div className={`p-2.5 rounded-2xl transition-all duration-500 ${
+                        status === 'locked' 
+                            ? 'bg-mint text-forest rotate-6' 
+                            : (status === 'active' ? 'bg-mint/20 text-mint animate-pulse' : 'bg-white/5 text-gray-500')
+                    }`}>
                         {icon}
                     </div>
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${status === 'active' ? 'text-mint' : 'text-gray-500'}`}>{label}</span>
+                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${status === 'active' ? 'text-mint' : 'text-gray-500'}`}>
+                        {label}
+                    </span>
                 </div>
-                {status === 'locked' && <CheckCircle2 className="w-4 h-4 text-mint" />}
-                {status === 'active' && <div className="w-2 h-2 rounded-full bg-mint animate-pulse" />}
+                <AnimatePresence>
+                    {status === 'locked' && (
+                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                            <CheckCircle2 className="w-4 h-4 text-mint" />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                {status === 'active' && <div className="w-2 h-2 rounded-full bg-mint animate-ping" />}
             </div>
-            <div className={`text-sm font-bold truncate pl-11 ${status === 'locked' ? 'text-white' : 'text-gray-200 truncate'}`}>
+            <div className={`text-sm font-bold truncate pl-12 transition-colors duration-500 ${status === 'locked' ? 'text-white' : 'text-gray-300'}`}>
                 {value}
             </div>
 
-            {/* Active Glow */}
+            {/* Premium Active Overlay */}
             {status === 'active' && (
                 <motion.div 
                     layoutId="ledger-glow"
                     className="absolute inset-0 border-2 border-mint rounded-3xl pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
             )}
