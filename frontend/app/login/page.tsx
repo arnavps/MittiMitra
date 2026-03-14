@@ -7,16 +7,16 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Zap, 
-  Smartphone, 
-  ShieldCheck, 
-  Key, 
-  Command, 
-  ArrowRight,
-  Loader2,
-  TrendingUp,
-  AlertTriangle
+import {
+    Zap,
+    Smartphone,
+    ShieldCheck,
+    Key,
+    Command,
+    ArrowRight,
+    Loader2,
+    TrendingUp,
+    AlertTriangle
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -35,7 +35,7 @@ export default function LoginPage() {
         if (!window.recaptchaVerifier) {
             window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
                 size: 'invisible',
-                callback: () => {},
+                callback: () => { },
                 'expired-callback': () => {
                     setError('reCAPTCHA expired. Please try again.');
                 }
@@ -128,15 +128,15 @@ export default function LoginPage() {
         <div className="flex min-h-screen bg-forest overflow-hidden selection:bg-mint selection:text-forest">
             {/* --- LEFT SIDE: HERO (60%) --- */}
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-                <motion.div 
+                <motion.div
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 10, ease: "linear", repeat: Infinity, repeatType: "mirror" }}
                     className="absolute inset-0 z-0"
                 >
-                    <img 
-                        src="/bg-img.jpg" 
-                        alt="Hero" 
+                    <img
+                        src="/bg-img.jpg"
+                        alt="Hero"
                         className="w-full h-full object-cover opacity-60 grayscale-[20%]"
                     />
                 </motion.div>
@@ -145,19 +145,19 @@ export default function LoginPage() {
 
                 <div className="relative z-20 w-full p-20 flex flex-col justify-between">
                     <div>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="bg-white/10 backdrop-blur-md rounded-2xl w-16 h-16 flex items-center justify-center mb-8 border border-white/20"
                         >
                             <Command className="w-8 h-8 text-mint" />
                         </motion.div>
-                        <motion.h1 
+                        <motion.h1
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             className="text-6xl font-black text-white tracking-tighter leading-[0.9] mb-6"
                         >
-                            THE GLASS <br />
+                            THE MITTIMITRA <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint to-teal-400">PORTAL</span>
                         </motion.h1>
                         <p className="text-gray-300 text-lg max-w-md font-medium leading-relaxed opacity-80">
@@ -167,13 +167,13 @@ export default function LoginPage() {
 
                     {/* LIVE TICKERS */}
                     <div className="flex space-x-6">
-                        <TickerBox 
+                        <TickerBox
                             icon={<TrendingUp className="w-4 h-4 text-emerald-400" />}
                             label="Mandi Volatility"
                             value="Low"
                             trend="Stable"
                         />
-                        <TickerBox 
+                        <TickerBox
                             icon={<AlertTriangle className="w-4 h-4 text-yellow-400" />}
                             label="Spoilage Risk"
                             value="12%"
@@ -202,13 +202,13 @@ export default function LoginPage() {
                     </div>
 
                     {/* Glass Login Card */}
-                    <motion.div 
+                    <motion.div
                         className={`glass-panel rounded-3xl p-8 relative transition-all duration-500 overflow-hidden shadow-none bg-white/5 ${isFocused ? 'border-mint/50' : ''}`}
                     >
                         {/* Focus Glow Overlay */}
                         <AnimatePresence>
                             {isFocused && (
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
@@ -218,7 +218,7 @@ export default function LoginPage() {
                         </AnimatePresence>
 
                         {error && (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-2xl text-red-400 text-xs font-bold"
@@ -232,7 +232,7 @@ export default function LoginPage() {
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">
                                     {step === 'PHONE' ? t('phoneNumber') : t('enterOtp')}
                                 </label>
-                                
+
                                 {step === 'PHONE' ? (
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center space-x-2 text-gray-500 border-r border-white/10 pr-3 mr-3">
@@ -264,17 +264,16 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full h-14 relative rounded-2xl font-black uppercase tracking-widest text-xs transition-all overflow-hidden ${
-                                    loading 
-                                    ? 'bg-white/10 cursor-not-allowed text-gray-500' 
-                                    : 'bg-mint text-forest hover:shadow-[0_0_30px_rgba(32,255,189,0.3)] transform hover:-translate-y-0.5'
-                                }`}
+                                className={`w-full h-14 relative rounded-2xl font-black uppercase tracking-widest text-xs transition-all overflow-hidden ${loading
+                                        ? 'bg-white/10 cursor-not-allowed text-gray-500'
+                                        : 'bg-mint text-forest hover:shadow-[0_0_30px_rgba(32,255,189,0.3)] transform hover:-translate-y-0.5'
+                                    }`}
                             >
                                 <span className={loading ? 'opacity-0' : 'flex items-center justify-center space-x-2'}>
                                     <span>{step === 'PHONE' ? t('getOtp') : t('verifyLogin')}</span>
                                     <ArrowRight className="w-4 h-4 ml-1" />
                                 </span>
-                                
+
                                 {loading && (
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div className="absolute inset-x-0 bottom-0 top-0 bg-mint/20 animate-progress origin-left w-full h-full" />
@@ -298,7 +297,7 @@ export default function LoginPage() {
                     {/* Extra Links */}
                     <div className="flex flex-col space-y-4">
                         {step === 'OTP' && (
-                            <button 
+                            <button
                                 onClick={() => { setStep('PHONE'); setOtp(''); setError(''); }}
                                 className="text-xs font-bold text-gray-500 hover:text-mint transition-colors inline-flex items-center"
                             >
@@ -327,7 +326,7 @@ export default function LoginPage() {
 
 function TickerBox({ icon, label, value, trend }: { icon: any, label: string, value: string, trend: string }) {
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="glass-panel p-4 rounded-2xl flex items-center space-x-4 min-w-[180px] shadow-none bg-white/5"
