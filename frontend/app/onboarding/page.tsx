@@ -294,13 +294,21 @@ export default function OnboardingPage() {
                             <Zap className="w-12 h-12 text-mint mx-auto mb-6 animate-pulse" />
                             <h2 className="text-2xl font-black mb-2 tracking-tight">Select Language</h2>
                             <div className="grid grid-cols-2 gap-4 mt-8">
-                                {['English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Punjabi'].map(l => (
+                                {[
+                                    { code: 'en', name: 'English' },
+                                    { code: 'hi', name: 'Hindi' },
+                                    { code: 'mr', name: 'Marathi' },
+                                    { code: 'ta', name: 'Tamil' },
+                                    { code: 'te', name: 'Telugu' },
+                                    { code: 'gu', name: 'Gujarati' },
+                                    { code: 'pa', name: 'Punjabi' }
+                                ].map(l => (
                                     <button 
-                                        key={l}
-                                        onClick={() => handleLanguageSelect(l, l)}
+                                        key={l.code}
+                                        onClick={() => handleLanguageSelect(l.code, l.name)}
                                         className="p-4 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-mint/20 hover:border-mint transition-all"
                                     >
-                                        {l}
+                                        {l.name}
                                     </button>
                                 ))}
                             </div>

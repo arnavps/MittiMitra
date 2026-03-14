@@ -48,7 +48,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     };
 
     const t = (key: keyof Translations): string => {
-        return dictionaries[language][key] || dictionaries.en[key] || key;
+        const dict = (dictionaries[language] || dictionaries.en) as Translations;
+        return dict[key] || dictionaries.en[key] || key;
     };
 
     const n = (value: number | string): string => {
@@ -76,10 +77,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         };
 
         try {
-            return new Intl.NumberFormat(locales[language], {
+            const locale = locales[language] || 'en-IN';
+            const numberingSystem = numberingSystems[language] || 'latn';
+            return new Intl.NumberFormat(locale, {
                 useGrouping: false, // Prevents commas, making it a pure digit replacement if needed
                 maximumFractionDigits: 2,
-                numberingSystem: numberingSystems[language]
+                numberingSystem: numberingSystem
             }).format(num);
         } catch (e) {
             return String(value); // Fallback
