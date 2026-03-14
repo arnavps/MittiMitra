@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import { Navbar } from "@/components/Navbar";
 
 export default function LandingPage() {
   const [isClient, setIsClient] = useState(false);
@@ -16,6 +16,9 @@ export default function LandingPage() {
 
   return (
     <div className="bg-forest text-white selection:bg-mint selection:text-forest relative">
+      {/* Navbar */}
+      <Navbar />
+
       {/* Absolute Background Image - RAW */}
       <img
         src="/bg-img.jpg"
@@ -31,34 +34,8 @@ export default function LandingPage() {
 
       {/* --- INITIAL VIEWPORT (100vh) --- */}
       <div className="relative min-h-screen flex flex-col justify-between">
-        {/* Navigation Layer */}
-        <nav className="relative z-50 w-full flex items-center justify-between px-6 py-4 md:px-12 lg:px-24 mx-auto max-w-7xl">
-          <div className="flex items-center space-x-3">
-            <div className="relative w-10 h-10 overflow-hidden rounded-lg shadow-[0_0_15px_rgba(32,255,189,0.2)] border border-white/10">
-              <Image
-                src="/logo.jpeg"
-                alt="MittiMitra Logo"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <span className="text-2xl font-black tracking-tighter"><span className="text-mint">Mitti</span>Mitra</span>
-          </div>
-          <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
-            <Link href="#features" className="hover:text-mint transition-colors">{t('features')}</Link>
-            <Link href="#how-it-works" className="hover:text-mint transition-colors">{t('howItWorks')}</Link>
-            <Link href="#impact" className="hover:text-mint transition-colors">{t('impact')}</Link>
-          </div>
-          <div className="flex items-center space-x-4">
-            <LanguageSwitcher direction="down" />
-            <Link
-              href="/login"
-              className="px-5 py-2.5 rounded-full bg-white/5 border border-glass-border hover:bg-white/10 hover:border-mint/50 transition-all font-semibold backdrop-blur-md"
-            >
-              {t('farmerLogin')}
-            </Link>
-          </div>
-        </nav>
+        {/* Navigation Layer - Spacer for Navbar */}
+        <div className="h-4"></div>
 
         {/* Hero Section */}
         <main className="relative z-10 flex-grow flex flex-col items-center justify-center text-center px-4 mx-auto w-full max-w-5xl">
@@ -101,7 +78,7 @@ export default function LandingPage() {
       </div>
 
       {/* Feature Bento Grid (BELOW THE FOLD) */}
-      <section className="relative z-10 px-6 py-24 bg-black/40 border-t border-glass-border">
+      <section className="relative z-10 px-6 py-24 bg-black/40 border-t border-glass-border" id="features">
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-5xl font-bold mb-4 whitespace-pre-line">{t('bentoTitle')}</h2>

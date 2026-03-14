@@ -4,6 +4,12 @@ export const en = {
     howItWorks: "How it Works",
     impact: "Impact",
     farmerLogin: "Farmer Login",
+    home: "Home",
+    about: "About",
+    solutions: "Solutions",
+    blog: "Blog",
+    contactUs: "Contact Us",
+    getStarted: "Get Started",
 
     // Hero Section
     heroBadge: "The 72-Hour Temporal Arbitrage Engine",
