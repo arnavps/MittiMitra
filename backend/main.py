@@ -58,6 +58,7 @@ class HarvestRequest(BaseModel):
     storage_type: str = "Open Field"
     transport_type: str = "Open Trolley"
     disease_severity: float = 0.0 # Phase 9
+    is_harvested: bool = False
 
 @app.post("/api/shadow-price")
 def get_shadow_price(data: dict):
@@ -88,7 +89,9 @@ async def get_harvest_recommendation(data: HarvestRequest):
         # 1.5 Harvest Oracle Integration (New)
         oracle_window = None
         oracle_verdict = None
-        if data.planting_date:
+        
+        # Skip maturity logic if already harvested
+        if data.planting_date and not data.is_harvested:
             from engine.oracle import calculate_harvest_window
             from logic.harvestVerdict import calculate_harvest_verdict
             
@@ -227,7 +230,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
         
         # 4.5 UNIFIED OVERRIDE: Maturity Protection
         # If crop is too young (<85%), force WAIT unless Oracle says SELL (Strategic Exit)
-        if oracle_window and oracle_window["current_maturity_pct"] < 85:
+        if not data.is_harvested and oracle_window and oracle_window["current_maturity_pct"] < 85:
             if oracle_verdict and oracle_verdict["verdict"] != "SELL":
                  status = "RED" # Force WAIT for growth
                  active_shock = active_shock or {

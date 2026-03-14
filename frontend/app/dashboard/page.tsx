@@ -29,6 +29,7 @@ export default function DashboardPage() {
     const [userCrop, setUserCrop] = useState('');
     const [yieldEst, setYieldEst] = useState<number | null>(null);
     const [plantingDate, setPlantingDate] = useState('');
+    const [isHarvested, setIsHarvested] = useState(false);
     const [profileLoaded, setProfileLoaded] = useState(false);
     const [oracleData, setOracleData] = useState<any>(null);
     const [clusterData, setClusterData] = useState<any>(null);
@@ -57,6 +58,9 @@ export default function DashboardPage() {
                 setYieldEst(data.yield_quintals);
             } else {
                 setYieldEst(50);
+            }
+            if (data?.harvest_status !== undefined) {
+                setIsHarvested(data.harvest_status);
             }
             if (data?.latitude && data?.longitude) {
                 setProfileLocation({ lat: data.latitude, lng: data.longitude });
@@ -159,7 +163,8 @@ export default function DashboardPage() {
                 yield_est_quintals: yieldEst,
                 base_spoilage_rate: 0.05,
                 language: language,
-                planting_date: plantingDate
+                planting_date: plantingDate,
+                is_harvested: isHarvested
             };
 
             const backendUrl = `/api/recommendation`;

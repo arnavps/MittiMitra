@@ -183,6 +183,8 @@ export default function OnboardingPage() {
         } else if (currentStepRef.current === 'YieldVolume') {
             if (data.yield_quintals) {
                 setYieldAmount(data.yield_quintals);
+                // Trigger GPS request before proceeding to HarvestStatus
+                requestLocation();
                 setCurrentStep('HarvestStatus');
             }
         } else if (currentStepRef.current === 'HarvestStatus') {
@@ -220,10 +222,40 @@ export default function OnboardingPage() {
 
         speakResponse(data.ai_reply, langStr, () => {
             const nextStep = currentStepRef.current;
-            if (nextStep !== 'HealthAudit' && nextStep !== 'Success') {
+            if (nextStep === 'Success') {
+                saveOnboardingData();
+            } else if (nextStep !== 'HealthAudit') {
                 startListening();
             }
         });
+    };
+
+    const saveOnboardingData = async () => {
+        try {
+            const phone = auth.currentUser?.phoneNumber || localStorage.getItem('demo_phone') || "9999999999";
+            
+            // Upsert profile data
+            const { error } = await supabase
+                .from('profiles')
+                .upsert({
+                    phone,
+                    name: 'Farmer',
+                    crop,
+                    yield_quintals: parseFloat(yieldAmount) || 0,
+                    harvest_status: harvestStatus === 'Already Harvested',
+                    latitude: location?.latitude || 18.5204,
+                    longitude: location?.longitude || 73.8567,
+                    storage_type: storageType || 'Open Field',
+                    transport_type: transportType || 'Open Trolley',
+                    last_onboarding_step: 'Success',
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'phone' });
+
+            if (error) throw error;
+            console.log("Onboarding data saved successfully");
+        } catch (err) {
+            console.error("Failed to save onboarding data", err);
+        }
     };
 
     const startCameraStep = async () => {
