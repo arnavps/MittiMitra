@@ -684,12 +684,17 @@ export default function OnboardingPage() {
                             </div>
 
                             <button 
-                                onClick={() => router.push('/dashboard')}
-                                className="w-full h-20 bg-mint text-forest rounded-[2rem] flex items-center justify-center space-x-4 font-black uppercase tracking-[0.2em] shadow-[0_0_60px_rgba(32,255,189,0.4)] hover:scale-[1.03] active:scale-95 transition-all text-sm"
+                                onClick={async () => {
+                                    setIsThinking(true); // Re-use thinking state for loading
+                                    await saveOnboardingData();
+                                    router.push('/dashboard');
+                                }}
+                                disabled={isThinking}
+                                className="w-full h-20 bg-mint text-forest rounded-[2rem] flex items-center justify-center space-x-4 font-black uppercase tracking-[0.2em] shadow-[0_0_60px_rgba(32,255,189,0.4)] hover:scale-[1.03] active:scale-95 transition-all text-sm disabled:opacity-70 disabled:hover:scale-100"
                              >
-                                <Zap className="w-5 h-5" />
-                                <span>Enter Dashboard</span>
-                                <ChevronRight className="w-6 h-6" />
+                                <Zap className={`w-5 h-5 ${isThinking ? 'animate-pulse' : ''}`} />
+                                <span>{isThinking ? 'Syncing...' : 'Enter Dashboard'}</span>
+                                {!isThinking && <ChevronRight className="w-6 h-6" />}
                             </button>
                          </motion.div>
                     </motion.div>
