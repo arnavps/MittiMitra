@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/glass-card';
 import { VoiceAssistant } from '@/components/voice-assistant';
 import { useGPS } from '@/hooks/useGPS';
 import { useOfflineCache } from '@/hooks/useOfflineCache';
+import { fetchProfile } from '@/services/user';
 
 export default function AgriVakeelPage() {
     const { t, language } = useLanguage();
@@ -17,13 +18,22 @@ export default function AgriVakeelPage() {
     const { cachedData: dashboardCachedData } = useOfflineCache('dashboard_recommendation');
 
 
+    const [isHarvested, setIsHarvested] = useState(false);
+
     const fetchRecommendation = async (coords: { latitude: number, longitude: number }) => {
         try {
+            // Fetch profile first to get harvest status if not already known
+            const profile = await fetchProfile();
+            if (profile?.harvest_status !== undefined) {
+                setIsHarvested(profile.harvest_status);
+            }
+
             const payload = {
-                crop: "Tomato",
+                crop: profile?.crop || "Tomato",
                 location: { lat: coords.latitude, lng: coords.longitude },
-                yield_est_quintals: 50.0,
-                base_spoilage_rate: 0.05
+                yield_est_quintals: profile?.yield_quintals || 50.0,
+                base_spoilage_rate: 0.05,
+                is_harvested: profile?.harvest_status || false
             };
             // Use the Next.js API proxy to avoid Mixed Content on mobile HTTPS
             const backendUrl = `/api/recommendation`;
@@ -103,34 +113,55 @@ export default function AgriVakeelPage() {
                 <div className="md:col-span-1 space-y-4">
                     <h2 className="text-white font-bold mb-2">{t('suggestions')}</h2>
                     <div className="grid grid-cols-1 gap-4 w-full">
-                        <button
-                            onClick={() => handleSuggestionClick(t('suggestion1Query'))}
-                            className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
-                        >
-                            <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('marketInsight')}</p>
-                            <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"{t('suggestion1Query')}"</p>
-                        </button>
-                        <button
-                            onClick={() => handleSuggestionClick(t('suggestion2Query'))}
-                            className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
-                        >
-                            <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('strategy')}</p>
-                            <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"{t('suggestion2Query')}"</p>
-                        </button>
-                        <button
-                            onClick={() => handleSuggestionClick(t('suggestion3Query'))}
-                            className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
-                        >
-                            <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('weatherRisk')}</p>
-                            <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"{t('suggestion3Query')}"</p>
-                        </button>
-                        <button
-                            onClick={() => handleSuggestionClick(t('suggestion4Query'))}
-                            className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
-                        >
-                            <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('arbitrage')}</p>
-                            <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"{t('suggestion4Query')}"</p>
-                        </button>
+                        {!isHarvested ? (
+                            <>
+                                <button
+                                    onClick={() => handleSuggestionClick("How is my soil health today?")}
+                                    className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
+                                >
+                                    <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('soilHealth')}</p>
+                                    <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"How is my soil health today?"</p>
+                                </button>
+                                <button
+                                    onClick={() => handleSuggestionClick("When should I trigger the next irrigation cycle?")}
+                                    className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
+                                >
+                                    <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('irrigationPlanner')}</p>
+                                    <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"When should I trigger the next irrigation cycle?"</p>
+                                </button>
+                                <button
+                                    onClick={() => handleSuggestionClick("Are there any pest alerts nearby?")}
+                                    className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
+                                >
+                                    <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('pestWarning')}</p>
+                                    <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"Are there any pest alerts nearby?"</p>
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={() => handleSuggestionClick(t('suggestion1Query'))}
+                                    className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
+                                >
+                                    <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('marketInsight')}</p>
+                                    <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"{t('suggestion1Query')}"</p>
+                                </button>
+                                <button
+                                    onClick={() => handleSuggestionClick(t('suggestion2Query'))}
+                                    className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
+                                >
+                                    <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('strategy')}</p>
+                                    <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"{t('suggestion2Query')}"</p>
+                                </button>
+                                <button
+                                    onClick={() => handleSuggestionClick(t('suggestion4Query'))}
+                                    className="p-4 rounded-2xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-colors w-full group"
+                                >
+                                    <p className="text-xs text-mint font-bold uppercase mb-1 group-hover:text-white transition-colors">{t('arbitrage')}</p>
+                                    <p className="text-sm text-gray-300 italic group-hover:text-gray-100 transition-colors">"{t('suggestion4Query')}"</p>
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
 

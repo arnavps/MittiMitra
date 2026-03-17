@@ -379,7 +379,33 @@ export default function DashboardPage() {
                 <div className="lg:col-span-5 space-y-6 flex flex-col group">
                     {/* Market Orbit / Growth Summary Duality */}
                     {!isHarvested ? (
-                        <div className="order-1 lg:order-1">
+                        <div className="order-1 lg:order-1 space-y-6">
+                            <GlassCard className="p-6 bg-mint/5 border-mint/20">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">{t('fieldIntelligenceSuite') || "Field Intelligence Suite"}</h3>
+                                    <div className="flex -space-x-2">
+                                        <div className="w-6 h-6 rounded-full bg-mint/40 border border-forest flex items-center justify-center text-[8px] font-bold text-white">S</div>
+                                        <div className="w-6 h-6 rounded-full bg-blue-500/40 border border-forest flex items-center justify-center text-[8px] font-bold text-white">W</div>
+                                        <div className="w-6 h-6 rounded-full bg-amber-500/40 border border-forest flex items-center justify-center text-[8px] font-bold text-white">P</div>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mb-4">
+                                    <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Soil Health</p>
+                                        <p className="text-xs font-bold text-mint">Optimal (28%)</p>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Pest Risk</p>
+                                        <p className="text-xs font-bold text-red-500">High (Nearby)</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => window.location.href = '/dashboard/soil-health'}
+                                    className="w-full py-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                                >
+                                    Explore Field Suite &rarr;
+                                </button>
+                            </GlassCard>
                             <VakeelBrief brief={data?.vakeel_brief} />
                         </div>
                     ) : (
