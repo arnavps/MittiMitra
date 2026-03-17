@@ -56,10 +56,13 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     routing = context.get("routing_data", {})
     
     # Phase 7: Harvest Oracle
-    oracle = context.get("oracle", {})
-    maturity_pct = oracle.get("maturity", {}).get("current_maturity_pct", "Unknown")
-    oracle_verdict = oracle.get("verdict", {}).get("verdict", "Unknown")
-    maturity_advice = oracle.get("maturity", {}).get("advice", "")
+    oracle = context.get("oracle") or {}
+    maturity = oracle.get("maturity") or {}
+    verdict = oracle.get("verdict") or {}
+    
+    maturity_pct = maturity.get("current_maturity_pct", "Unknown")
+    oracle_verdict = verdict.get("verdict", "Unknown")
+    maturity_advice = maturity.get("advice", "")
 
     # Phase 3: Logistics Orchestration
     logistics_rec = context.get("logistics_recommendations", [])
