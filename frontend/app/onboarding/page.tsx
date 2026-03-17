@@ -206,12 +206,15 @@ export default function OnboardingPage() {
                 setStorageType(data.storage_type);
             }
             if (data.health_issue === true) {
+                setHealthStatus("Issue Reported");
                 setCurrentStep('HealthAudit');
             } else if (data.health_issue === false) {
+                setHealthStatus("Healthy");
                 setCurrentStep('TransitConfig');
             }
         } else if (currentStepRef.current === 'HealthAudit') {
             if (data.health_issue === false || (data.ai_reply && (data.ai_reply.toLowerCase().includes("transport") || data.ai_reply.toLowerCase().includes("transit")))) {
+                setHealthStatus("Visual Data Captured");
                 setCurrentStep('TransitConfig');
             }
         } else if (currentStepRef.current === 'MaturityCheck') {
@@ -447,6 +450,12 @@ export default function OnboardingPage() {
                                                     icon={<MapPin className="w-4 h-4" />}
                                                 />
                                                 <LedgerItem 
+                                                    label="Health Status" 
+                                                    value={healthStatus || "---"} 
+                                                    status={healthStatus ? 'locked' : (currentStepRef.current === 'HealthAudit' ? 'active' : 'pending')}
+                                                    icon={<AlertTriangle className="w-4 h-4" />}
+                                                />
+                                                <LedgerItem 
                                                     label="Transit" 
                                                     value={transportType || "---"} 
                                                     status={transportType ? 'locked' : (currentStepRef.current === 'TransitConfig' ? 'active' : 'pending')}
@@ -512,10 +521,10 @@ export default function OnboardingPage() {
                                     </div>
                                 </div>
 
-                                {/* Messages Area - Sliding Window (Last 2 Messages) */}
+                                {/* Messages Area - Full History */}
                                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 custom-scrollbar pb-10">
                                     <AnimatePresence initial={false} mode="popLayout">
-                                        {messages.slice(-2).map((msg) => (
+                                        {messages.map((msg) => (
                                             <motion.div
                                                 key={`msg-${msg.id}`}
                                                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
