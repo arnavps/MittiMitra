@@ -521,10 +521,10 @@ export default function OnboardingPage() {
                                     </div>
                                 </div>
 
-                                {/* Messages Area - Full History */}
+                                {/* Messages Area - Sliding Window (Last 2 Messages) */}
                                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 custom-scrollbar pb-10">
                                     <AnimatePresence initial={false} mode="popLayout">
-                                        {messages.map((msg) => (
+                                        {messages.slice(-2).map((msg) => (
                                             <motion.div
                                                 key={`msg-${msg.id}`}
                                                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
