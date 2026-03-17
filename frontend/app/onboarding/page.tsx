@@ -105,8 +105,9 @@ export default function OnboardingPage() {
                 recognitionRef.current.onresult = (event: any) => {
                     const text = event.results[event.results.length - 1][0].transcript;
                     if (text && text.trim()) {
-                        setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: text.trim() }]);
-                        processAIExtraction(text.trim());
+                        const userText = text.trim();
+                        setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: userText }]);
+                        processAIExtraction(userText);
                     }
                 };
 
@@ -189,9 +190,9 @@ export default function OnboardingPage() {
                 setCurrentStep('LocationPermission');
             }
         } else if (currentStepRef.current === 'LocationPermission') {
-            // This step is explicitly for triggering location permission
+            // Initiate location request
             requestLocation();
-            setCurrentStep('HarvestStatus');
+            // Don't auto-advance yet - wait for useEffect below to see 'location'
         } else if (currentStepRef.current === 'HarvestStatus') {
             if (data.harvest_status === 'already_harvested') {
                 setHarvestStatus('Already Harvested');
@@ -234,6 +235,26 @@ export default function OnboardingPage() {
             }
         });
     };
+
+    // Watch for location to advance from LocationPermission
+    useEffect(() => {
+        if (location && currentStepRef.current === 'LocationPermission') {
+            const nextMsg = langStr === "Hindi"
+                ? "स्थान प्राप्त हुआ। क्या आपकी फसल पहले ही कट चुकी है, या आप अभी इसके पकने का इंतजार कर रहे हैं?"
+                : "Location secured. Is your crop already harvested, or are you still waiting for it to ripen?";
+            
+            setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: nextMsg }]);
+            speakResponse(nextMsg, langStr, () => startListening());
+            setCurrentStep('HarvestStatus');
+        } else if (gpsError && currentStepRef.current === 'LocationPermission') {
+            const nextMsg = langStr === "Hindi"
+                ? "स्थान प्राप्त करने में समस्या हुई, लेकिन हम आगे बढ़ सकते हैं। क्या आपकी फसल पहले ही कट चुकी है?"
+                : "Got it. We can proceed anyway. Is your crop already harvested, or are you still waiting?";
+            setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: nextMsg }]);
+            speakResponse(nextMsg, langStr, () => startListening());
+            setCurrentStep('HarvestStatus');
+        }
+    }, [location, gpsError]);
 
     const saveOnboardingData = async () => {
         try {
@@ -399,7 +420,13 @@ export default function OnboardingPage() {
                                         icon={<Zap className="w-4 h-4" />}
                                     />
                                     <LedgerItem 
-                                        label="Harvest Node" 
+                                        label="Field Location" 
+                                        value={location ? "Located ✅" : (gpsError ? "Manual 📍" : "Finding...")} 
+                                        status={location || gpsError ? 'locked' : (currentStepRef.current === 'LocationPermission' ? 'active' : 'pending')}
+                                        icon={<MapPin className="w-4 h-4" />}
+                                    />
+                                    <LedgerItem 
+                                        label="Harvest Status" 
                                         value={harvestStatus || "Detecting..."} 
                                         status={harvestStatus ? 'locked' : (currentStepRef.current === 'HarvestStatus' ? 'active' : 'pending')}
                                         icon={<TrendingUp className="w-4 h-4" />}
@@ -497,10 +524,10 @@ export default function OnboardingPage() {
                                                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
                                                 className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}
                                             >
-                                                <div className={`max-w-[85%] p-6 rounded-3xl ${
+                                                <div className={`max-w-[85%] p-6 rounded-3xl shadow-xl ${
                                                     msg.role === 'ai' 
-                                                        ? 'bg-white/[0.07] border border-white/10 text-white italic text-lg leading-relaxed rounded-bl-none shadow-2xl backdrop-blur-md' 
-                                                        : 'bg-mint text-black font-bold text-base rounded-br-none shadow-[0_10px_30px_rgba(32,255,189,0.3)]'
+                                                        ? 'bg-white/[0.07] border border-white/10 text-white italic text-lg leading-relaxed rounded-bl-none backdrop-blur-md' 
+                                                        : 'bg-mint text-forest font-black text-lg rounded-br-none shadow-[0_10px_30px_rgba(32,255,189,0.4)]'
                                                 }`}>
                                                     {msg.role === 'ai' ? (
                                                         <span className="text-mint">"{msg.text}"</span>
