@@ -57,12 +57,17 @@ export default function OnboardingPage() {
     const [langStr, setLangStr] = useState("English");
     const [consentGranted, setConsentGranted] = useState<boolean | null>(null);
     const [crop, setCrop] = useState("");
+    const cropRef = useRef("");
     const [yieldAmount, setYieldAmount] = useState("");
+    const yieldAmountRef = useRef("");
     const [harvestStatus, setHarvestStatus] = useState<'Already Harvested' | 'Not Yet Harvested' | null>(null);
+    const harvestStatusRef = useRef<'Already Harvested' | 'Not Yet Harvested' | null>(null);
     const [storageType, setStorageType] = useState("");
+    const storageTypeRef = useRef("");
     const [healthStatus, setHealthStatus] = useState("");
     const [sowingDate, setSowingDate] = useState("");
     const [transportType, setTransportType] = useState("");
+    const transportTypeRef = useRef("");
     const [cameraActive, setCameraActive] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -182,11 +187,13 @@ export default function OnboardingPage() {
         } else if (currentStepRef.current === 'CropName') {
             if (data.crop) {
                 setCrop(data.crop);
+                cropRef.current = data.crop;
                 setCurrentStep('YieldVolume');
             }
         } else if (currentStepRef.current === 'YieldVolume') {
             if (data.yield_quintals) {
                 setYieldAmount(data.yield_quintals);
+                yieldAmountRef.current = data.yield_quintals;
                 setCurrentStep('LocationPermission');
             }
         } else if (currentStepRef.current === 'LocationPermission') {
@@ -196,14 +203,17 @@ export default function OnboardingPage() {
         } else if (currentStepRef.current === 'HarvestStatus') {
             if (data.harvest_status === 'already_harvested') {
                 setHarvestStatus('Already Harvested');
+                harvestStatusRef.current = 'Already Harvested';
                 setCurrentStep('StorageAudit');
             } else if (data.harvest_status === 'not_yet_harvested') {
                 setHarvestStatus('Not Yet Harvested');
+                harvestStatusRef.current = 'Not Yet Harvested';
                 setCurrentStep('MaturityCheck');
             }
         } else if (currentStepRef.current === 'StorageAudit') {
             if (data.storage_type) {
                 setStorageType(data.storage_type);
+                storageTypeRef.current = data.storage_type;
             }
             if (data.health_issue === true) {
                 setHealthStatus("Issue Reported");
@@ -225,6 +235,7 @@ export default function OnboardingPage() {
         } else if (currentStepRef.current === 'TransitConfig') {
             if (data.transport_type) {
                 setTransportType(data.transport_type);
+                transportTypeRef.current = data.transport_type;
                 setCurrentStep('Success'); // Simplified flow: End of onboarding
             }
         }
@@ -263,19 +274,18 @@ export default function OnboardingPage() {
         try {
             const phone = auth.currentUser?.phoneNumber || localStorage.getItem('demo_phone') || "9999999999";
             
-            // Upsert profile data
             const { error } = await supabase
                 .from('profiles')
                 .upsert({
                     phone,
                     name: 'Farmer',
-                    crop,
-                    yield_quintals: parseFloat(yieldAmount) || 0,
-                    harvest_status: harvestStatus === 'Already Harvested',
+                    crop: cropRef.current || crop,
+                    yield_quintals: parseFloat(yieldAmountRef.current || yieldAmount) || 0,
+                    harvest_status: harvestStatusRef.current === 'Already Harvested' || harvestStatus === 'Already Harvested',
                     latitude: location?.latitude || 18.5204,
                     longitude: location?.longitude || 73.8567,
-                    storage_type: storageType || 'Open Field',
-                    transport_type: transportType || 'Open Trolley',
+                    storage_type: storageTypeRef.current || storageType || 'Open Field',
+                    transport_type: transportTypeRef.current || transportType || 'Open Trolley',
                     last_onboarding_step: 'Success',
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'phone' });
