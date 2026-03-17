@@ -191,8 +191,12 @@ def generate_vakeel_brief(context: Dict[str, Any], language: str = "Regional") -
     total_profit = context.get("total_net_profit", 0)
     best_mandi = context.get("best_mandi", "Unknown")
     
+    oracle_data = context.get('oracle') or {}
+    maturity_data = oracle_data.get('maturity') or {}
+    maturity_pct = maturity_data.get('current_maturity_pct', 'harvested')
+
     prompt = f"""You are MittiMitra AI. 
-    Task: Summarize why the farmer should {status} based on {best_mandi}, profit of ₹{total_profit}, and maturity of {context.get('oracle', {}).get('maturity', {}).get('current_maturity_pct', 'unknown')}% ripeness.
+    Task: Summarize why the farmer should {status} based on {best_mandi}, profit of ₹{total_profit}, and maturity of {maturity_pct}% ripeness.
     Constraint: ONE SENTENCE ONLY. Use the language: {language}.
     If {language} is not English, use the native script and address politely.
     Focus on the main driver (Price dip? High spoilage? Immature crop? Shock Alert?).

@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "C:\Users\Arnav Shirwadkar\Desktop\Mains\MittiMitra\backend\main.py", line 321, in get_harvest_recommendation
+    recommendation["vakeel_brief"] = generate_vakeel_brief(recommendation, data.language)
+                                     ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Arnav Shirwadkar\Desktop\Mains\MittiMitra\backend\api\chat.py", line 195, in generate_vakeel_brief
+    Task: Summarize why the farmer should {status} based on {best_mandi}, profit of ₹{total_profit}, and maturity of {context.get('oracle', {}).get('maturity', {}).get('current_maturity_pct', 'unknown')}% ripeness.
+                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Arnav Shirwadkar\Desktop\Mains\MittiMitra\backend\test2.py", line 18, in test
+    res = await get_harvest_recommendation(req)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Arnav Shirwadkar\Desktop\Mains\MittiMitra\backend\main.py", line 328, in get_harvest_recommendation
+    raise HTTPException(status_code=500, detail=str(e))
+fastapi.exceptions.HTTPException: 500: 'NoneType' object has no attribute 'get'
