@@ -389,22 +389,34 @@ export default function DashboardPage() {
                                         <div className="w-6 h-6 rounded-full bg-amber-500/40 border border-forest flex items-center justify-center text-[8px] font-bold text-white">P</div>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3 mb-4">
-                                    <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                                <div className="grid grid-cols-3 gap-3 mb-4">
+                                    <div className="p-3 rounded-xl bg-black/40 border border-white/5 cursor-pointer hover:border-mint/50 transition-all" onClick={() => window.location.href = '/dashboard/soil-health'}>
                                         <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Soil Health</p>
                                         <p className="text-xs font-bold text-mint">Optimal (28%)</p>
                                     </div>
-                                    <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                                    <div className="p-3 rounded-xl bg-black/40 border border-white/5 cursor-pointer hover:border-mint/50 transition-all" onClick={() => window.location.href = '/dashboard/pest-warning'}>
                                         <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Pest Risk</p>
-                                        <p className="text-xs font-bold text-red-500">High (Nearby)</p>
+                                        <p className="text-xs font-bold text-red-500">High</p>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-black/40 border border-white/5 cursor-pointer hover:border-mint/50 transition-all" onClick={() => window.location.href = '/dashboard/irrigation-planner'}>
+                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Irrigation</p>
+                                        <p className="text-xs font-bold text-blue-400">Scheduled</p>
                                     </div>
                                 </div>
-                                <button 
-                                    onClick={() => window.location.href = '/dashboard/soil-health'}
-                                    className="w-full py-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-                                >
-                                    Explore Field Suite &rarr;
-                                </button>
+                                <div className="flex space-x-2">
+                                    <button 
+                                        onClick={() => window.location.href = '/dashboard/soil-health'}
+                                        className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                                    >
+                                        Field Suite &rarr;
+                                    </button>
+                                    <button 
+                                        onClick={() => window.location.href = '/dashboard/irrigation-planner'}
+                                        className="flex-1 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                                    >
+                                        Water Plan &rarr;
+                                    </button>
+                                </div>
                             </GlassCard>
                             <VakeelBrief brief={data?.vakeel_brief} />
                         </div>
