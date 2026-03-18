@@ -568,53 +568,53 @@ export default function OnboardingPage() {
                                 </div>
 
                                 {/* Message Input Bar - Ultra High Visibility */}
-                                <div className="p-6 lg:p-8 bg-forest/90 border-t-2 border-mint/30 backdrop-blur-3xl shadow-[0_-20px_50px_rgba(32,255,189,0.1)]">
-                                    <div className="max-w-2xl mx-auto flex items-center space-x-5">
-                                        {currentStep === 'HealthAudit' && !cameraActive ? (
+                                <div className="p-6 lg:p-8 bg-forest/90 border-t-2 border-mint/30 backdrop-blur-3xl shadow-[0_-20px_50px_rgba(32,255,189,0.1)] flex flex-col space-y-4">
+                                    {currentStep === 'HealthAudit' && !cameraActive && (
+                                        <div className="w-full flex justify-center pb-2">
                                             <button 
                                                 onClick={startCameraStep}
-                                                className="flex-1 h-16 bg-mint text-forest rounded-2xl flex items-center justify-center space-x-3 font-black uppercase tracking-[0.1em] shadow-[0_0_40px_rgba(32,255,189,0.4)] hover:scale-[1.03] active:scale-95 transition-all text-sm"
+                                                className="w-full max-w-sm h-14 bg-mint text-forest rounded-2xl flex items-center justify-center space-x-3 font-black uppercase tracking-[0.1em] shadow-[0_0_40px_rgba(32,255,189,0.4)] hover:scale-[1.03] active:scale-95 transition-all text-sm"
                                             >
                                                 <Camera className="w-6 h-6" />
                                                 <span>Initialize Visual Audit</span>
                                             </button>
-                                        ) : (
-                                            <>
-                                                <button 
-                                                    onClick={isListening ? () => recognitionRef.current?.stop() : startListening}
-                                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl shrink-0 ${
-                                                        isListening 
-                                                        ? 'bg-red-500 scale-110 shadow-[0_0_50px_rgba(239,68,68,0.5)]' 
-                                                        : 'bg-mint text-forest hover:scale-110 active:scale-90 shadow-[0_10px_30px_rgba(32,255,189,0.3)]'
-                                                    }`}
-                                                >
-                                                    {isListening ? <MicOff className="w-8 h-8 animate-pulse" /> : <Mic className="w-8 h-8" />}
-                                                </button>
-                                                <form 
-                                                    onSubmit={(e) => {
-                                                        e.preventDefault();
-                                                        const input = e.currentTarget.elements.namedItem('text-input') as HTMLInputElement;
-                                                        if (input.value) {
-                                                            setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: input.value }]);
-                                                            processAIExtraction(input.value);
-                                                            input.value = "";
-                                                        }
-                                                    }}
-                                                    className="flex-1 h-16 bg-white/[0.08] border-2 border-mint/20 rounded-2xl flex items-center px-6 focus-within:border-mint/60 focus-within:bg-white/[0.12] transition-all shadow-xl group"
-                                                >
-                                                    <input 
-                                                        name="text-input"
-                                                        type="text"
-                                                        autoComplete="off"
-                                                        placeholder={isListening ? "Listening..." : "Speak via mic or type..."}
-                                                        className="bg-transparent border-none outline-none text-white text-md w-full placeholder:text-gray-400 font-bold"
-                                                    />
-                                                    <button type="submit" className="text-mint ml-4 hover:scale-125 transition-transform active:scale-90">
-                                                        <Send className="w-7 h-7" />
-                                                    </button>
-                                                </form>
-                                            </>
-                                        )}
+                                        </div>
+                                    )}
+                                    <div className="max-w-2xl mx-auto w-full flex items-center space-x-5">
+                                        <button 
+                                            onClick={isListening ? () => recognitionRef.current?.stop() : startListening}
+                                            className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl shrink-0 ${
+                                                isListening 
+                                                ? 'bg-red-500 scale-110 shadow-[0_0_50px_rgba(239,68,68,0.5)]' 
+                                                : 'bg-mint text-forest hover:scale-110 active:scale-90 shadow-[0_10px_30px_rgba(32,255,189,0.3)]'
+                                            }`}
+                                        >
+                                            {isListening ? <MicOff className="w-8 h-8 animate-pulse" /> : <Mic className="w-8 h-8" />}
+                                        </button>
+                                        <form 
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                const input = e.currentTarget.elements.namedItem('text-input') as HTMLInputElement;
+                                                const trimmedValue = input.value.trim();
+                                                if (trimmedValue) {
+                                                    setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: trimmedValue }]);
+                                                    processAIExtraction(trimmedValue);
+                                                    input.value = "";
+                                                }
+                                            }}
+                                            className="flex-1 h-16 bg-white/[0.08] border-2 border-mint/20 rounded-2xl flex items-center px-6 focus-within:border-mint/60 focus-within:bg-white/[0.12] transition-all shadow-xl group"
+                                        >
+                                            <input 
+                                                name="text-input"
+                                                type="text"
+                                                autoComplete="off"
+                                                placeholder={isListening ? "Listening..." : "Speak via mic or type..."}
+                                                className="bg-transparent border-none outline-none text-white text-md w-full placeholder:text-gray-400 font-bold"
+                                            />
+                                            <button type="submit" className="text-mint ml-4 hover:scale-125 transition-transform active:scale-90">
+                                                <Send className="w-7 h-7" />
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </GlassCard>
