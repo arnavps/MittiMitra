@@ -34,7 +34,8 @@ def calculate_quality_loss(crop_type: str, temp: float, humidity: float, hours_p
         high_temp_multiplier = 1.0 + ((temp - 30) * 0.10)
         relative_rate *= high_temp_multiplier
         
-    quality_loss_pct = base_rate * relative_rate * hours_passed
+    quality_loss_ratio = base_rate * relative_rate * hours_passed
+    quality_loss_pct = quality_loss_ratio * 100.0
     
-    # Cap loss at 1.0 (100%)
-    return min(1.0, quality_loss_pct)
+    # Cap loss at 100.0 (100%)
+    return min(100.0, quality_loss_pct)

@@ -24,9 +24,9 @@ def get_net_realization(
         transport_per_quintal += (distance_km - 250) * (transport_cost_per_km * 1.5) / max(1.0, yield_est)
 
     # 2. Quality Loss (Spoilage penalty in INR)
-    # Note: calculate_quality_loss returns a percentage (0.0 to 1.0)
+    # Note: calculate_quality_loss returns a percentage (0.0 to 100.0)
     loss_pct = calculate_quality_loss(crop_type, temp_c, humidity, hours_to_market)
-    quality_loss_inr = loss_pct * market_price
+    quality_loss_inr = (loss_pct / 100.0) * market_price
     
     # 3. Final Calculation
     net_realization = market_price - transport_per_quintal - quality_loss_inr

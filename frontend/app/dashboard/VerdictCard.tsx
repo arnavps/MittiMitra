@@ -29,7 +29,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
 
     const grossRevenue = data.breakdown?.gross_revenue ?? (price * yieldQtl);
     const logistics = data.breakdown?.logistics_cost ?? Math.round(distanceKm * 15);
-    const spoilagePenalty = data.breakdown?.spoilage_penalty ?? Math.round(grossRevenue * (data.mandi_stats?.quality_loss_pct ?? 0.02));
+    const spoilagePenalty = data.breakdown?.spoilage_penalty ?? Math.round(grossRevenue * ((data.mandi_stats?.quality_loss_pct ?? 2.0) / 100.0));
 
     // Final source of truth: backend total
     const totalTakeHome = data.total_net_profit ?? (grossRevenue - logistics - spoilagePenalty);

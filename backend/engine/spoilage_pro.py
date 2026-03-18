@@ -17,7 +17,7 @@ def calculate_dynamic_spoilage(base_q10: float, current_temp: float, target_temp
     final_rate = accelerated_rate * multiplier
     
     # Total spoilage over duration
-    total_spoilage_percent = final_rate * duration_hours
+    total_spoilage_percent = final_rate * duration_hours * 100.0
     
     return min(total_spoilage_percent, 100.0) # Cap at 100%
 
