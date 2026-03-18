@@ -286,6 +286,8 @@ def onboarding_extract(req: OnboardingExtractRequest):
 - Grok is free to phrase this creatively in """ + req.language + " script."
         elif req.step == "HarvestStatus":
             schema_instructions = """Return JSON with: {'harvest_status': 'already_harvested'/'not_yet_harvested'/null, 'ai_reply': 'string'}.
+- Set 'harvest_status' to 'already_harvested' if user says they are done, yes, completed, ho gaya, already harvested, etc.
+- Set 'harvest_status' to 'not_yet_harvested' if user says they are waiting, no, still growing, nahi, etc.
 - If 'already_harvested', ask where they are keeping the harvest (Open field, shed, or cold storage).
 - If 'not_yet_harvested', ask when they sowed the seeds so we can check maturity.
 - Grok is free to phrase this creatively in """ + req.language + " script only."
