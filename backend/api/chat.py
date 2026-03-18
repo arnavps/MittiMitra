@@ -280,10 +280,9 @@ def onboarding_extract(req: OnboardingExtractRequest):
 - Grok is free to phrase this creatively in """ + req.language + " script."
         elif req.step == "LocationPermission":
             schema_instructions = """Return JSON with: {'ai_reply': 'string'}.
-- Acknowledge that you've received the location.
-- If the translation is Hindi/Marathi, use terms like 'Sthan prapt hua' (स्थान प्राप्त हुआ).
-- Acknowledge that having a location helps in finding more profitable markets.
-- Ask: "Is your crop already harvested, or are you still waiting for it to ripen?"
+- Acknowledge their consent to use GPS securely.
+- Ask them to please click "Allow" on the location prompt that appears on their screen.
+- DO NOT ask any further questions yet.
 - Grok is free to phrase this creatively in """ + req.language + " script."
         elif req.step == "HarvestStatus":
             schema_instructions = """Return JSON with: {'harvest_status': 'already_harvested'/'not_yet_harvested'/null, 'ai_reply': 'string'}.
