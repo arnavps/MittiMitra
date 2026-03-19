@@ -75,6 +75,7 @@ export default function OnboardingPage() {
     const [messages, setMessages] = useState<{ id: number, role: 'ai' | 'user', text: string }[]>([]);
     const [isListening, setIsListening] = useState(false);
     const [isThinking, setIsThinking] = useState(false);
+    const [recommendation, setRecommendation] = useState<any>(null);
     const [showLanguageModal, setShowLanguageModal] = useState(true);
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -240,14 +241,45 @@ export default function OnboardingPage() {
             }
         }
 
-        speakResponse(data.ai_reply, langStr, () => {
+        speakResponse(data.ai_reply, langStr, async () => {
             const nextStep = currentStepRef.current;
             if (nextStep === 'Success') {
-                saveOnboardingData();
+                await saveOnboardingData();
+                fetchFinalRecommendation();
             } else if (nextStep !== 'HealthAudit') {
                 startListening();
             }
         });
+    };
+
+    const fetchFinalRecommendation = async () => {
+        setIsThinking(true);
+        try {
+            const payload = {
+                crop: cropRef.current || crop || "Cotton",
+                location: location ? { lat: location.latitude, lng: location.longitude } : { lat: 18.5204, lng: 73.8567 },
+                yield_est_quintals: parseFloat(yieldAmountRef.current || yieldAmount) || 50,
+                base_spoilage_rate: 0.05,
+                language: globalLanguage,
+                planting_date: sowingDate || null,
+                is_harvested: harvestStatusRef.current === 'Already Harvested' || harvestStatus === 'Already Harvested'
+            };
+
+            const res = await fetch('/api/recommendation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setRecommendation(data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch final recommendation", err);
+        } finally {
+            setIsThinking(false);
+        }
     };
 
     // Watch for location to advance from LocationPermission
@@ -679,7 +711,9 @@ export default function OnboardingPage() {
                                 <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] text-left">
                                     <TrendingUp className="w-5 h-5 text-mint mb-4" />
                                     <div className="text-[10px] font-black uppercase tracking-widest text-mint/60 mb-1">Target</div>
-                                    <div className="font-bold text-sm uppercase">Vashi Market</div>
+                                    <div className="font-bold text-sm uppercase">
+                                        {recommendation?.mandi_stats?.name || "Detecting..."}
+                                    </div>
                                 </div>
                             </div>
 
