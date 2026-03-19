@@ -28,21 +28,21 @@ const mockData = [
 ];
 
 export default function SoilHealthPage() {
-    const { t } = useLanguage();
+    const { t, n } = useLanguage();
 
     return (
         <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
             <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-white uppercase tracking-tighter">
-                        {t('soilHealth') || "Soil & Crop Health"}
+                        {t('soilHealth')}
                     </h1>
-                    <p className="text-sm text-gray-400">{t('observabilityLayer') || "The Observability Layer: Real-time Field Telemetry"}</p>
+                    <p className="text-sm text-gray-400">{t('observabilityLayer')}</p>
                 </div>
                 <div className="flex items-center space-x-3">
-                    <StatusPill status="GREEN" message={t('sensorActive') || "Sensors Online"} />
+                    <StatusPill status="GREEN" message={t('sensorActive')} />
                     <div className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
-                        {t('nodeId') || "Node ID"}: #MM-782
+                        {t('nodeId')}: #MM-782
                     </div>
                 </div>
             </header>
@@ -54,11 +54,11 @@ export default function SoilHealthPage() {
                     </div>
                     <div className="flex items-center space-x-2 mb-4">
                         <Droplets className="w-4 h-4 text-mint" />
-                        <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('soilMoisture') || "Soil Moisture"}</h3>
+                        <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('soilMoisture')}</h3>
                     </div>
                     <div className="flex items-baseline space-x-2">
-                        <span className="text-3xl font-bold text-white">68%</span>
-                        <span className="text-xs text-mint font-medium">+2% {t('optimal') || "Optimal"}</span>
+                        <span className="text-3xl font-bold text-white">{n(68)}%</span>
+                        <span className="text-xs text-mint font-medium">+{n(2)}% {t('optimal')}</span>
                     </div>
                     <div className="mt-4 w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                         <div className="h-full bg-mint w-[68%]" />
@@ -71,20 +71,20 @@ export default function SoilHealthPage() {
                     </div>
                     <div className="flex items-center space-x-2 mb-4">
                         <Activity className="w-4 h-4 text-teal-400" />
-                        <h3 className="text-xs font-black text-white uppercase tracking-widest">NPK Levels</h3>
+                        <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('npkLevels')}</h3>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                         <div>
-                            <p className="text-[10px] text-gray-500 font-bold uppercase">N</p>
-                            <p className="text-lg font-bold text-white">45</p>
+                            <p className="text-[10px] text-gray-500 font-bold uppercase">{t('nitrogen')}</p>
+                            <p className="text-lg font-bold text-white">{n(45)}</p>
                         </div>
                         <div>
-                            <p className="text-[10px] text-gray-500 font-bold uppercase">P</p>
-                            <p className="text-lg font-bold text-white">12</p>
+                            <p className="text-[10px] text-gray-500 font-bold uppercase">{t('phosphorus')}</p>
+                            <p className="text-lg font-bold text-white">{n(12)}</p>
                         </div>
                         <div>
-                            <p className="text-[10px] text-gray-500 font-bold uppercase">K</p>
-                            <p className="text-lg font-bold text-white">32</p>
+                            <p className="text-[10px] text-gray-500 font-bold uppercase">{t('potassium')}</p>
+                            <p className="text-lg font-bold text-white">{n(32)}</p>
                         </div>
                     </div>
                 </GlassCard>
@@ -95,13 +95,13 @@ export default function SoilHealthPage() {
                     </div>
                     <div className="flex items-center space-x-2 mb-4">
                         <Sprout className="w-4 h-4 text-green-400" />
-                        <h3 className="text-xs font-black text-white uppercase tracking-widest">Growth Stage</h3>
+                        <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('growthStage')}</h3>
                     </div>
                     <div className="flex items-baseline space-x-2">
-                        <span className="text-xl font-bold text-white">Vegetative</span>
-                        <span className="text-xs text-gray-400">Phase 3/5</span>
+                        <span className="text-xl font-bold text-white">{t('vegetative')}</span>
+                        <span className="text-xs text-gray-400">{t('phase')} {n(3)}/{n(5)}</span>
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-2">Next stage: Flowering (Est. 8 days)</p>
+                    <p className="text-[10px] text-gray-500 mt-2">{t('nextStage')}: {t('flowering')} ({t('estDays', { days: n(8) })})</p>
                 </GlassCard>
             </div>
 
@@ -109,8 +109,8 @@ export default function SoilHealthPage() {
                 <GlassCard className="p-6">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
                         <div>
-                            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Field Health Correlation</h3>
-                            <p className="text-xs text-gray-400">NDVI Score vs Soil Moisture Overlap</p>
+                            <h3 className="text-sm font-bold text-white uppercase tracking-wider">{t('fieldHealthCorrelation')}</h3>
+                            <p className="text-xs text-gray-400">{t('ndviScoreMoisture')}</p>
                         </div>
                         <div className="flex space-x-4">
                             <div className="flex items-center space-x-1">
@@ -119,7 +119,7 @@ export default function SoilHealthPage() {
                             </div>
                             <div className="flex items-center space-x-1">
                                 <span className="w-2 h-2 rounded-full bg-teal-500"></span>
-                                <span className="text-[10px] text-gray-400 font-bold uppercase">Moisture</span>
+                                <span className="text-[10px] text-gray-400 font-bold uppercase">{t('soilMoisture')}</span>
                             </div>
                         </div>
                     </div>
@@ -166,14 +166,14 @@ export default function SoilHealthPage() {
                     </div>
                     <div className="mt-4 p-3 bg-mint/5 border border-mint/10 rounded-lg">
                         <p className="text-[10px] text-mint leading-relaxed">
-                            <span className="font-bold uppercase mr-2">Analysis:</span>
-                            High correlation between Wednesday's high irrigation (75%) and subsequent NDVI growth (0.76 → 0.82). Crop vitality is peak.
+                            <span className="font-bold uppercase mr-2">{t('analysis')}:</span>
+                            {t('soilHealthAnalysisPrompt')}
                         </p>
                     </div>
                 </GlassCard>
 
                 <GlassCard className="p-6">
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-6">Historical Comparison</h3>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-6">{t('historicalComparison')}</h3>
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
@@ -181,13 +181,13 @@ export default function SoilHealthPage() {
                                     <Database className="w-4 h-4 text-gray-400" />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-white uppercase">Last Season Avg</p>
-                                    <p className="text-[10px] text-gray-500">Same growth stage</p>
+                                    <p className="text-xs font-bold text-white uppercase">{t('lastSeasonAvg')}</p>
+                                    <p className="text-[10px] text-gray-500">{t('sameGrowthStage')}</p>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm font-bold text-white">0.68 NDVI</p>
-                                <p className="text-[10px] text-mint font-bold">+20% Improved</p>
+                                <p className="text-sm font-bold text-white">{n(0.68)} NDVI</p>
+                                <p className="text-[10px] text-mint font-bold">+{n(20)}% {t('improved')}</p>
                             </div>
                         </div>
 
@@ -197,26 +197,26 @@ export default function SoilHealthPage() {
                                     <Activity className="w-4 h-4 text-gray-400" />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-white uppercase">Regional Benchmark</p>
-                                    <p className="text-[10px] text-gray-500">Nearby farms (5km)</p>
+                                    <p className="text-xs font-bold text-white uppercase">{t('regionalBenchmark')}</p>
+                                    <p className="text-[10px] text-gray-500">{t('nearbyFarms')}</p>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm font-bold text-white">0.74 NDVI</p>
-                                <p className="text-[10px] text-mint font-bold">+10% Above Avg</p>
+                                <p className="text-sm font-bold text-white">{n(0.74)} NDVI</p>
+                                <p className="text-[10px] text-mint font-bold">+{n(10)}% {t('aboveAvg')}</p>
                             </div>
                         </div>
 
                         <div className="pt-6 border-t border-white/10">
                             <div className="flex items-center space-x-2 mb-2">
                                 <Wind className="w-3 h-3 text-gray-400" />
-                                <span className="text-[10px] font-black text-white uppercase tracking-widest">Evapotranspiration</span>
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">{t('evapotranspiration')}</span>
                             </div>
                             <div className="flex items-baseline space-x-2">
-                                <span className="text-2xl font-bold text-white">5.2 mm/day</span>
-                                <span className="text-[10px] text-red-400 font-bold uppercase">High Loss</span>
+                                <span className="text-2xl font-bold text-white">{n(5.2)} mm/day</span>
+                                <span className="text-[10px] text-red-400 font-bold uppercase">{t('highLoss')}</span>
                             </div>
-                            <p className="text-[10px] text-gray-500 mt-1">High wind speeds detected. Increasing irrigation frequency recommended.</p>
+                            <p className="text-[10px] text-gray-500 mt-1">{t('windSpeedAdvice')}</p>
                         </div>
                     </div>
                 </GlassCard>

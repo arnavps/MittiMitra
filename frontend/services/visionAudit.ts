@@ -49,8 +49,8 @@ function round(val: number, precision: number) {
  * Guidance messages for the farmer during 360 capture.
  */
 export const captureGuidance = [
-    "Position the crop in the center of the frame.",
-    "Rotate the crop slowly (360 degrees).",
-    "Ensure good lighting for skin analysis.",
-    "Audit complete. Processing quality markers..."
+    "positionCrop",
+    "rotateCrop",
+    "ensureLighting",
+    "auditComplete"
 ];

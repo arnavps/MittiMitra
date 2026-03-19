@@ -27,30 +27,31 @@ import {
     Bar
 } from 'recharts';
 
-const projectionData = [
-    { stage: 'Seedling', min: 40, exp: 45, max: 50 },
-    { stage: 'Vegetative', min: 42, exp: 48, max: 55 },
-    { stage: 'Flowering', min: 45, exp: 52, max: 60 },
-    { stage: 'Maturity', min: 48, exp: 55, max: 65 },
-];
 
 export default function YieldProjectionPage() {
-    const { t } = useLanguage();
+    const { t, n } = useLanguage();
     const [auditLogVisible, setAuditLogVisible] = useState(false);
+
+    const projectionData = [
+        { stage: t('seedling'), min: 40, exp: 45, max: 50 },
+        { stage: t('vegetative'), min: 42, exp: 48, max: 55 },
+        { stage: t('flowering'), min: 45, exp: 52, max: 60 },
+        { stage: t('maturity'), min: 48, exp: 55, max: 65 },
+    ];
 
     return (
         <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
-             <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-white uppercase tracking-tighter">
-                        {t('yieldProjection') || "Yield Projection Calculator"}
+                        {t('yieldProjection')}
                     </h1>
-                    <p className="text-sm text-gray-400">{t('blockchainProvenance') || "Pre-Harvest Digital ID & Provenance Preparation"}</p>
+                    <p className="text-sm text-gray-400">{t('blockchainProvenance')}</p>
                 </div>
                 <div className="flex items-center space-x-3">
                     <div className="bg-mint/10 border border-mint/20 px-3 py-1.5 rounded-full flex items-center space-x-2">
                         <Lock className="w-3 h-3 text-mint" />
-                        <span className="text-[10px] text-mint font-black uppercase tracking-widest">Immutable Log Active</span>
+                        <span className="text-[10px] text-mint font-black uppercase tracking-widest">{t('immutableLogActive')}</span>
                     </div>
                 </div>
             </header>
@@ -60,11 +61,11 @@ export default function YieldProjectionPage() {
                 <div className="lg:col-span-7 space-y-6">
                     <GlassCard className="p-6">
                         <div className="flex items-center justify-between mb-8">
-                            <h3 className="text-xs font-black text-white uppercase tracking-widest">Dynamic Harvest Projection</h3>
+                            <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('dynamicHarvestProjection')}</h3>
                             <div className="flex space-x-4">
                                 <span className="flex items-center space-x-1.5">
                                     <div className="w-2 h-2 rounded-full bg-mint" />
-                                    <span className="text-[8px] text-gray-500 font-bold uppercase">Expected</span>
+                                    <span className="text-[8px] text-gray-500 font-bold uppercase">{t('expected')}</span>
                                 </span>
                             </div>
                         </div>
@@ -87,12 +88,12 @@ export default function YieldProjectionPage() {
 
                         <div className="flex justify-between mt-6 pt-6 border-t border-white/10">
                             <div>
-                                <p className="text-[10px] text-gray-500 font-black uppercase">Current Estimate</p>
-                                <p className="text-3xl font-bold text-white">55 <span className="text-sm text-gray-400">Qtl</span></p>
+                                <p className="text-[10px] text-gray-500 font-black uppercase">{t('currentEstimate')}</p>
+                                <p className="text-3xl font-bold text-white">{n(55)} <span className="text-sm text-gray-400">{t('quintals')}</span></p>
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] text-gray-500 font-black uppercase">Confidence Score</p>
-                                <p className="text-3xl font-bold text-mint">92%</p>
+                                <p className="text-[10px] text-gray-500 font-black uppercase">{t('confidenceScore')}</p>
+                                <p className="text-3xl font-bold text-mint">{n(92)}%</p>
                             </div>
                         </div>
                     </GlassCard>
@@ -101,13 +102,13 @@ export default function YieldProjectionPage() {
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center space-x-2">
                                 <ShieldCheck className="w-4 h-4 text-mint" />
-                                <h3 className="text-xs font-black text-white uppercase tracking-widest">Digital Provenance Trail</h3>
+                                <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('immutableLogs')}</h3>
                             </div>
                             <button 
                                 onClick={() => setAuditLogVisible(!auditLogVisible)}
                                 className="text-[10px] text-mint font-black uppercase tracking-widest hover:underline"
                             >
-                                {auditLogVisible ? "Hide Logs" : "View Immutable Logs"}
+                                {auditLogVisible ? t('hideLogs') : t('viewImmutableLogs')}
                             </button>
                         </div>
 
@@ -115,14 +116,14 @@ export default function YieldProjectionPage() {
                             <div className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 border border-white/5 group">
                                 <div className="w-2 h-2 rounded-full bg-mint" />
                                 <p className="text-[11px] text-gray-300 flex-1">
-                                    <span className="text-white font-bold">NPK Sourced:</span> Fertilizer batch #U-2026-X logged from Inventory.
+                                    <span className="text-white font-bold">{t('npkSourced')}:</span> {t('npkLogMsg')}
                                 </p>
                                 <Check className="w-3 h-3 text-mint opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
                             <div className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 border border-white/5 group">
                                 <div className="w-2 h-2 rounded-full bg-mint" />
                                 <p className="text-[11px] text-gray-300 flex-1">
-                                    <span className="text-white font-bold">Soil Signature:</span> Real-time moisture (68%) recorded via MM-782 sensor.
+                                    <span className="text-white font-bold">{t('soilSignature')}:</span> {t('soilLogMsg')}
                                 </p>
                                 <Check className="w-3 h-3 text-mint opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
@@ -142,7 +143,7 @@ export default function YieldProjectionPage() {
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                             <Truck className="w-16 h-16 text-mint" />
                         </div>
-                        <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-6">30-Day Planning</h3>
+                        <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-6">{t('planning30Day')}</h3>
                         
                         <div className="space-y-6">
                             <div className="flex items-start space-x-4">
@@ -150,9 +151,9 @@ export default function YieldProjectionPage() {
                                     <Archive className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-white">Reserve Cold Storage</p>
+                                    <p className="text-sm font-bold text-white">{t('reserveColdStorage')}</p>
                                     <p className="text-[10px] text-gray-500 leading-relaxed mt-1">
-                                        Estimated yield exceeds on-field storage by 15 quintals. Book "ColdHub Nashik" before March 25.
+                                        {t('coldStorageAdvice')}
                                     </p>
                                 </div>
                             </div>
@@ -162,26 +163,26 @@ export default function YieldProjectionPage() {
                                     <Truck className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-white">Pre-Book Logistics</p>
+                                    <p className="text-sm font-bold text-white">{t('preBookLogistics')}</p>
                                     <p className="text-[10px] text-gray-500 leading-relaxed mt-1">
-                                        Projection suggests 2 mini-trucks or 1 heavy truck. Bulk booking saves ₹1,200.
+                                        {t('logisticsAdvice')}
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         <button className="w-full mt-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                            Export PDF to Buyer
+                            {t('exportPdfBuyer')}
                         </button>
                     </GlassCard>
 
                     <div className="p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden">
                         <div className="flex items-center justify-between mb-4">
-                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Digital Asset Ready</h4>
+                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{t('digitalAssetReady')}</h4>
                             <Cpu className="w-4 h-4 text-mint opacity-50" />
                         </div>
                         <p className="text-xs text-gray-300 mb-4">
-                            Your harvest data is now ready to be minted as a "MittiID" upon final weighment.
+                            {t('mittiIdAdvice')}
                         </p>
                         <div className="flex -space-x-2">
                             <div className="w-6 h-6 rounded-full bg-mint/40 border border-forest" />

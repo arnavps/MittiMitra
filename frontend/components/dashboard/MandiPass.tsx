@@ -1,6 +1,7 @@
 import React from 'react';
 import { GlassCard } from '@/components/glass-card';
 import { StatusPill } from '@/components/status-pill';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MandiPassProps {
     hash: string;
@@ -16,6 +17,7 @@ interface MandiPassProps {
 }
 
 export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
+    const { t, n } = useLanguage();
     // Using standard high-contrast colors (Black on White) for maximum scannability
     const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(hash)}&size=300&dark=000000&light=ffffff&ecLevel=H`;
 
@@ -64,8 +66,8 @@ export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
             {/* Header / Brand */}
             <div className="bg-mint/10 p-6 border-b border-mint/20 text-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-mint/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-                <h2 className="text-2xl font-black text-mint tracking-tighter uppercase italic">Digital Mandi Pass</h2>
-                <p className="text-[10px] text-mint/60 font-black tracking-widest uppercase mt-1">Provenance Verfied & Hashed</p>
+                <h2 className="text-2xl font-black text-mint tracking-tighter uppercase italic">{t('digitalMandiPass')}</h2>
+                <p className="text-[10px] text-mint/60 font-black tracking-widest uppercase mt-1">{t('provenanceVerified')}</p>
             </div>
 
             {/* Main Content */}
@@ -85,18 +87,17 @@ export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
                     </p>
                 </div>
 
-                {/* Audit Grid */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Quality Grade</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">{t('qualityGrade')}</p>
                         <div className="flex items-center space-x-2">
                             <span className="text-3xl font-black text-white">{record.grade}</span>
-                            <StatusPill status="GREEN" message="Premium" className="scale-75" />
+                            <StatusPill status="GREEN" message={t('premium')} className="scale-75" />
                         </div>
                     </div>
                     <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Audit Score</p>
-                        <span className="text-3xl font-black text-mint">{record.qualityScore}%</span>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">{t('auditScore')}</p>
+                        <span className="text-3xl font-black text-mint">{n(record.qualityScore)}%</span>
                     </div>
                 </div>
 
@@ -107,21 +108,20 @@ export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
                     </div>
                     <div className="flex justify-between items-center">
                         <div>
-                            <p className="text-[10px] text-mint font-black uppercase tracking-widest mb-1">Shadow Price Prediction</p>
-                            <h3 className="text-4xl font-black text-white italic">₹{record.shadowPrice}</h3>
-                            <p className="text-[10px] text-white/40 mt-1 font-bold">Base Mandi: ₹{record.mandiPrice}/Qtl</p>
+                            <p className="text-[10px] text-mint font-black uppercase tracking-widest mb-1">{t('shadowPricePrediction')}</p>
+                            <h3 className="text-4xl font-black text-white italic">₹{n(record.shadowPrice)}</h3>
+                            <p className="text-[10px] text-white/40 mt-1 font-bold">{t('baseMandi')}: ₹{n(record.mandiPrice)}/{t('qtl') || "Qtl"}</p>
                         </div>
                         <div className="text-right">
-                             <span className="text-2xl font-black text-mint">+{Math.round(((record.shadowPrice/record.mandiPrice)-1)*100)}%</span>
-                             <p className="text-[10px] text-mint/60 font-bold">Premium</p>
+                             <span className="text-2xl font-black text-mint">+{n(Math.round(((record.shadowPrice/record.mandiPrice)-1)*100))}%</span>
+                             <p className="text-[10px] text-mint/60 font-bold">{t('premium')}</p>
                         </div>
                     </div>
                 </div>
 
-                {/* Footer Meta */}
                 <div className="pt-4 border-t border-white/10 flex justify-between items-center">
                     <div>
-                        <p className="text-[9px] text-gray-500 font-bold uppercase">{record.crop} Yield Audit</p>
+                        <p className="text-[9px] text-gray-500 font-bold uppercase">{record.crop} {t('yieldAudit')}</p>
                         <p className="text-[9px] text-white/30">{new Date(record.timestamp).toLocaleString()}</p>
                     </div>
                     <div className="bg-black/40 px-3 py-1 rounded-full border border-white/10">
@@ -132,7 +132,7 @@ export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
             
             {/* Security Notice */}
             <div className="bg-red-500/10 p-3 text-center border-t border-red-500/20">
-                <p className="text-[9px] text-red-400 font-bold uppercase tracking-widest">Tamper-Proof Ledger Protected</p>
+                <p className="text-[9px] text-red-400 font-bold uppercase tracking-widest">{t('tamperProofLedger')}</p>
             </div>
         </GlassCard>
       </div>

@@ -15,7 +15,7 @@ type Translations = typeof en;
 interface LanguageContextType {
     language: Language;
     setLanguage: (lang: Language) => void;
-    t: (key: keyof Translations) => string;
+    t: (key: keyof Translations, params?: Record<string, string | number>) => string;
     n: (value: number | string) => string;
 }
 
@@ -47,9 +47,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("language", lang);
     };
 
-    const t = (key: keyof Translations): string => {
+    const t = (key: keyof Translations, params?: Record<string, string | number>): string => {
         const dict = (dictionaries[language] || dictionaries.en) as Translations;
-        return dict[key] || dictionaries.en[key] || key;
+        let value = dict[key] || dictionaries.en[key] || key;
+        
+        if (params) {
+            Object.entries(params).forEach(([k, v]) => {
+                value = value.replace(`{${k}}`, String(v));
+            });
+        }
+        
+        return value;
     };
 
     const n = (value: number | string): string => {

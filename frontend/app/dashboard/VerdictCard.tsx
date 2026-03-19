@@ -68,7 +68,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                         <div className="flex items-center space-x-1 animate-in fade-in slide-in-from-right-2">
                              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
                              <span className="text-[9px] text-blue-400 font-bold uppercase tracking-widest">
-                                {clusterData.cluster.total_neighbors} Neighbors Nearby
+                                {clusterData.cluster.total_neighbors} {t('neighborsNearby')}
                              </span>
                         </div>
                     )}
@@ -80,37 +80,37 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                     {data.status === 'GREEN' ? (
                         <div className="animate-in fade-in zoom-in duration-500">
                             <h3 className="text-8xl lg:text-9xl font-black text-mint mb-2 drop-shadow-[0_0_35px_rgba(32,255,189,0.6)] tracking-tighter italic">
-                                {t('sell') || 'SELL'}
+                                {t('sell')}
                             </h3>
-                            <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">Market peak detected. Best window for maximum realization.</p>
+                            <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">{t('sellDesc')}</p>
                         </div>
                     ) : data.status === 'RED' ? (
                         <div className="animate-in fade-in zoom-in duration-500">
                             <h3 className="text-8xl lg:text-9xl font-black text-amber-500 mb-2 drop-shadow-[0_0_35px_rgba(245,158,11,0.6)] tracking-tighter italic">
-                                {t('wait') || 'WAIT'}
+                                {t('wait')}
                             </h3>
                             <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">
                                 {data.shock_alert?.status === 'MATURITY_LOCK' 
                                     ? data.shock_alert.message 
-                                    : 'Market volume spike detected. Waiting 48h for price stabilization.'}
+                                    : t('waitDesc')}
                             </p>
                         </div>
                     ) : (
                         <div className="animate-in fade-in zoom-in duration-500">
                             <h3 className="text-8xl lg:text-9xl font-black text-yellow-400 mb-2 drop-shadow-[0_0_35px_rgba(250,204,21,0.6)] tracking-tighter italic">
-                                {t('hold') || 'HOLD'}
+                                {t('hold')}
                             </h3>
-                            <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">{t('holdDesc') || 'Volatility mapped. Standing by for arbitrage signal.'}</p>
+                            <p className="text-white/80 font-bold text-sm max-w-xs mx-auto">{t('holdDesc')}</p>
                         </div>
                     )}
                 </div>
             ) : (
                 <div className="z-10 w-full mb-6">
                     <h3 className="text-6xl lg:text-7xl font-black text-white/90 mb-2 tracking-tighter italic">
-                        {oracleData?.status || 'GROWING'}
+                        {oracleData?.status === 'GROWING' ? t('ready') : oracleData?.status}
                     </h3>
                     <p className="text-white/60 font-bold text-sm max-w-xs mx-auto mb-8">
-                        {oracleData?.oracle_verdict?.verdict || 'Biological maturity tracked via satellite & weather nodes.'}
+                        {oracleData?.oracle_verdict?.verdict || t('monitorClosely')}
                     </p>
                     
                     {oracleData && (
@@ -130,11 +130,11 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
             {onExplain && (
                 <div className="z-10 mb-8">
                     <button
-                        onClick={() => onExplain(t('askWhy') || "Explain why you recommended this action.")}
+                        onClick={() => onExplain(t('askWhy'))}
                         className="px-6 py-2.5 bg-white/10 hover:bg-mint text-white hover:text-forest border border-white/20 hover:border-mint rounded-full text-xs font-black transition-all flex items-center space-x-2 mx-auto uppercase tracking-widest shadow-xl group"
                     >
                         <svg className="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span>{t('askVakeelWhy') || 'Ask Vakeel Why'}</span>
+                        <span>{t('askVakeelWhy')}</span>
                     </button>
                 </div>
             )}
@@ -146,7 +146,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                         <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                         <div className="flex items-center space-x-2">
                              <svg className="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                             <span className="uppercase tracking-widest text-xs">Emergency Cold Storage</span>
+                             <span className="uppercase tracking-widest text-xs">{t('emergencyColdStorage')}</span>
                         </div>
                         <p className="text-[10px] opacity-80 font-bold">Secure Yield at ₹15/day vs losing ₹{n(data.shock_alert?.savings_inr || 0)}</p>
                     </button>
@@ -155,8 +155,8 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
             {/* Neon Profit Centerpiece - Post-Harvest Only */}
             {isHarvested && (
                 <div className="z-10 w-full mb-4">
-                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-black block mb-1">{t('estimatedTakeHome') || 'Net Take-Home Payout'}</span>
-                    <div className="text-6xl font-black text-mint font-mono drop-shadow-[0_0_15px_rgba(32,255,189,0.3)] tabular-nums animate-pulse-slow">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-black block mb-1">{t('estimatedTakeHome')}</span>
+                    <div className="text-6xl font-black text-mint font-mono drop-shadow-[0_0_15_rgb(32,255,189,0.3)] tabular-nums animate-pulse-slow">
                         ₹<AnimatedNumber value={totalTakeHome} />
                     </div>
                 </div>
@@ -173,11 +173,11 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                             </div>
                             <div>
                                 <div className="flex items-center space-x-2">
-                                    <p className="text-[10px] text-mint uppercase tracking-widest font-black opacity-80 mb-0.5">Priority Action</p>
+                                    <p className="text-[10px] text-mint uppercase tracking-widest font-black opacity-80 mb-0.5">{t('urgent')}</p>
                                     <button 
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            const audioText = `${t('priorityAction')}: ${priorityAction.action}. ${t('savesYou')} ${n(priorityAction.net_saving_inr)} ${t('rupees')}.`;
+                                            const audioText = `${t('urgent')}: ${priorityAction.action}. ${t('loss24h')} ${n(priorityAction.net_saving_inr)} ${t('rupees')}.`;
                                             speak(audioText, language);
                                         }}
                                         className="p-1 hover:bg-mint/20 rounded-full transition-colors group/audio"
@@ -190,7 +190,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                             </div>
                         </div>
                         <div className="text-right">
-                            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-0.5">Saves You</p>
+                            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-0.5">{t('loss24h')}</p>
                             <p className="text-mint font-mono font-black text-lg">₹{n(priorityAction.net_saving_inr)}</p>
                         </div>
                     </div>
@@ -202,13 +202,13 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                 <div className="z-10 w-full mb-6 mt-4 p-5 bg-white/[0.03] border border-white/10 rounded-2xl relative group overflow-hidden">
                     <div className="flex justify-between items-end mb-3">
                         <div className="flex flex-col">
-                            <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black mb-1">Harvest Oracle</span>
-                            <span className="text-xl font-black text-white">{oracleData.current_maturity_pct}% <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest tracking-tighter">Ripe</span></span>
+                            <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black mb-1">{t('harvestOracle')}</span>
+                            <span className="text-xl font-black text-white">{oracleData.current_maturity_pct}% <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest tracking-tighter">{t('ripeness')}</span></span>
                         </div>
                         <div className="flex flex-col items-end">
-                            <span className="text-[10px] text-mint uppercase tracking-widest font-black mb-1">Tactics</span>
+                            <span className="text-[10px] text-mint uppercase tracking-widest font-black mb-1">{t('tactics')}</span>
                             <span className="text-sm font-black text-mint">
-                                 {oracleData.oracle_verdict?.verdict || 'MONITOR'}
+                                 {oracleData.oracle_verdict?.verdict || t('ready')}
                             </span>
                         </div>
                     </div>
@@ -230,7 +230,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                             href="/dashboard/harvest-oracle" 
                             className="flex items-center justify-center py-2 bg-mint/10 border border-mint/20 rounded-xl text-[10px] text-mint font-black uppercase tracking-widest hover:bg-mint hover:text-forest transition-all"
                         >
-                            Learn More Logic
+                            {t('learnMore')}
                             <svg className="w-3 h-3 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
@@ -242,7 +242,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                             <svg className="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
-                            Certify Yield
+                            {t('certifyYield')}
                         </Link>
                     </div>
                 </div>
@@ -252,7 +252,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
             {isHarvested && (
                 <div className="z-10 w-full mb-4 px-2">
                     <div className="flex justify-between items-end mb-1.5">
-                        <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Transit Spoilage Risk (48h)</span>
+                        <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">{t('transitSpoilageRisk')}</span>
                         <span className={`text-xs font-mono font-black ${spoilageRiskPct > 50 ? 'text-red-400' : spoilageRiskPct > 20 ? 'text-yellow-400' : 'text-mint'}`}>
                             {n(spoilageRiskPct)}%
                         </span>
@@ -273,7 +273,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                         onClick={() => setIsExpanded(!isExpanded)}
                         className="w-full flex items-center justify-center space-x-2 text-[10px] text-gray-500 font-black uppercase tracking-widest py-2 hover:text-white transition-colors"
                     >
-                        <span>{isExpanded ? (t('hideAuditTrail') || 'Hide Audit Trail') : (t('showAuditTrail') || 'Show Audit Trail')}</span>
+                        <span>{isExpanded ? t('cancel') : t('learnMore')}</span>
                         <svg className={`w-3 h-3 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
@@ -285,7 +285,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                             <div className="flex justify-between items-center text-gray-300">
                                 <span className="flex items-center text-xs">
                                     <span className="w-1.5 h-1.5 bg-mint rounded-full mr-2"></span>
-                                    {t('marketValue') || 'MARKET VALUE'}
+                                    {t('marketValue')}
                                 </span>
                                 <span className="text-white">+₹{n(grossRevenue)}</span>
                             </div>
@@ -294,7 +294,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                             <div className="flex justify-between items-center text-gray-400">
                                 <span className="flex items-center text-xs">
                                     <span className="w-1.5 h-1.5 rounded-full bg-red-400 mr-2"></span>
-                                    {t('logistics') || 'LOGISTICS'}
+                                    {t('logistics')}
                                 </span>
                                 <span className="text-red-400">-₹{n(logistics)}</span>
                             </div>
@@ -303,7 +303,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                             <div className="flex justify-between items-center text-gray-400">
                                 <span className="flex items-center text-xs">
                                     <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></span>
-                                    {t('qualityLoss') || 'QUALITY LOSS'}
+                                    {t('qualityLoss')}
                                 </span>
                                 <span className="text-red-400">-₹{n(spoilagePenalty)}</span>
                             </div>
@@ -319,7 +319,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-mint opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-mint"></span>
                     </span>
-                    <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest">{t('liveArbitration') || 'Live Arbitration Logic Active'}</span>
+                    <span className="text-[8px] text-gray-400 uppercase font-black tracking-widest">{t('liveArbitration')}</span>
                 </div>
             </div>
         </div>

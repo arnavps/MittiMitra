@@ -288,19 +288,17 @@ export default function DashboardPage() {
     })) : [];
 
     return (
-        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
-
-            {/* Header */}
+        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">            {/* Header */}
             <header className="relative z-50 flex items-center justify-between mb-8">
                 <div>
                     <div className="flex items-center space-x-3 mb-2">
-                        <h1 className="text-2xl font-bold tracking-tight text-white uppercase tracking-tighter">{t('decisionHub') || "Decision Hub"}</h1>
+                        <h1 className="text-2xl font-bold tracking-tight text-white uppercase tracking-tighter">{t('decisionHub')}</h1>
                         <button
                             onClick={() => setIsCropSelectorOpen(true)}
                             className="group flex items-center space-x-2 bg-mint/10 hover:bg-mint/20 border border-mint/30 px-2 py-0.5 rounded-full transition-all"
                         >
                             <span className="text-mint text-[10px] font-black uppercase tracking-widest">
-                                {userCrop || t('selectCrop') || "Select Crop"}
+                                {userCrop || t('selectCrop')}
                             </span>
                             <svg className="w-3 h-3 text-mint opacity-50 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                         </button>
@@ -320,14 +318,14 @@ export default function DashboardPage() {
                             >
                                 <svg className="w-3 h-3 text-mint group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                 <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">
-                                    {manualLocation ? (t('customFix') || "Custom Fix") : location ? (t('liveGps') || "Live GPS") : (t('puneHub') || "Pune Hub")}
+                                    {manualLocation ? t('customFix') : location ? t('liveGps') : t('puneHub')}
                                 </span>
                             </button>
 
                             <div className="flex items-center space-x-1.5 border-l border-white/10 pl-4">
                                 <span className="w-1.5 h-1.5 bg-mint rounded-full animate-pulse"></span>
                                 <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
-                                    {t('lastSync') || 'Last Sync'}: {lastFetched ? lastFetched.toLocaleTimeString(language === 'en' ? 'en-IN' : `${language}-IN`, { hour: '2-digit', minute: '2-digit' }) : (t('justNow') || "Just Now")}
+                                    {t('lastSync')}: {lastFetched ? lastFetched.toLocaleTimeString(language === 'en' ? 'en-IN' : `${language}-IN`, { hour: '2-digit', minute: '2-digit' }) : t('justNow')}
                                 </span>
                             </div>
                         </div>
@@ -349,7 +347,7 @@ export default function DashboardPage() {
             {/* Shock Alert Banner */}
             {(data?.shock_alert?.is_shock || data?.shock_analysis?.z_score > 2) && (
                 <ShockAlertBanner
-                    message={data?.shock_alert?.message || 'High market volatility detected.'}
+                    message={data?.shock_alert?.message || t('highVolatility')}
                     pivotAdvice={data?.shock_alert?.pivot_advice || ''}
                 />
             )}
@@ -382,7 +380,7 @@ export default function DashboardPage() {
                         <div className="order-1 lg:order-1 space-y-6">
                             <GlassCard className="p-6 bg-mint/5 border-mint/20">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">{t('fieldIntelligenceSuite') || "Field Intelligence Suite"}</h3>
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">{t('fieldIntelligenceSuite')}</h3>
                                     <div className="flex -space-x-2">
                                         <div className="w-6 h-6 rounded-full bg-mint/40 border border-forest flex items-center justify-center text-[8px] font-bold text-white">S</div>
                                         <div className="w-6 h-6 rounded-full bg-blue-500/40 border border-forest flex items-center justify-center text-[8px] font-bold text-white">W</div>
@@ -391,16 +389,16 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="grid grid-cols-3 gap-3 mb-4">
                                     <div className="p-3 rounded-xl bg-black/40 border border-white/5 cursor-pointer hover:border-mint/50 transition-all" onClick={() => window.location.href = '/dashboard/soil-health'}>
-                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Soil Health</p>
-                                        <p className="text-xs font-bold text-mint">Optimal (28%)</p>
+                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">{t('soilHealth')}</p>
+                                        <p className="text-xs font-bold text-mint">{t('optimal')} (28%)</p>
                                     </div>
                                     <div className="p-3 rounded-xl bg-black/40 border border-white/5 cursor-pointer hover:border-mint/50 transition-all" onClick={() => window.location.href = '/dashboard/pest-warning'}>
-                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Pest Risk</p>
-                                        <p className="text-xs font-bold text-red-500">High</p>
+                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">{t('pestRisk')}</p>
+                                        <p className="text-xs font-bold text-red-500">{t('highRisk')}</p>
                                     </div>
                                     <div className="p-3 rounded-xl bg-black/40 border border-white/5 cursor-pointer hover:border-mint/50 transition-all" onClick={() => window.location.href = '/dashboard/irrigation-planner'}>
-                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Irrigation</p>
-                                        <p className="text-xs font-bold text-blue-400">Scheduled</p>
+                                        <p className="text-[8px] text-gray-500 font-black uppercase mb-1">{t('irrigation')}</p>
+                                        <p className="text-xs font-bold text-blue-400">{t('scheduled')}</p>
                                     </div>
                                 </div>
                                 <div className="flex space-x-2">
@@ -408,13 +406,13 @@ export default function DashboardPage() {
                                         onClick={() => window.location.href = '/dashboard/soil-health'}
                                         className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
                                     >
-                                        Field Suite &rarr;
+                                        {t('fieldSuite')} &rarr;
                                     </button>
                                     <button 
                                         onClick={() => window.location.href = '/dashboard/irrigation-planner'}
                                         className="flex-1 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
                                     >
-                                        Water Plan &rarr;
+                                        {t('waterPlan')} &rarr;
                                     </button>
                                 </div>
                             </GlassCard>
@@ -424,7 +422,7 @@ export default function DashboardPage() {
                         <div className="order-1 lg:order-1">
                             <GlassCard className="h-full !p-4">
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
-                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Market Orbit</h3>
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">{t('marketOrbit')}</h3>
                                     <StatusPill status="GREEN" message={t('liveData')} className="scale-75 origin-right" />
                                 </div>
 
@@ -439,8 +437,8 @@ export default function DashboardPage() {
                         <div className="order-2 lg:order-2">
                             <GlassCard className="p-6">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">{t('yieldCalibration') || 'Yield Calibration'}</h3>
-                                    <span className="text-mint font-mono font-bold text-xl">{n(yieldEst || 50)} {t('qtl') || 'Qtl'}</span>
+                                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">{t('yieldCalibration')}</h3>
+                                    <span className="text-mint font-mono font-bold text-xl">{n(yieldEst || 50)} {t('qtl')}</span>
                                 </div>
                                 <input
                                     type="range"
@@ -457,9 +455,9 @@ export default function DashboardPage() {
                                     className="w-full h-1.5 bg-mint/20 rounded-lg appearance-none cursor-pointer accent-mint mb-2"
                                 />
                                 <div className="flex justify-between text-[10px] text-gray-500 font-bold">
-                                    <span>{n(1)} {t('qtl') || 'QTL'}</span>
-                                    <span>{t('totalFieldEst') || 'TOTAL FIELD ESTIMATE'}</span>
-                                    <span>{n(500)} {t('qtl') || 'QTL'}</span>
+                                    <span>{n(1)} {t('qtl')}</span>
+                                    <span>{t('totalFieldEst')}</span>
+                                    <span>{n(500)} {t('qtl')}</span>
                                 </div>
                             </GlassCard>
                         </div>
@@ -496,7 +494,7 @@ export default function DashboardPage() {
                     <GlassCard className="max-w-md w-full p-8 shadow-2xl border-mint/20">
                         <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                             <svg className="w-6 h-6 text-mint mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                            {t('correctionSelectCrop') || 'Correction: Select Active Crop'}
+                            {t('correctionSelectCrop')}
                         </h3>
                         <div className="grid grid-cols-2 gap-3 mb-8">
                             {availableCrops.map(crop => (
@@ -510,7 +508,7 @@ export default function DashboardPage() {
                                         ? 'bg-mint text-forest border-mint shadow-[0_0_15px_rgba(32,255,189,0.3)]'
                                         : 'bg-white/5 text-white border-white/10 hover:border-mint/50'}`}
                                 >
-                                    {t(crop.toLowerCase() as any) || crop}
+                                    {t(crop.toLowerCase() as any)}
                                 </button>
                             ))}
                         </div>
@@ -518,7 +516,7 @@ export default function DashboardPage() {
                             onClick={() => setIsCropSelectorOpen(false)}
                             className="w-full py-3 text-sm text-gray-500 font-bold uppercase tracking-widest hover:text-white transition-colors"
                         >
-                            {t('cancel') || 'Cancel'}
+                            {t('cancel')}
                         </button>
                     </GlassCard>
                 </div>
@@ -529,9 +527,9 @@ export default function DashboardPage() {
                     <GlassCard className="max-w-md w-full p-8 shadow-2xl border-white/10">
                         <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                             <svg className="w-6 h-6 text-mint mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            {t('correctionFieldLocation') || 'Correction: Field Location'}
+                            {t('correctionFieldLocation')}
                         </h3>
-                        <p className="text-xs text-gray-400 mb-6 leading-relaxed">{t('gpsWeakDesc') || 'If your GPS signal is weak in the field, select a nearby agricultural hub or use your saved coordinates for accurate transit math.'}</p>
+                        <p className="text-xs text-gray-400 mb-6 leading-relaxed">{t('gpsWeakDesc')}</p>
 
                         <div className="space-y-3 mb-8">
                             <button
@@ -543,8 +541,8 @@ export default function DashboardPage() {
                                 className="w-full flex items-center justify-between p-4 rounded-xl border border-mint/30 bg-mint/5 hover:bg-mint/10 transition-all group"
                             >
                                 <div className="text-left">
-                                    <p className="text-sm font-bold text-mint uppercase tracking-widest">{t('useLiveGps') || 'Use Live GPS'}</p>
-                                    <p className="text-[10px] text-mint/60">{t('autoDetectDevice') || 'Auto-detect from device'}</p>
+                                    <p className="text-sm font-bold text-mint uppercase tracking-widest">{t('useLiveGps')}</p>
+                                    <p className="text-[10px] text-mint/60">{t('autoDetectDevice')}</p>
                                 </div>
                                 <svg className="w-5 h-5 text-mint animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z" /></svg>
                             </button>
@@ -570,7 +568,7 @@ export default function DashboardPage() {
                             onClick={() => setIsLocationModalOpen(false)}
                             className="w-full py-3 text-sm text-gray-500 font-bold uppercase tracking-widest hover:text-white transition-colors"
                         >
-                            {t('backToHub') || 'Back to Hub'}
+                            {t('backToHub')}
                         </button>
                     </GlassCard>
                 </div>

@@ -7,12 +7,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { ShieldAlert, Camera, Map, AlertTriangle, Info, BellRing, Target, ChevronRight } from 'lucide-react';
 
 export default function PestWarningPage() {
-    const { t } = useLanguage();
+    const { t, n } = useLanguage();
     const [isReporting, setIsReporting] = useState(false);
 
     const alerts = [
-        { id: 1, type: 'High Risk', pest: 'Fall Armyworm', distance: '2.5km away', trend: 'Spreading East' },
-        { id: 2, type: 'Moderate', pest: 'Fungal Blight', distance: '12km away', trend: 'Static' },
+        { id: 1, type: t('highRisk'), pest: t('fallArmyworm'), distance: t('distKm', { dist: n(2.5) }), trend: t('spreadingEast') },
+        { id: 2, type: t('moderate'), pest: t('fungalBlight'), distance: t('distKm', { dist: n(12) }), trend: t('static') },
     ];
 
     return (
@@ -20,9 +20,9 @@ export default function PestWarningPage() {
             <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-white uppercase tracking-tighter">
-                        {t('pestWarning') || "Pest & Disease \"Early Warning\" System"}
+                        {t('pestDiseaseSystem')}
                     </h1>
-                    <p className="text-sm text-gray-400">{t('geofencingActive') || "Geofencing Active: Monitoring 25km radius around your field"}</p>
+                    <p className="text-sm text-gray-400">{t('geofencingActive')}</p>
                 </div>
                 <div className="flex items-center space-x-3">
                     <button 
@@ -30,7 +30,7 @@ export default function PestWarningPage() {
                         className="group flex items-center space-x-2 bg-mint hover:bg-white text-forest px-4 py-2 rounded-xl transition-all font-black text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(32,255,189,0.3)]"
                     >
                         <Camera className="w-4 h-4" />
-                        <span>{t('reportIssue') || "AI Report (Camera)"}</span>
+                        <span>{t('aiReportCamera')}</span>
                     </button>
                 </div>
             </header>
@@ -60,7 +60,9 @@ export default function PestWarningPage() {
                                     <div className="w-6 h-6 bg-forest border-2 border-mint rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(32,255,189,0.5)]">
                                         <div className="w-1.5 h-1.5 bg-mint rounded-full" />
                                     </div>
-                                    <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-black/80 px-2 py-0.5 rounded text-[8px] text-white font-bold uppercase tracking-widest whitespace-nowrap border border-white/10">Your Field</span>
+                                    <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-black/80 px-2 py-0.5 rounded text-[8px] text-white font-bold uppercase tracking-widest whitespace-nowrap border border-white/10">
+                                        {t('yourField')}
+                                    </span>
                                 </div>
                             </div>
 
@@ -68,7 +70,7 @@ export default function PestWarningPage() {
                             <div className="absolute top-[38%] left-[28%] z-10 group cursor-help">
                                 <AlertTriangle className="w-6 h-6 text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-bounce" />
                                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-32 hidden group-hover:block bg-red-500/90 p-2 rounded-lg text-[10px] text-white font-bold animate-in fade-in slide-in-from-bottom-1">
-                                    Fall Armyworm Outbreak (2.5km)
+                                    {t('armywormOutbreak')}
                                 </div>
                             </div>
                         </div>
@@ -77,11 +79,11 @@ export default function PestWarningPage() {
                         <div className="absolute top-4 left-4 flex flex-col space-y-2">
                              <div className="bg-black/80 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg flex items-center space-x-2">
                                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-[10px] text-white font-black uppercase tracking-widest">High Threat Zone</span>
+                                <span className="text-[10px] text-white font-black uppercase tracking-widest">{t('highThreatZone')}</span>
                              </div>
                              <div className="bg-black/80 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg flex items-center space-x-2">
                                 <div className="w-2 h-2 rounded-full bg-amber-500" />
-                                <span className="text-[10px] text-white font-black uppercase tracking-widest">Observation Required</span>
+                                <span className="text-[10px] text-white font-black uppercase tracking-widest">{t('observationRequired')}</span>
                              </div>
                         </div>
 
@@ -98,14 +100,14 @@ export default function PestWarningPage() {
                     <GlassCard className="p-6">
                         <div className="flex items-center space-x-2 mb-6">
                             <BellRing className="w-4 h-4 text-red-500" />
-                            <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('activeAlerts') || "Active Nearby Threats"}</h3>
+                            <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('activeAlerts')}</h3>
                         </div>
 
                         <div className="space-y-4">
                             {alerts.map((alert) => (
                                 <div key={alert.id} className="p-4 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all">
                                     <div className="flex justify-between items-start mb-2">
-                                        <span className={`text-[8px] font-black uppercase tracking-tighter px-2 py-0.5 rounded ${alert.type === 'High Risk' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                                        <span className={`text-[8px] font-black uppercase tracking-tighter px-2 py-0.5 rounded ${alert.type === t('highRisk') ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
                                             {alert.type}
                                         </span>
                                         <span className="text-[10px] text-gray-500 font-bold">{alert.distance}</span>
@@ -123,9 +125,9 @@ export default function PestWarningPage() {
                             <div className="flex items-start space-x-3">
                                 <ShieldAlert className="w-5 h-5 text-mint shrink-0" />
                                 <div>
-                                    <p className="text-xs font-bold text-white uppercase mb-1">Preventative Action</p>
+                                    <p className="text-xs font-bold text-white uppercase mb-1">{t('preventativeAction')}</p>
                                     <p className="text-[10px] text-gray-400 leading-relaxed">
-                                        Wind direction favors spread to your field by Thursday. Apply Neem-based biological barrier within 48h.
+                                        {t('pestAdvice')}
                                     </p>
                                 </div>
                             </div>
@@ -135,8 +137,8 @@ export default function PestWarningPage() {
                     <GlassCard className="p-6 relative group cursor-pointer border-dashed border-white/20 hover:border-mint/50 transition-all">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-xs font-black text-white uppercase tracking-widest mb-1">AI Diagnostic Hub</h3>
-                                <p className="text-[10px] text-gray-500">Upload photo to identify unknown blight</p>
+                                <h3 className="text-xs font-black text-white uppercase tracking-widest mb-1">{t('aiDiagnosticHub')}</h3>
+                                <p className="text-[10px] text-gray-500">{t('uploadPhotoPest')}</p>
                             </div>
                             <Camera className="w-6 h-6 text-gray-400 group-hover:text-mint transition-colors" />
                         </div>
@@ -145,10 +147,10 @@ export default function PestWarningPage() {
                     <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
                         <div className="flex items-center space-x-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                             <Info className="w-3 h-3" />
-                            <span>Community Sourced Data</span>
+                            <span>{t('communitySourcedData')}</span>
                         </div>
                         <p className="mt-2 text-[10px] text-gray-400">
-                            Alerts are verified by 12 neighboring farms using MittiMitra Peer-to-Peer verification.
+                            {t('p2pVerification')}
                         </p>
                     </div>
                 </div>
@@ -161,18 +163,18 @@ export default function PestWarningPage() {
                         <div className="w-20 h-20 bg-mint/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Camera className="w-10 h-10 text-mint" />
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tighter">Initialize AI Camera</h3>
-                        <p className="text-xs text-gray-400 mb-8 leading-relaxed">Point your camera at the affected leaf or stem. Our computer vision model will identify the disease and prescribe treatment.</p>
+                        <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tighter">{t('initializeAiCamera')}</h3>
+                        <p className="text-xs text-gray-400 mb-8 leading-relaxed">{t('cameraInstruction')}</p>
                         
                         <div className="space-y-3">
                             <button className="w-full py-4 bg-mint text-forest font-black uppercase tracking-widest text-xs rounded-xl shadow-lg ring-mint/30 hover:ring-4 transition-all">
-                                Open Camera
+                                {t('openCamera')}
                             </button>
                             <button 
                                 onClick={() => setIsReporting(false)}
                                 className="w-full py-4 text-xs text-gray-500 font-bold uppercase tracking-widest hover:text-white transition-colors"
                             >
-                                {t('cancel') || "Cancel"}
+                                {t('cancel')}
                             </button>
                         </div>
                     </GlassCard>

@@ -7,9 +7,11 @@ import { performQualityAudit, captureGuidance, QualityAuditResult } from '@/serv
 import { generateProvenanceHash, cacheProvenanceHash } from '@/utils/provenance';
 import { MandiPass } from '@/components/dashboard/MandiPass';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function TransparencyLedgerPage() {
     const router = useRouter();
+    const { t, n } = useLanguage();
     const [isAuditing, setIsAuditing] = useState(false);
     const [auditStep, setAuditStep] = useState(0);
     const [auditResult, setAuditResult] = useState<QualityAuditResult | null>(null);
@@ -21,7 +23,7 @@ export default function TransparencyLedgerPage() {
     // Mock data from dashboard context
     const mockContext = {
         userId: "FARMER_77",
-        crop: "Tomato",
+        crop: t('tomato'),
         basePrice: 2850,
         location: { lat: 18.5204, lng: 73.8567 },
         spoilageRisk: 4.2
@@ -100,14 +102,14 @@ export default function TransparencyLedgerPage() {
         <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-8">
             <header className="flex items-center justify-between mb-8">
                 <div>
-                   <button onClick={() => router.back()} className="text-mint text-xs font-bold flex items-center mb-2 hover:opacity-70 transition-all">
+                   <button onClick={() => router.back()} className="text-mint text-xs font-bold flex items-center mb-2 hover:opacity-70 transition-all uppercase">
                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-                       BACK TO DASHBOARD
+                       {t('backToDashboard')}
                    </button>
-                   <h1 className="text-3xl font-black text-white italic uppercase tracking-tighter">Transparency Ledger</h1>
-                   <p className="text-gray-400 text-sm">Secure your premium yield with cryptographic proof.</p>
+                   <h1 className="text-3xl font-black text-white italic uppercase tracking-tighter">{t('transparencyLedger')}</h1>
+                   <p className="text-gray-400 text-sm">{t('securePremiumYield')}</p>
                 </div>
-                <StatusPill status="GREEN" message="ENCRYPTED SESSION" />
+                <StatusPill status="GREEN" message={t('encryptedSession')} />
             </header>
 
             {!auditResult && !isAuditing ? (
@@ -115,13 +117,13 @@ export default function TransparencyLedgerPage() {
                     <div className="w-24 h-24 bg-mint/10 rounded-full flex items-center justify-center mb-6 border border-mint/30 shadow-[0_0_30px_rgba(32,255,189,0.2)]">
                         <svg className="w-12 h-12 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                     </div>
-                    <h2 className="text-2xl font-black text-white mb-2 tracking-tight">Audit Your Yield</h2>
-                    <p className="text-gray-400 max-w-sm mb-8">Take a 360° scan of your crop to calculate its Shadow Price and generate a Digital Mandi Pass.</p>
+                    <h2 className="text-2xl font-black text-white mb-2 tracking-tight uppercase">{t('auditYourYield')}</h2>
+                    <p className="text-gray-400 max-w-sm mb-8">{t('auditYieldDesc')}</p>
                     <button 
                         onClick={startAudit}
                         className="bg-mint text-forest font-black px-8 py-4 rounded-2xl shadow-[0_0_20px_rgba(32,255,189,0.4)] hover:scale-105 transition-all text-lg uppercase italic"
                     >
-                        Start Quality Audit
+                        {t('startQualityAudit')}
                     </button>
                 </GlassCard>
             ) : isAuditing ? (
@@ -135,7 +137,7 @@ export default function TransparencyLedgerPage() {
                         />
                         <div className="absolute inset-0 flex flex-col items-center justify-end p-12 bg-gradient-to-t from-forest/90 to-transparent">
                              <div className="bg-mint/20 border border-mint/50 backdrop-blur-md px-6 py-3 rounded-2xl mb-4">
-                                 <p className="text-mint font-black text-lg animate-pulse">{captureGuidance[auditStep]}</p>
+                                 <p className="text-mint font-black text-lg animate-pulse uppercase">{t(captureGuidance[auditStep] as any)}</p>
                              </div>
                              <div className="flex space-x-2">
                                 {captureGuidance.map((_, i) => (
@@ -172,17 +174,17 @@ export default function TransparencyLedgerPage() {
                     <div className="mt-8 flex justify-center space-x-4">
                          <button 
                             onClick={() => window.print()} 
-                            className="flex items-center space-x-2 bg-white/5 hover:bg-white/10 border border-white/20 px-6 py-3 rounded-2xl text-white font-bold transition-all"
+                            className="flex items-center space-x-2 bg-white/5 hover:bg-white/10 border border-white/20 px-6 py-3 rounded-2xl text-white font-bold transition-all uppercase"
                          >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 00-2 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                            <span>Print Certificate</span>
+                            <span>{t('printCertificate')}</span>
                          </button>
                          <button 
                             onClick={() => startAudit()} 
-                            className="flex items-center space-x-2 bg-mint/10 hover:bg-mint/20 border border-mint/30 px-6 py-3 rounded-2xl text-mint font-bold transition-all"
+                            className="flex items-center space-x-2 bg-mint/10 hover:bg-mint/20 border border-mint/30 px-6 py-3 rounded-2xl text-mint font-bold transition-all uppercase"
                          >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                            <span>Re-Audit Batch</span>
+                            <span>{t('reAuditBatch')}</span>
                          </button>
                     </div>
                 </div>
