@@ -15,9 +15,11 @@ import { HarvestScorecard } from '@/components/dashboard/HarvestScorecard';
 import { getClusterMaturityHeatmap } from '@/services/supplyOrchestrator';
 import { getWeatherForecast } from '@/services/weatherService';
 import Link from 'next/link';
+import { speak } from '@/services/ttsService';
+import { Volume2 } from 'lucide-react';
 
 export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData, clusterData }: VerdictCardProps) {
-    const { t, n } = useLanguage();
+    const { t, n, language } = useLanguage();
     const [isExpanded, setIsExpanded] = useState(false);
 
     if (!data) return null;
@@ -170,7 +172,20 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                 <svg className="w-5 h-5 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                             </div>
                             <div>
-                                <p className="text-[10px] text-mint uppercase tracking-widest font-black opacity-80 mb-0.5">Priority Action</p>
+                                <div className="flex items-center space-x-2">
+                                    <p className="text-[10px] text-mint uppercase tracking-widest font-black opacity-80 mb-0.5">Priority Action</p>
+                                    <button 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            const audioText = `${t('priorityAction')}: ${priorityAction.action}. ${t('savesYou')} ${n(priorityAction.net_saving_inr)} ${t('rupees')}.`;
+                                            speak(audioText, language);
+                                        }}
+                                        className="p-1 hover:bg-mint/20 rounded-full transition-colors group/audio"
+                                        title="Listen to Priority Action"
+                                    >
+                                        <Volume2 className="w-3 h-3 text-mint/60 group-hover/audio:text-mint transition-colors" />
+                                    </button>
+                                </div>
                                 <p className="text-white text-sm font-bold">{priorityAction.action}</p>
                             </div>
                         </div>
