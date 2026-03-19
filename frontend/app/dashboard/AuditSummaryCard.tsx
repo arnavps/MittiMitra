@@ -1,11 +1,13 @@
 import { useLanguage } from '@/contexts/LanguageContext';
+import { speak } from '@/services/ttsService';
+import { Volume2 } from 'lucide-react';
 
 interface AuditSummaryCardProps {
     auditData: any;
 }
 
 export function AuditSummaryCard({ auditData }: AuditSummaryCardProps) {
-    const { t, n } = useLanguage();
+    const { t, n, language } = useLanguage();
 
     if (!auditData) return null;
 
@@ -31,7 +33,20 @@ export function AuditSummaryCard({ auditData }: AuditSummaryCardProps) {
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${is_high_risk ? 'bg-red-500/20 text-red-500 border-red-500/50' : 'bg-mint/20 text-mint border-mint/50'} border`}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
-                    <h3 className="text-white font-bold tracking-widest uppercase text-xs">Logistics Audit</h3>
+                    <div className="flex items-center space-x-2">
+                        <h3 className="text-white font-bold tracking-widest uppercase text-xs">{t('logisticsAudit') || 'Logistics Audit'}</h3>
+                        <button 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                const audioText = `${t('logisticsAudit')}: ${t('yourSetupIs')} ${current_setup} ${t('with')} ${n(current_spoilage_24h_pct)}% ${t('spoilageLoss')}. ${t('idealSetupIs')} ${ideal_setup}. ${leak_inr_24h > 0 ? `${t('losing')} ${n(leak_inr_per_hour)} ${t('rupees')} ${t('perHour')}.` : ''}`;
+                                speak(audioText, language);
+                            }}
+                            className="p-1 hover:bg-mint/20 rounded-full transition-colors group/audio"
+                            title="Listen to Logistics Audit"
+                        >
+                            <Volume2 className="w-3 h-3 text-mint/60 group-hover/audio:text-mint transition-colors" />
+                        </button>
+                    </div>
                 </div>
                 {is_high_risk ? (
                     <span className="bg-red-500/20 text-red-400 text-[10px] px-2 py-1 rounded-full font-black uppercase tracking-widest border border-red-500/30 flex items-center animate-pulse">
