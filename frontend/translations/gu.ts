@@ -305,6 +305,8 @@ export const gu = {
     soilSignature: "સોઈલ સિગ્નેચર",
     soilLogMsg: "સેટેલાઇટ-વેરિફાઈડ નાઈટ્રોજન શોષણ 2024 બેઝલાઇન સાથે સુસંગત.",
     planning30Day: "30-દિવસીય લણણીનું આયોજન",
+    yieldCalibration: "ઉપજ કેલિબ્રેશન",
+    totalFieldEst: "કુલ ખેતર અંદાજ",
     reserveColdStorage: "કોલ્ડ સ્ટોરેજ રિઝર્વ કરો",
     coldStorageAdvice: "પીક લણણી 12 દિવસમાં છે. પુણે એગ્રી-હબમાં તમારો સ્લોટ અત્યારે જ સુરક્ષિત કરો.",
     preBookLogistics: "લોજિસ્ટિક્સ પ્રી-બુક કરો",

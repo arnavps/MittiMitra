@@ -305,6 +305,8 @@ export const hi = {
     soilSignature: "मिट्टी के हस्ताक्षर",
     soilLogMsg: "उपग्रह-सत्यापित नाइट्रोजन अवशोषण 2024 आधार रेखा के अनुरूप।",
     planning30Day: "30-दिवसीय हार्वेस्ट योजना",
+    yieldCalibration: "उपज अंशांकन",
+    totalFieldEst: "कुल क्षेत्र अनुमान",
     reserveColdStorage: "कोल्ड स्टोरेज रिजर्व करें",
     coldStorageAdvice: "पीक हार्वेस्ट 12 दिनों में है। पुणे एग्री-हब में अपना स्लॉट अभी सुरक्षित करें।",
     preBookLogistics: "लॉजिस्टिक्स प्री-बुक करें",

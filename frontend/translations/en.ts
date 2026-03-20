@@ -305,6 +305,8 @@ export const en = {
     soilSignature: "Soil Signature",
     soilLogMsg: "Satellite-verified nitrogen uptake consistent with 2024 baseline.",
     planning30Day: "30-Day Harvest Planning",
+    yieldCalibration: "Yield Calibration",
+    totalFieldEst: "Total Field Estimate",
     reserveColdStorage: "Reserve Cold Storage",
     coldStorageAdvice: "Peak harvest is in 12 days. Secure your slot at the Pune Agri-Hub now.",
     preBookLogistics: "Pre-book Logistics",

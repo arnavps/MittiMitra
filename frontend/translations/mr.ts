@@ -305,6 +305,8 @@ export const mr = {
     soilSignature: "मातीची स्वाक्षरी",
     soilLogMsg: "सॅटेलाइट-सत्यापित नायट्रोजन शोषण २०२४ च्या बेसलाइनशी सुसंगत.",
     planning30Day: "३०-दिवसीय कापणी नियोजन",
+    yieldCalibration: "उत्पन्न अंशांकन",
+    totalFieldEst: "एकूण क्षेत्र अंदाज",
     reserveColdStorage: "कोल्ड स्टोरेज रिझर्व्ह करा",
     coldStorageAdvice: "पीक कापणी १२ दिवसांनी आहे. पुणे एग्री-हबमध्ये तुमचा स्लॉट आत्ताच सुरक्षित करा.",
     preBookLogistics: "लॉजिस्टिक्स प्री-बुक करा",

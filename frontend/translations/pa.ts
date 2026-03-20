@@ -305,6 +305,8 @@ export const pa = {
     soilSignature: "ਸੋਇਲ ਸਿਗਨੇਚਰ",
     soilLogMsg: "ਸੈਟੇਲਾਈਟ-ਵੈਰੀਫਾਈਡ ਨਾਈਟ੍ਰੋਜਨ ਜਜ਼ਬ ਕਰਨਾ 2024 ਦੇ ਅਧਾਰ ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਹੈ।",
     planning30Day: "30-ਦਿਨਾਂ ਦੀ ਕਟਾਈ ਦੀ ਯੋਜਨਾ",
+    yieldCalibration: "ਝਾੜ ਸੋਧ",
+    totalFieldEst: "ਕੁੱਲ ਖੇਤ ਅੰਦਾਜ਼ਾ",
     reserveColdStorage: "ਕੋਲਡ ਸਟੋਰੇਜ ਰਿਜ਼ਰਵ ਕਰੋ",
     coldStorageAdvice: "ਸਿਖਰ ਦੀ ਕਟਾਈ 12 ਦਿਨਾਂ ਵਿੱਚ ਹੈ। ਪੁਣੇ ਅਗਰੀ-ਹਬ ਵਿੱਚ ਆਪਣੀ ਸਲਾਟ ਹੁਣੇ ਸੁਰੱਖਿਅਤ ਕਰੋ।",
     preBookLogistics: "ਲੌਜਿਸਟਿਕਸ ਪ੍ਰੀ-ਬੁੱਕ ਕਰੋ",

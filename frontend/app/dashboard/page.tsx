@@ -318,7 +318,11 @@ export default function DashboardPage() {
                             >
                                 <svg className="w-3 h-3 text-mint group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                 <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">
-                                    {manualLocation ? t('customFix') : location ? t('liveGps') : t('puneHub')}
+                                    {manualLocation 
+                                        ? (hubs.find(h => h.lat === manualLocation.lat && h.lng === manualLocation.lng)?.name || t('customFix')) 
+                                        : location 
+                                            ? `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}` 
+                                            : t('puneHub')}
                                 </span>
                             </button>
 
