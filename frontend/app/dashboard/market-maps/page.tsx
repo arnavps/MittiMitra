@@ -14,6 +14,7 @@ const TransitMap = dynamic(() => import('@/components/dashboard/TransitMap'), {
 });
 
 import { NavigationMode } from '@/components/dashboard/NavigationMode';
+import { fetchProfile } from '@/services/user';
 
 export default function MarketMapsPage() {
     const { t, n } = useLanguage();
@@ -26,9 +27,23 @@ export default function MarketMapsPage() {
     const [isVakeelThinking, setIsVakeelThinking] = useState(false);
     const [isTripActive, setIsTripActive] = useState(false);
 
+    const [profileLocation, setProfileLocation] = useState<{ lat: number, lng: number } | null>(null);
+    const [isProfileLoading, setIsProfileLoading] = useState(true);
+
     // Get current location (from user profile or default)
-    const startLoc = cachedData?.user_location || { lat: 18.5204, lng: 73.8567 };
+    const startLoc = profileLocation || cachedData?.user_location || { lat: 18.5204, lng: 73.8567 };
     const activeShock = cachedData?.shock_alert;
+
+    useEffect(() => {
+        const loadProfile = async () => {
+            const profile = await fetchProfile();
+            if (profile?.latitude && profile?.longitude) {
+                setProfileLocation({ lat: profile.latitude, lng: profile.longitude });
+            }
+            setIsProfileLoading(false);
+        };
+        loadProfile();
+    }, []);
 
     const fetchRouting = async (targetMandi: any) => {
         if (!targetMandi || isRoutingLoading) return;
