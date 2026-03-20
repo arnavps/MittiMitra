@@ -393,4 +393,20 @@ export const mr = {
     featShockAnalyzerDesc: "किमती कोसळण्यापूर्वी २४ तास आधी त्याचा शोध घ्या.",
     featGlobalMandi: "ग्लोबल मंडी ऑर्बिट",
     featGlobalMandiDesc: "५०० किमी रेडियस मधील प्रत्येक बाजारपेठेला निव्वळ नफानुसार रँक करा.",
+
+    // Voice Assistant Missing Keys
+    micDenied: "मायक्रोफोन ॲक्सेस नाकारला.",
+    networkError: "ध्वनी ओळखताना नेटवर्क त्रुटी.",
+    micRequired: "मायक्रोफोन परवानगी आवश्यक आहे.",
+    serverError: "सर्व्हर त्रुटी. कृपया पुन्हा प्रयत्न करा.",
+    networkErrorOccurred: "नेटवर्क त्रुटी आली. कृपया तुमचे कनेक्शन तपासा.",
+    askWhySellWait: "वकीलला विचारा का विकावे/थांबावे",
+    close: "बंद करा",
+    findingAnswer: "तुमचे उत्तर शोधत आहे...",
+    voiceNotSupported: "या ब्राउझरमध्ये ध्वनी समर्थित नाही",
+    listeningTapStop: "ऐकत आहे... थांबवण्यासाठी टॅप करा",
+    tapToSpeak: "एग्री-वकीलशी बोलण्यासाठी टॅप करा",
+    tryAgain: "पुन्हा प्रयत्न करा",
+    typeQuestionIn: "तुमचा प्रश्न टाइप करा",
+    aiEngine: "एआय इंजिन",
 };

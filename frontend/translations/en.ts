@@ -393,4 +393,20 @@ export const en = {
     featShockAnalyzerDesc: "Detect black-swan price crashes 24h before they hit.",
     featGlobalMandi: "Global Mandi Orbit",
     featGlobalMandiDesc: "Rank every market in a 500km radius by absolute net realization.",
+
+    // Voice Assistant Missing Keys
+    micDenied: "Microphone access denied.",
+    networkError: "Network error during speech recognition.",
+    micRequired: "Microphone permission is required.",
+    serverError: "Server error. Please try again.",
+    networkErrorOccurred: "A network error occurred. Please check your connection.",
+    askWhySellWait: "Ask Vakeel why to sell/wait",
+    close: "Close",
+    findingAnswer: "Finding your answer...",
+    voiceNotSupported: "Voice not supported in this browser",
+    listeningTapStop: "Listening... Tap to stop",
+    tapToSpeak: "Tap to speak with Agri-Vakeel",
+    tryAgain: "Try Again",
+    typeQuestionIn: "Type your question in",
+    aiEngine: "AI Engine",
 };

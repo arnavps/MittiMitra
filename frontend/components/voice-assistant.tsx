@@ -112,13 +112,16 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
             recognition.continuous = false;
             recognition.interimResults = false;
 
-            if (language === "Hindi") {
-                recognition.lang = "hi-IN";
-            } else if (language === "Marathi") {
-                recognition.lang = "mr-IN";
-            } else {
-                recognition.lang = "en-US";
-            }
+            const langMap: Record<string, string> = {
+                "Hindi": "hi-IN",
+                "Marathi": "mr-IN",
+                "Tamil": "ta-IN",
+                "Telugu": "te-IN",
+                "Gujarati": "gu-IN",
+                "Punjabi": "pa-IN",
+                "English": "en-IN"
+            };
+            recognition.lang = langMap[language] || "en-IN";
 
             recognition.onresult = (event: any) => {
                 const current = event.resultIndex;

@@ -393,4 +393,20 @@ export const hi = {
     featShockAnalyzerDesc: "ब्लैक-स्वान कीमतों के गिरने का 24 घंटे पहले पता लगाएं।",
     featGlobalMandi: "ग्लोबल मंडी ऑर्बिट",
     featGlobalMandiDesc: "500 किमी के दायरे में हर बाजार को शुद्ध लाभ के आधार पर रैंक करें।",
+
+    // Voice Assistant Missing Keys
+    micDenied: "माइक्रोफ़ोन एक्सेस अस्वीकार कर दिया गया।",
+    networkError: "ध्वनि पहचान के दौरान नेटवर्क त्रुटि।",
+    micRequired: "माइक्रोफ़ोन अनुमति की आवश्यकता है।",
+    serverError: "सर्वर त्रुटि। कृपया पुनः प्रयास करें।",
+    networkErrorOccurred: "एक नेटवर्क त्रुटि हुई। कृपया अपना कनेक्शन जांचें।",
+    askWhySellWait: "वकील से पूछें कि क्यों बेचें/प्रतीक्षा करें",
+    close: "बंद करें",
+    findingAnswer: "आपका उत्तर खोज रहे हैं...",
+    voiceNotSupported: "इस ब्राउज़र में ध्वनि समर्थित नहीं है",
+    listeningTapStop: "सुन रहा हूँ... रुकने के लिए टैप करें",
+    tapToSpeak: "एग्री-वकील से बात करने के लिए टैप करें",
+    tryAgain: "पुनः प्रयास करें",
+    typeQuestionIn: "अपना प्रश्न टाइप करें",
+    aiEngine: "एआई इंजन",
 };

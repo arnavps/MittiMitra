@@ -393,4 +393,20 @@ export const gu = {
     featShockAnalyzerDesc: "કિંમતોમાં ઘટાડાને 24 કલાક પહેલા શોધી કાઢો.",
     featGlobalMandi: "ગ્લોબલ મંડી ઓર્બિટ",
     featGlobalMandiDesc: "500 કિમીના વિસ્તારમાં દરેક બજારને શુદ્ધ નફાના આધારે રેન્ક કરો.",
+
+    // Voice Assistant Missing Keys
+    micDenied: "Microphone access denied.",
+    networkError: "Network error during speech recognition.",
+    micRequired: "Microphone permission is required.",
+    serverError: "Server error. Please try again.",
+    networkErrorOccurred: "A network error occurred. Please check your connection.",
+    askWhySellWait: "Ask Vakeel why to sell/wait",
+    close: "Close",
+    findingAnswer: "Finding your answer...",
+    voiceNotSupported: "Voice not supported in this browser",
+    listeningTapStop: "Listening... Tap to stop",
+    tapToSpeak: "એગ્રી-વકીલ સાથે વાત કરવા માટે ટેપ કરો",
+    tryAgain: "ફરી પ્રયાસ કરો",
+    typeQuestionIn: "Type your question in",
+    aiEngine: "AI Engine",
 };

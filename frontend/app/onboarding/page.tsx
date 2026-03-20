@@ -141,9 +141,21 @@ export default function OnboardingPage() {
         setShowLanguageModal(false);
         setCurrentStep('Consent');
         
-        const greeting = name === "Hindi" 
-            ? "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खिड़कियां खोजने के लिए, मुझे आपके जीपीएस और फसल डेटा का उपयोग करने की आवश्यकता है। क्या मुझे आगे बढ़ने के लिए आपकी अनुमति है?"
-            : "Namaste! I am MittiMitra. To find you the best profit windows, I need to use your GPS and crop data. Do I have your permission to proceed?";
+        let greeting = "Namaste! I am MittiMitra. To find you the best profit windows, I need to use your GPS and crop data. Do I have your permission to proceed?";
+        
+        if (name === "Hindi") {
+            greeting = "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खिड़कियां खोजने के लिए, मुझे आपके जीपीएस और फसल डेटा का उपयोग करने की आवश्यकता है। क्या मुझे आगे बढ़ने के लिए आपकी अनुमति है?";
+        } else if (name === "Marathi") {
+            greeting = "नमस्कार! मी मिट्टीमित्र आहे. तुमच्यासाठी सर्वोत्तम नफा शोधण्यासाठी, मला तुमचा जीपीएस અને पिकाचा डेटा वापरण्याची परवानगी हवी आहे. मी पुढे जाऊ शकतो का?";
+        } else if (name === "Tamil") {
+            greeting = "வணக்கம்! நான் மிட்டிமித்ரா. உங்களுக்குச் சிறந்த லாபச் சந்தைகளைக் கண்டறிய, உங்கள் ஜிபிஎஸ் மற்றும் பயிர் தரவைப் பயன்படுத்த எனக்கு அனுமதி தேவை. நான் தொடரலாமா?";
+        } else if (name === "Telugu") {
+            greeting = "నమస్కారం! నేను మిట్టిమిత్ర. మీకు ఉత్తమ లాభదాయకమైన మార్કેట్లను కనుగొనడానికి, మీ జిపిఎస్ మరియు పంట డేటాను ఉపయోగించడానికి నాకు మీ అనుమతి అవసరం. నేను కొనసాగించవచ్చా?";
+        } else if (name === "Gujarati") {
+            greeting = "નમસ્તે! હું મિત્તીમિત્ર છું. તમારા માટે શ્રેષ્ઠ નફાકારક બજારો શોધવા માટે, મારે તમારા જીપીએસ અને પાકના ડેટાનો ઉપયોગ કરવાની મંજૂરી જોઈએ છે. શું હું આગળ વધી શકું?";
+        } else if (name === "Punjabi") {
+            greeting = "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਮਿੱਟੀਮਿੱਤਰ ਹਾਂ। ਤੁਹਾਡੇ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਮੁਨਾਫ਼ਾ ਵਾਲੀਆਂ ਮੰਡੀਆਂ ਲੱਭਣ ਲਈ, ਮੈਨੂੰ ਤੁਹਾਡੇ ਜੀਪੀਐਸ ਅਤੇ ਫ਼ਸਲ ਦੇ ਡੇਟਾ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਕੀ ਮੈਂ ਅੱਗੇ ਵਧ ਸਕਦਾ ਹਾਂ?";
+        }
         
         setMessages([{ id: Date.now(), role: 'ai', text: greeting }]);
         speakResponse(greeting, name, () => startListening());
@@ -151,7 +163,15 @@ export default function OnboardingPage() {
 
     const startListening = () => {
         if (recognitionRef.current) {
-            const langMap: any = { "English": "en-IN", "Hindi": "hi-IN", "Marathi": "mr-IN" };
+            const langMap: any = { 
+                "English": "en-IN", 
+                "Hindi": "hi-IN", 
+                "Marathi": "mr-IN",
+                "Tamil": "ta-IN",
+                "Telugu": "te-IN",
+                "Gujarati": "gu-IN",
+                "Punjabi": "pa-IN"
+            };
             recognitionRef.current.lang = langMap[langStr] || "en-IN";
             try {
                 recognitionRef.current.start();

@@ -393,4 +393,20 @@ export const te = {
     featShockAnalyzerDesc: "ధర పతనాన్ని 24 గంటల ముందే గుర్తించండి.",
     featGlobalMandi: "గ్లోబల్ మండి ఆర్బిట్",
     featGlobalMandiDesc: "500 కి.మీ పరిధిలోని ప్రతి మార్కెట్‌ను నికర లాభం ఆధారంగా ర్యాంక్ చేయండి.",
+
+    // Voice Assistant Missing Keys
+    micDenied: "Microphone access denied.",
+    networkError: "Network error during speech recognition.",
+    micRequired: "Microphone permission is required.",
+    serverError: "Server error. Please try again.",
+    networkErrorOccurred: "A network error occurred. Please check your connection.",
+    askWhySellWait: "Ask Vakeel why to sell/wait",
+    close: "Close",
+    findingAnswer: "Finding your answer...",
+    voiceNotSupported: "Voice not supported in this browser",
+    listeningTapStop: "Listening... Tap to stop",
+    tapToSpeak: "అగ్రి-వకీల్‌తో మాట్లాడటానికి నొక్కండి",
+    tryAgain: "మళ్ళీ ప్రయత్నించండి",
+    typeQuestionIn: "Type your question in",
+    aiEngine: "AI Engine",
 };

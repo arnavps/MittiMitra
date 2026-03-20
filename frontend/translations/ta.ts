@@ -393,4 +393,20 @@ export const ta = {
     featShockAnalyzerDesc: "விலை வீழ்ச்சியை 24 மணிநேரத்திற்கு முன்பே கண்டறியும்.",
     featGlobalMandi: "உலகளாவிய மண்டி சுற்றுவட்டப்பாதை",
     featGlobalMandiDesc: "500 கிமீ சுற்றளவில் உள்ள ஒவ்வொரு சந்தையையும் லாபத்தின் அடிப்படையில் வரிசைப்படுத்தும்.",
+
+    // Voice Assistant Missing Keys
+    micDenied: "Microphone access denied.",
+    networkError: "Network error during speech recognition.",
+    micRequired: "Microphone permission is required.",
+    serverError: "Server error. Please try again.",
+    networkErrorOccurred: "A network error occurred. Please check your connection.",
+    askWhySellWait: "Ask Vakeel why to sell/wait",
+    close: "Close",
+    findingAnswer: "Finding your answer...",
+    voiceNotSupported: "Voice not supported in this browser",
+    listeningTapStop: "Listening... Tap to stop",
+    tapToSpeak: "அக்ரி-வக்கீலுடன் பேச தட்டவும்",
+    tryAgain: "மீண்டும் முயற்சிக்கவும்",
+    typeQuestionIn: "Type your question in",
+    aiEngine: "AI Engine",
 };

@@ -393,4 +393,20 @@ export const pa = {
     featShockAnalyzerDesc: "ਕੀਮਤਾਂ ਡਿੱਗਣ ਤੋਂ 24 ਘੰਟੇ ਪਹਿਲਾਂ ਪਤਾ ਲਗਾਓ।",
     featGlobalMandi: "ਗਲੋਬਲ ਮੰਡੀ ਆਰਬਿਟ",
     featGlobalMandiDesc: "500 ਕਿਲੋਮੀਟਰ ਦੇ ਘੇਰੇ ਵਿੱਚ ਹਰ ਬਾਜ਼ਾਰ ਨੂੰ ਸ਼ੁੱਧ ਲਾਭ ਦੇ ਅਧਾਰ 'ਤੇ ਰੈਂਕ ਕਰੋ।",
+
+    // Voice Assistant Missing Keys
+    micDenied: "Microphone access denied.",
+    networkError: "Network error during speech recognition.",
+    micRequired: "Microphone permission is required.",
+    serverError: "Server error. Please try again.",
+    networkErrorOccurred: "A network error occurred. Please check your connection.",
+    askWhySellWait: "Ask Vakeel why to sell/wait",
+    close: "Close",
+    findingAnswer: "Finding your answer...",
+    voiceNotSupported: "Voice not supported in this browser",
+    listeningTapStop: "Listening... Tap to stop",
+    tapToSpeak: "ਐਗਰੀ-ਵਕੀਲ ਨਾਲ ਗੱਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ",
+    tryAgain: "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+    typeQuestionIn: "Type your question in",
+    aiEngine: "AI Engine",
 };
