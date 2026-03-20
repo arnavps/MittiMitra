@@ -363,6 +363,12 @@ export const pa = {
     useLiveGps: "ਲਾਈਵ ਜੀਪੀਐਸ ਵਰਤੋ",
     autoDetectDevice: "ਡਿਵਾਈਸ ਤੋਂ ਆਪਣੇ ਆਪ ਪਛਾਣੋ",
     backToHub: "ਹਬ 'ਤੇ ਵਾਪਸ",
+    searchLocation: "ਸਥਾਨ ਖੋਜੋ",
+    searchPlaceholder: "ਸ਼ਹਿਰ/ਜ਼ਿਲ੍ਹੇ ਦਾ ਨਾਮ ਟਾਈਪ ਕਰੋ...",
+    searching: "ਖੋਜ ਕਰ ਰਿਹਾ ਹੈ...",
+    noResults: "ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ",
+    lockLocation: "ਸਥਾਨ ਲੌਕ ਕਰੋ",
+    locationLocked: "ਸਥਾਨ ਲੌਕ ਕੀਤਾ ਗਿਆ",
 
     // Sidebar
     strategy: "ਰਣਨੀਤੀ",

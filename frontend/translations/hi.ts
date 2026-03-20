@@ -363,6 +363,12 @@ export const hi = {
     useLiveGps: "लाइव जीपीएस का प्रयोग करें",
     autoDetectDevice: "डिवाइस से स्वतः पहचानें",
     backToHub: "हब पर वापस",
+    searchLocation: "स्थान खोजें",
+    searchPlaceholder: "शहर/जिले का नाम टाइप करें...",
+    searching: "खोज रहे हैं...",
+    noResults: "कोई परिणाम नहीं मिला",
+    lockLocation: "स्थान लॉक करें",
+    locationLocked: "स्थान लॉक किया गया",
 
     // Sidebar
     strategy: "रणनीति",

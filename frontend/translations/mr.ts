@@ -363,6 +363,12 @@ export const mr = {
     useLiveGps: "लाइव्ह जीपीएस वापरा",
     autoDetectDevice: "डिव्हाइसवरून स्वयंचलितपणे ओळखा",
     backToHub: "हबवर परत",
+    searchLocation: "स्थान शोधा",
+    searchPlaceholder: "शहर/जिल्ह्याचे नाव टाइप करा...",
+    searching: "शोधत आहे...",
+    noResults: "कोणतेही परिणाम आढळले नाहीत",
+    lockLocation: "स्थान लॉक करा",
+    locationLocked: "स्थान लॉक केले",
 
     // Sidebar
     strategy: "रणनीती",

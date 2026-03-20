@@ -363,6 +363,12 @@ export const gu = {
     useLiveGps: "લાઇવ જીપીએસ વાપરો",
     autoDetectDevice: "ડિવાઇસ દ્વારા ઓટો-ડિટેક્ટ કરો",
     backToHub: "હબ પર પાછા",
+    searchLocation: "સ્થાન શોધો",
+    searchPlaceholder: "શહેર/જિલ્લાનું નામ ટાઇપ કરો...",
+    searching: "શોધી રહ્યાં છે...",
+    noResults: "કોઈ પરિણામ મળ્યાં નથી",
+    lockLocation: "સ્થાન લોક કરો",
+    locationLocked: "સ્થાન લોક કર્યું",
 
     // Sidebar
     strategy: "વ્યૂહરચના",

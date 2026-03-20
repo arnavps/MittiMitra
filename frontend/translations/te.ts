@@ -363,6 +363,12 @@ export const te = {
     useLiveGps: "లైవ్ GPS ఉపయోగించండి",
     autoDetectDevice: "పరికరం నుండి ఆటో-డిటెక్ట్ చేయండి",
     backToHub: "హబ్ కు తిరిగి వెళ్ళండి",
+    searchLocation: "స్థానాన్ని వెతకండి",
+    searchPlaceholder: "నగరం/జిల్లా పేరును టైప్ చేయండి...",
+    searching: "వెతుకుతోంది...",
+    noResults: "ఫలితాలు ఏవీ లేవు",
+    lockLocation: "స్థానాన్ని లాక్ చేయండి",
+    locationLocked: "స్థానం లాక్ చేయబడింది",
 
     // Sidebar
     strategy: "వ్యూహం",

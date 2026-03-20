@@ -363,6 +363,12 @@ export const ta = {
     useLiveGps: "Live GPS-ஐப் பயன்படுத்தவும்",
     autoDetectDevice: "இயந்திரம் மூலம் தானாகக் கண்டறியவும்",
     backToHub: "மையத்திற்குத் திரும்பவும்",
+    searchLocation: "இருப்பிடத்தைத் தேடு",
+    searchPlaceholder: "நகரம்/மாவட்டப் பெயரை உள்ளிடவும்...",
+    searching: "தேடுகிறது...",
+    noResults: "முடிவுகள் எதுவும் இல்லை",
+    lockLocation: "இருப்பிடத்தைப் பூட்டு",
+    locationLocked: "இருப்பிடம் பூட்டப்பட்டது",
 
     // Sidebar
     strategy: "யுக்தி",

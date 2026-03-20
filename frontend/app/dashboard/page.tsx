@@ -38,6 +38,26 @@ export default function DashboardPage() {
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
     const [manualLocation, setManualLocation] = useState<{ lat: number, lng: number } | null>(null);
     const [profileLocation, setProfileLocation] = useState<{ lat: number, lng: number } | null>(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+
+    const handleLocationSearch = async (query: string) => {
+        if (!query || query.length < 3) return;
+        setIsSearching(true);
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`);
+            if (res.ok) {
+                const results = await res.json();
+                setSearchResults(results);
+            }
+        } catch (error) {
+            console.error("Search failed:", error);
+        } finally {
+            setIsSearching(false);
+        }
+    };
 
     const availableCrops = ["Tomato", "Potato", "Onion", "Soybean", "Wheat", "Cotton"];
     const hubs = [
@@ -81,6 +101,14 @@ export default function DashboardPage() {
 
     const { location, requestLocation } = useGPS();
     const { isOnline, cachedData, saveToCache, calculateOfflineSpoilage } = useOfflineCache('dashboard_recommendation');
+
+    // Auto-sync whenever location or manual location changes
+    useEffect(() => {
+        if (location || manualLocation) {
+            console.log("Location updated, matching data...");
+            fetchRecommendation();
+        }
+    }, [location, manualLocation, userCrop]);
 
     const getNearestHubName = (lat: number, lng: number) => {
         const R = 6371; // Earth's radius in km
@@ -605,6 +633,43 @@ export default function DashboardPage() {
                                 </div>
                                 <svg className="w-5 h-5 text-mint animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z" /></svg>
                             </button>
+
+                            {/* Location Search Bar (Phase 10) */}
+                            <div className="relative">
+                                <div className="relative">
+                                    <input 
+                                        type="text"
+                                        placeholder={t('searchPlaceholder')}
+                                        value={searchQuery}
+                                        onChange={(e) => {
+                                            setSearchQuery(e.target.value);
+                                            if (e.target.value.length >= 3) handleLocationSearch(e.target.value);
+                                        }}
+                                        className="w-full p-4 pl-12 rounded-xl bg-white/5 border border-white/10 text-sm focus:border-mint focus:outline-none transition-all"
+                                    />
+                                    <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                    {isSearching && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-mint border-t-transparent rounded-full animate-spin"></div>}
+                                </div>
+
+                                {searchResults.length > 0 && searchQuery.length >= 3 && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 max-h-48 overflow-y-auto rounded-xl bg-forest border border-glass-border shadow-2xl z-[110] animate-in slide-in-from-top-2 duration-200">
+                                        {searchResults.map(result => (
+                                            <button
+                                                key={result.place_id}
+                                                onClick={() => {
+                                                    setManualLocation({ lat: parseFloat(result.lat), lng: parseFloat(result.lon) });
+                                                    setSearchQuery('');
+                                                    setSearchResults([]);
+                                                    setIsLocationModalOpen(false);
+                                                }}
+                                                className="w-full text-left px-4 py-3 text-[10px] font-bold text-gray-200 border-b border-white/5 hover:bg-white/10 transition-colors last:border-0"
+                                            >
+                                                {result.display_name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
 
                             <div className="grid grid-cols-2 gap-2">
                                 {hubs.map(hub => (

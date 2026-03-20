@@ -363,6 +363,12 @@ export const en = {
     useLiveGps: "Use Live GPS",
     autoDetectDevice: "Auto-detect from device",
     backToHub: "Back to Hub",
+    searchLocation: "Search Location",
+    searchPlaceholder: "Type city/district name...",
+    searching: "Searching...",
+    noResults: "No results found",
+    lockLocation: "Lock Location",
+    locationLocked: "Location Locked",
 
     // Sidebar
     strategy: "Strategy",
