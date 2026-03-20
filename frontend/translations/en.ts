@@ -470,4 +470,6 @@ export const en = {
     netRealizationDetail: "This represents your absolute take-home profit. We deduct GPS-calculated fuel costs and heat-decay quality loss from the raw Mandi price.",
     aiRouteAnalysisTitle: "Agri-Vakeel Intelligence",
     aiRouteAnalysisDesc: "Our AI evaluates road grade, real-time traffic, and temperature-sensitive spoilage risks to calculate the safest path for your {crop}.",
+    prepareOffline: "Prepare Offline",
+    startNavigation: "Start Navigation",
 };

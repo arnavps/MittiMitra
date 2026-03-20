@@ -137,7 +137,28 @@ export default function MarketMapsPage() {
                                 </div>
                                 <h2 className="text-lg font-bold text-white uppercase tracking-tight">{t('spatialProfitAnalysis') || 'Logistics Intelligence'}</h2>
                             </div>
-                            <StatusPill status="GREEN" message={t('liveGPSTransitData')} />
+                            <div className="flex items-center space-x-4">
+                                <div className="hidden md:flex items-center space-x-2 px-3 py-1 rounded-full bg-mint/10 border border-mint/20 animate-pulse">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-mint" />
+                                    <span className="text-[10px] font-bold text-mint uppercase tracking-widest">{t('netRealizationFormula')}</span>
+                                </div>
+                                <StatusPill status="GREEN" message={t('liveGPSTransitData')} />
+                            </div>
+                        </div>
+
+                        {/* Top Insight Bar */}
+                        <div className="bg-mint/5 border-b border-white/5 p-3 px-6 flex items-center justify-between group overflow-hidden">
+                            <div className="flex items-center space-x-4">
+                                <span className="text-[10px] text-gray-400 font-mono uppercase tracking-tighter">Algorithm Insight:</span>
+                                <p className="text-xs text-mint font-medium animate-in fade-in slide-in-from-left duration-700">
+                                    {t('netRealizationDetail')}
+                                </p>
+                            </div>
+                            <div className="flex items-center space-x-2 text-[10px] text-gray-500 font-mono">
+                                <span>GPS: ACTIVE</span>
+                                <span className="w-1 h-1 rounded-full bg-gray-500" />
+                                <span>DECAY: CALCULATING</span>
+                            </div>
                         </div>
 
                         {/* Transit Map Integration */}
@@ -154,64 +175,95 @@ export default function MarketMapsPage() {
                             />
                         </div>
 
-                        {/* Route Intelligence Briefing (Inline) */}
                         {selectedRouteObject && (
-                            <div className="p-6 bg-mint/[0.03] transition-all duration-500">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-mint mb-1 flex items-center">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-mint mr-2 animate-pulse" />
-                                            {t('aiRouteAnalysisTitle')}
-                                        </h3>
-                                        <p className="text-white font-bold text-lg">{selectedRouteObject.name}</p>
-                                        <p className="text-xs text-gray-400 mt-1 max-w-md">
-                                            {t('aiRouteAnalysisDesc', { crop: t((cachedData?.crop || 'Tomato').toLowerCase() as any) })}
-                                        </p>
+                            <div className="p-0 border-t border-white/5 grid grid-cols-1 lg:grid-cols-3">
+                                {/* AI Terminal */}
+                                <div className="lg:col-span-2 p-6 bg-black/40 relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-mint/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-mint/10 transition-all duration-700" />
+                                    
+                                    <div className="relative z-10">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center space-x-2">
+                                                <div className="flex space-x-1">
+                                                    <div className="w-2 h-2 rounded-full bg-red-500/50" />
+                                                    <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
+                                                    <div className="w-2 h-2 rounded-full bg-mint/50" />
+                                                </div>
+                                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest ml-2">AI-Vakeel OS v4.0</span>
+                                            </div>
+                                            <div className="text-[10px] font-mono text-mint/50 animate-pulse">● LIVE_FEED</div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <div>
+                                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-mint mb-1 flex items-center">
+                                                    {t('aiRouteAnalysisTitle')}
+                                                </h3>
+                                                <p className="text-white font-bold text-xl tracking-tight">{selectedRouteObject.name}</p>
+                                            </div>
+
+                                            <div className="font-mono text-sm border-l-2 border-mint/20 pl-4 py-1">
+                                                <p className="text-gray-300 leading-relaxed">
+                                                    <span className="text-mint mr-2">{'>'}</span>
+                                                    {selectedRouteObject.justification || selectedRouteObject.description}
+                                                </p>
+                                            </div>
+
+                                            <p className="text-[11px] text-gray-500 italic max-w-md">
+                                                {t('aiRouteAnalysisDesc', { crop: t((cachedData?.crop || 'Tomato').toLowerCase() as any) })}
+                                            </p>
+                                        </div>
                                     </div>
+                                </div>
+
+                                {/* Chat Action Area */}
+                                <div className="bg-mint/5 p-6 flex flex-col justify-center items-center text-center border-l border-white/5">
                                     <button 
                                         onClick={handleAskVakeel}
                                         disabled={isVakeelThinking}
-                                        className="flex items-center space-x-2 bg-forest border border-mint/30 hover:bg-mint/10 px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(32,255,189,0.1)] group"
+                                        className="w-full mb-4 flex items-center justify-center space-x-3 bg-mint text-forest font-black uppercase tracking-widest py-4 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(32,255,189,0.2)] disabled:opacity-50"
                                     >
-                                        <svg className={`w-4 h-4 ${isVakeelThinking ? 'animate-spin text-mint' : 'text-mint'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                        <svg className={`w-5 h-5 ${isVakeelThinking ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                         </svg>
-                                        <span className="text-xs font-bold text-white group-hover:text-mint transition-colors">
-                                            {isVakeelThinking ? 'Vakeel is Thinking...' : 'Ask Agri-Vakeel'}
-                                        </span>
+                                        <span>{isVakeelThinking ? 'Processing...' : 'Ask AI Vakeel'}</span>
                                     </button>
-                                </div>
-                                <div className="p-4 rounded-xl bg-forest/40 border border-white/5 backdrop-blur-sm">
-                                    <p className="text-sm text-gray-300 italic leading-relaxed font-medium">
-                                        "{selectedRouteObject.justification || selectedRouteObject.description}"
+                                    <p className="text-[10px] text-gray-400 font-medium">
+                                        Tap to dive deeper into logistics spoilage vectors and alternative pivot points.
                                     </p>
-                                </div>
-                                <div className="mt-4 flex flex-wrap justify-end gap-3">
-                                    <button 
-                                        className="bg-white/5 border border-white/10 text-gray-400 font-bold px-6 py-3 rounded-2xl hover:bg-white/10 transition-all flex items-center space-x-2"
-                                        onClick={() => {
-                                            // Trigger caching logic from here if we want or just show it's available in navigation
-                                            window.dispatchEvent(new CustomEvent('agriVakeelIntervention', { 
-                                                detail: { 
-                                                    message: "Don't forget to download the offline map package once you start navigation to stay safe in zero-signal areas!",
-                                                    title: "OFFLINE READY" 
-                                                } 
-                                            }));
-                                        }}
-                                    >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                        <span>Prepare Offline</span>
-                                    </button>
-                                    <button 
-                                        onClick={() => setIsTripActive(true)}
-                                        className="bg-mint text-forest font-black uppercase tracking-widest px-8 py-3 rounded-2xl shadow-[0_0_20px_rgba(32,255,189,0.3)] hover:bg-white transition-all transform hover:scale-105 active:scale-95 flex items-center space-x-2"
-                                    >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-                                        <span>Start Navigation</span>
-                                    </button>
                                 </div>
                             </div>
                         )}
+
+                        <div className="p-6 border-t border-white/5">
+                            <div className="flex flex-wrap justify-end gap-3">
+                                <button 
+                                    className="bg-white/5 border border-white/10 text-gray-400 font-bold px-6 py-3 rounded-2xl hover:bg-white/10 transition-all flex items-center space-x-2"
+                                    onClick={() => {
+                                        window.dispatchEvent(new CustomEvent('agriVakeelIntervention', { 
+                                            detail: { 
+                                                message: "Don't forget to download the offline map package once you start navigation to stay safe in zero-signal areas!",
+                                                title: "OFFLINE READY" 
+                                            } 
+                                        }));
+                                    }}
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span>{t('prepareOffline') || 'Prepare Offline'}</span>
+                                </button>
+                                <button 
+                                    onClick={() => setIsTripActive(true)}
+                                    className="bg-mint text-forest font-black uppercase tracking-widest px-8 py-3 rounded-2xl shadow-[0_0_20px_rgba(32,255,189,0.3)] hover:bg-white transition-all transform hover:scale-105 active:scale-95 flex items-center space-x-2"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                    </svg>
+                                    <span>{t('startNavigation') || 'Start Navigation'}</span>
+                                </button>
+                            </div>
+                        </div>
                     </GlassCard>
 
                     {isTripActive && selectedMandi && (
