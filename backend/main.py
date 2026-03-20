@@ -63,7 +63,7 @@ class HarvestRequest(BaseModel):
 async def get_area_name(lat: float, lng: float) -> str:
     """Resolves coordinates to a city/district name using Nominatim."""
     try:
-        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=10"
+        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=14"
         async with httpx.AsyncClient(timeout=3.0) as client:
             # Nominatim requires a descriptive User-Agent
             headers = {"User-Agent": "MittiMitra-Decision-Engine-v2/1.0 (Agricultural-Advisory-System)"}
