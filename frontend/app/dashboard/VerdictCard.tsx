@@ -181,7 +181,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                     <p className="text-[10px] text-mint uppercase tracking-widest font-black opacity-80 mb-0.5">{t('urgent')}</p>
                                     <ChevronRight className="w-3 h-3 text-mint/40 group-hover:translate-x-1 transition-transform" />
                                 </div>
-                                <p className="text-white text-sm font-bold">{priorityAction.action}</p>
+                                <p className="text-white text-sm font-bold">{priorityAction.action_id ? t(priorityAction.action_id as any) : priorityAction.action}</p>
                             </div>
                         </div>
                         <div className="text-right">
@@ -255,8 +255,12 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                                         #{idx + 1}
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-lg font-black text-white">{action.action}</h4>
-                                                        <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm">{action.description}</p>
+                                                         <h4 className="text-lg font-black text-white">
+                                                            {action.action_id ? t(action.action_id as any) : action.action}
+                                                         </h4>
+                                                         <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm">
+                                                            {action.action_id ? t(`${action.action_id}_desc` as any, { crop: t(data.crop.toLowerCase() as any) }) : action.description}
+                                                         </p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
@@ -270,14 +274,27 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                                 <div className="absolute top-0 right-0 w-24 h-24 bg-mint/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
                                                 <div className="flex items-start space-x-4 relative z-10">
                                                     <button 
-                                                        onClick={() => speak(action.ai_advice, language)}
+                                                        onClick={() => {
+                                                            const adviceText = action.action_id ? t(`${action.action_id}_advice` as any, { 
+                                                                crop: t(data.crop.toLowerCase() as any), 
+                                                                temp: data.metrics.temp, 
+                                                                saving: action.net_saving_inr 
+                                                            }) : action.ai_advice;
+                                                            speak(adviceText, language);
+                                                        }}
                                                         className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center shrink-0 hover:scale-110 active:scale-95 transition-all shadow-lg"
                                                     >
                                                         <Volume2 className="w-5 h-5" />
                                                     </button>
                                                     <div>
                                                         <div className="text-[10px] font-black text-mint uppercase tracking-widest mb-1">{t('aiAdvice')}</div>
-                                                        <p className="text-sm text-gray-300 italic font-medium leading-relaxed">"{action.ai_advice}"</p>
+                                                         <p className="text-sm text-gray-300 italic font-medium leading-relaxed">
+                                                            "{action.action_id ? t(`${action.action_id}_advice` as any, { 
+                                                                crop: t(data.crop.toLowerCase() as any), 
+                                                                temp: data.metrics.temp, 
+                                                                saving: action.net_saving_inr 
+                                                            }) : action.ai_advice}"
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>

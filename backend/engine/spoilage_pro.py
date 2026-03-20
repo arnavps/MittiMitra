@@ -36,6 +36,7 @@ def get_preservation_actions(crop_value: float, current_spoilage_pct: float, tem
     """
     actions = [
         {
+            "id": "move_to_shade",
             "name": "Move to Shade",
             "cost": 0,
             "time_mins": 15,
@@ -45,6 +46,7 @@ def get_preservation_actions(crop_value: float, current_spoilage_pct: float, tem
             "ai_advice": f"Namaste! Since your {crop_type} is currently in the open field at {temp_c}°C, moving it to shade is a zero-cost way to save ₹{{saving}} today. The sun is your biggest enemy right now."
         },
         {
+            "id": "wet_the_bags",
             "name": "Wet the Bags",
             "cost": 50,
             "time_mins": 10,
@@ -54,6 +56,7 @@ def get_preservation_actions(crop_value: float, current_spoilage_pct: float, tem
             "ai_advice": f"I recommend wetting the gunny bags. As the water evaporates, it pulls heat away from the {crop_type}, acting like a natural refrigerator. This is very effective for {crop_type} in this heat."
         },
         {
+            "id": "use_a_tarp",
             "name": "Use a Tarp",
             "cost": 250,
             "time_mins": 5,
@@ -77,6 +80,7 @@ def get_preservation_actions(crop_value: float, current_spoilage_pct: float, tem
             is_recommended = net_saving > 0
             
             detail = {
+                "action_id": action["id"],
                 "action": action["name"],
                 "cost_inr": action["cost"],
                 "loss_saved_inr": round(potential_loss_saved, 2),
