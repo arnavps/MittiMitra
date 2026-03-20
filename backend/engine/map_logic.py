@@ -18,9 +18,9 @@ def calculate_spatial_profit(
         price = mandi["current_price"]
         dist = mandi["distance_km"]
         
-        # Completely exclude mandis that are unrealistically far away for a smallholder farmer (>500km)
-        # unless it is the ONLY mandi available
-        if dist > 500 and len(available_mandis) > 1:
+        # Exclude mandis that are extremely far away (>1000km)
+        # to focus on regional markets, unless we need more to hit 6.
+        if dist > 1000 and len(results) >= 6:
             continue
             
         # Estimate transit time (assume 30 km/hr average speed for agricultural transport)

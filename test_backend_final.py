@@ -3,7 +3,7 @@ import json
 
 def test():
     payload = {
-        "crop": "Tomato",
+        "crop": "Cotton",
         "location": {"lat": 19.1767, "lng": 72.9475},
         "yield_est_quintals": 50.0
     }
