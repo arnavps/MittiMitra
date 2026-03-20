@@ -272,6 +272,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
             
         recommendation = {
             "status": status,
+            "source_area": primary_mandi["name"].replace(" Mandi", ""),
             "net_realization_inr_per_quintal": round(profit_today, 2),
             "total_net_profit": round(total_profit_today, 2),
             "yield_quintals": data.yield_est_quintals,

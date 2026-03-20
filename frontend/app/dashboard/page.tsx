@@ -82,6 +82,38 @@ export default function DashboardPage() {
     const { location, requestLocation } = useGPS();
     const { isOnline, cachedData, saveToCache, calculateOfflineSpoilage } = useOfflineCache('dashboard_recommendation');
 
+    const getNearestHubName = (lat: number, lng: number) => {
+        const R = 6371; // Earth's radius in km
+        let nearestHub = hubs[0];
+        let minDistance = Infinity;
+
+        hubs.forEach(hub => {
+            const dLat = (hub.lat - lat) * Math.PI / 180;
+            const dLng = (hub.lng - lng) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat * Math.PI / 180) * Math.cos(hub.lat * Math.PI / 180) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestHub = hub;
+            }
+        });
+
+        // If backend provided a specific area name, use it
+        if (data?.source_area) {
+            return `${data.source_area} ${t('today') === 'आज' ? 'क्षेत्र' : 'Area'}`;
+        }
+
+        // If within 100km of a predefined hub, return that hub name
+        if (minDistance < 100) {
+            return `${nearestHub.name.split(',')[0]} ${t('today') === 'आज' ? 'क्षेत्र' : 'Area'}`;
+        }
+        return `${lat.toFixed(2)}, ${lng.toFixed(2)}`;
+    };
+
     // Trigger re-calculation when overrides or yield change locally
     const recalculateWithOverrides = (currentData: any, newOverrides: Record<string, number>, newYield?: number) => {
         if (!currentData) return;
@@ -321,7 +353,7 @@ export default function DashboardPage() {
                                     {manualLocation 
                                         ? (hubs.find(h => h.lat === manualLocation.lat && h.lng === manualLocation.lng)?.name || t('customFix')) 
                                         : location 
-                                            ? `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}` 
+                                            ? getNearestHubName(location.latitude, location.longitude)
                                             : t('puneHub')}
                                 </span>
                             </button>
