@@ -12,6 +12,7 @@ export interface ProvenanceRecord {
     decayStatus: number; // Q10 status
     crop: string;
     shadowPrice: number;
+    txHash?: string; // Polygon L2 Transaction Hash
 }
 
 /**
@@ -48,9 +49,10 @@ export async function commitProvenanceToBlockchain(hash: string, record: Provena
                 decay_status: record.decayStatus,
                 crop: record.crop,
                 shadow_price: record.shadowPrice,
+                tx_hash: record.txHash,
                 metadata: {
-                    engine_version: "v2.1-crypto-lock",
-                    network: "PolyMitti-Mainnet"
+                    engine_version: "v3.0-polygon-amoy",
+                    network: record.txHash ? "Polygon-Amoy-L2" : "PolyMitti-Mainnet-Sim"
                 }
             }
         ]);

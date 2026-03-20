@@ -28,6 +28,7 @@ import { generateProvenanceHash, commitProvenanceToBlockchain, ProvenanceRecord 
 import { MandiPass } from '@/components/dashboard/MandiPass';
 import { CameraFeed } from '@/components/dashboard/CameraFeed';
 import { fetchProfile } from '@/services/user';
+import { connectWallet, anchorHashToPolygon, getExplorerUrl } from '@/utils/polygon';
 
 export default function TransparencyLedgerPage() {
     const { t, n, language } = useLanguage();
@@ -38,8 +39,11 @@ export default function TransparencyLedgerPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [auditResult, setAuditResult] = useState<QualityAuditResult | null>(null);
     const [provenanceHash, setProvenanceHash] = useState<string | null>(null);
+    const [txHash, setTxHash] = useState<string | null>(null);
     const [isComplete, setIsComplete] = useState(false);
     const [cameraError, setCameraError] = useState<string | null>(null);
+    const [walletAddress, setWalletAddress] = useState<string | null>(null);
+    const [isAnchoring, setIsAnchoring] = useState(false);
     
     // Real Data States
     const [activeCrop, setActiveCrop] = useState<string>('Tomato');
@@ -98,6 +102,7 @@ export default function TransparencyLedgerPage() {
         setAuditStep(0);
         setIsComplete(false);
         setAuditResult(null);
+        setTxHash(null);
         
         // Simulate Camera Guidance Steps
         for (let i = 0; i < captureGuidance.length; i++) {
@@ -132,12 +137,26 @@ export default function TransparencyLedgerPage() {
             const hash = await generateProvenanceHash(record);
             setProvenanceHash(hash);
 
-            // 4. Commit to "Blockchain" (Supabase)
+            // 4. Commit to Supabase
             await commitProvenanceToBlockchain(hash, record);
 
-            // 5. Update Live Feed
+            // 5. Anchor to Polygon if wallet is connected
+            if (walletAddress) {
+                setIsAnchoring(true);
+                const polygonTx = await anchorHashToPolygon(hash);
+                if (polygonTx) {
+                    setTxHash(polygonTx);
+                    // Update the record with txHash for MandiPass
+                    record.txHash = polygonTx;
+                    // Re-commit to update the DB with tx_hash
+                    await commitProvenanceToBlockchain(hash, record);
+                }
+                setIsAnchoring(false);
+            }
+
+            // 6. Update Live Feed
             const newBlock = {
-                id: `0x${hash.slice(0, 4)}...${hash.slice(-4)}`,
+                id: txHash ? `0x${txHash.slice(2, 6)}...${txHash.slice(-4)}` : `0x${hash.slice(0, 4)}...${hash.slice(-4)}`,
                 event: t('yieldAudit'),
                 msg: `${t('auditSuccess')} - ${result.grade} Grade`,
                 time: t('justNow'),
@@ -177,6 +196,13 @@ export default function TransparencyLedgerPage() {
         }
     };
 
+    const handleConnectWallet = async () => {
+        const address = await connectWallet();
+        if (address) {
+            setWalletAddress(address);
+        }
+    };
+
     return (
         <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-8">
@@ -193,10 +219,20 @@ export default function TransparencyLedgerPage() {
                 </div>
                 <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-2 bg-black/40 px-4 py-2 rounded-2xl border border-white/10">
-                        <div className="w-2 h-2 rounded-full bg-mint animate-pulse" />
-                        <span className="text-[10px] text-mint font-black uppercase tracking-[0.2em]">{t('immutableLogActive')}</span>
+                        <div className={`w-2 h-2 rounded-full ${walletAddress ? 'bg-mint animate-pulse' : 'bg-yellow-500'}`} />
+                        <span className={`text-[10px] ${walletAddress ? 'text-mint' : 'text-yellow-500'} font-black uppercase tracking-[0.2em]`}>
+                            {walletAddress ? t('walletConnected') : t('immutableLogActive')}
+                        </span>
                     </div>
-                </div>
+                    {!walletAddress && (
+                        <button 
+                            onClick={handleConnectWallet}
+                            className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white transition-all"
+                        >
+                            {t('connectWallet')}
+                        </button>
+                    )}
+                 </div>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -296,7 +332,9 @@ export default function TransparencyLedgerPage() {
                                 <RefreshCw className="w-12 h-12 text-mint animate-spin" />
                                 <div className="text-center">
                                     <p className="text-xl font-black text-white uppercase tracking-tighter mb-1">{t('analyzingQuality')}</p>
-                                    <p className="text-xs text-mint/60 font-bold uppercase tracking-widest">{t('securingBatch')}</p>
+                                    <p className="text-xs text-mint/60 font-bold uppercase tracking-widest">
+                                        {isAnchoring ? t('anchoring') : t('securingBatch')}
+                                    </p>
                                 </div>
                             </motion.div>
                         )}
@@ -329,7 +367,8 @@ export default function TransparencyLedgerPage() {
                                         grade: auditResult.grade,
                                         shadowPrice: Math.round(realMandiPrice * (auditResult.grade === 'A' ? 1.1 : 1.0)),
                                         mandiPrice: realMandiPrice,
-                                        crop: t(activeCrop.toLowerCase() as any)
+                                        crop: t(activeCrop.toLowerCase() as any),
+                                        txHash: txHash || undefined
                                     }}
                                 />
 
@@ -442,7 +481,11 @@ export default function TransparencyLedgerPage() {
                         <div className="space-y-4">
                             <div className="flex justify-between items-center py-2 border-b border-white/5">
                                 <span className="text-xs text-gray-400">Consensus</span>
-                                <span className="text-xs text-white font-bold font-mono">MITTI-PoS v2</span>
+                                <span className="text-xs text-white font-bold font-mono">Polygon PoS (Amoy)</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2 border-b border-white/5">
+                                <span className="text-xs text-gray-400">L2 Native</span>
+                                <span className="text-xs text-white font-bold font-mono">MATIC / POL</span>
                             </div>
                             <div className="flex justify-between items-center py-2 border-b border-white/5">
                                 <span className="text-xs text-gray-400">Block Time</span>

@@ -13,6 +13,7 @@ interface MandiPassProps {
         shadowPrice: number;
         mandiPrice: number;
         crop: string;
+        txHash?: string;
     };
 }
 
@@ -86,6 +87,19 @@ export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
                     <p className="text-[10px] font-mono text-gray-400 break-all max-w-[200px] text-center opacity-50">
                         {hash}
                     </p>
+                    {record.txHash && (
+                        <div className="mt-4 flex flex-col items-center">
+                            <span className="text-[10px] text-mint font-black uppercase tracking-widest mb-1">{t('polygonL2Verified')}</span>
+                            <a 
+                                href={`https://amoy.polygonscan.com/tx/${record.txHash}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-[9px] font-mono text-mint hover:underline break-all max-w-[250px] text-center"
+                            >
+                                {record.txHash.slice(0, 10)}...{record.txHash.slice(-10)}
+                            </a>
+                        </div>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
