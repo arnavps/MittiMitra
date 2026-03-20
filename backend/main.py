@@ -69,8 +69,9 @@ async def get_area_name(lat: float, lng: float) -> str:
     """Resolves coordinates to a city/district name using Nominatim with multi-zoom fallback."""
     headers = {"User-Agent": "MittiMitra-Decision-Engine-v2/1.0 (Agricultural-Advisory-System)"}
     
-    # Try multiple zoom levels: 14 (Granular) then 10 (District level)
-    for zoom in [14, 10]:
+    # Try multiple zoom levels - Zoom 16/18 usually provides specific Neighbourhoods/Villages
+    # whereas Zoom 14 often defaults to administrative "Ward" names in Indian cities.
+    for zoom in [16, 18, 14, 10]:
         try:
             url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom={zoom}"
             async with httpx.AsyncClient(timeout=4.0) as client:
@@ -78,22 +79,22 @@ async def get_area_name(lat: float, lng: float) -> str:
                 if res.status_code == 200:
                     data = res.json()
                     addr = data.get("address", {})
-                    print(f"DEBUG: Nominatim address for zoom {zoom}: {addr}")
-                    # Expanded field mapping for Indian hierarchy
-                    area = (
-                        addr.get("suburb") or 
-                        addr.get("neighbourhood") or 
-                        addr.get("village") or 
-                        addr.get("town") or 
-                        addr.get("city_district") or 
-                        addr.get("district") or 
-                        addr.get("state_district") or
-                        addr.get("city") or 
-                        addr.get("county") or 
-                        addr.get("state")
-                    )
-                    if area:
-                        return area
+                    
+                    # Priority of keys to check for a civilian-friendly name
+                    potential_keys = [
+                        "village", "town", "neighbourhood", "residential", "locality",
+                        "suburb", "city_district"
+                    ]
+                    
+                    # Search through keys and strictly skip labels containing "Ward"
+                    for key in potential_keys:
+                        val = addr.get(key)
+                        if val and "Ward" not in val:
+                            return val
+                            
+                    # Final Fallback to City or generic area if no locality found
+                    if addr.get("city"):
+                        return addr.get("city")
         except Exception as e:
             logger.error(f"Geocoding attempt (zoom {zoom}) failed: {e}")
             
@@ -415,4 +416,5 @@ async def get_ranked_schemes(data: dict):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    # Use string reference for reload to work
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
