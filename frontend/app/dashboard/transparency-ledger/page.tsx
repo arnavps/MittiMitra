@@ -14,15 +14,35 @@ import {
     ExternalLink,
     Search,
     Globe,
-    Zap
+    Zap,
+    Camera,
+    RefreshCw,
+    Printer,
+    Share2,
+    ArrowRight,
+    AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { performQualityAudit, captureGuidance, QualityAuditResult } from '@/services/visionAudit';
+import { generateProvenanceHash, commitProvenanceToBlockchain, ProvenanceRecord } from '@/utils/provenance';
+import { MandiPass } from '@/components/dashboard/MandiPass';
+import { CameraFeed } from '@/components/dashboard/CameraFeed';
 
 export default function TransparencyLedgerPage() {
     const { t, n } = useLanguage();
-    const [liveBlocks, setLiveBlocks] = useState<any[]>([]);
     
-    // Simulate live block mining/updates
+    // UI States
+    const [isAuditing, setIsAuditing] = useState(false);
+    const [auditStep, setAuditStep] = useState(0);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [auditResult, setAuditResult] = useState<QualityAuditResult | null>(null);
+    const [provenanceHash, setProvenanceHash] = useState<string | null>(null);
+    const [isComplete, setIsComplete] = useState(false);
+    const [cameraError, setCameraError] = useState<string | null>(null);
+    
+    const [liveBlocks, setLiveBlocks] = useState<any[]>([]);
+
+    // Simulate live block updates for background context
     useEffect(() => {
         const initialBlocks = [
             { id: '0x82fb...812a', event: t('npkSourced'), msg: t('npkLogMsg'), time: '2 mins ago', icon: <Database className="w-4 h-4" /> },
@@ -30,20 +50,64 @@ export default function TransparencyLedgerPage() {
             { id: '0x77bc...112d', event: t('yieldCalibration'), msg: 'Yield potential locked at 55 quintals.', time: '3 hours ago', icon: <Zap className="w-4 h-4" /> }
         ];
         setLiveBlocks(initialBlocks);
-
-        const interval = setInterval(() => {
-            const newBlock = {
-                id: `0x${Math.random().toString(16).slice(2, 6)}...${Math.random().toString(16).slice(2, 6)}`,
-                event: 'Heartbeat Audit',
-                msg: 'System integrity verified via satellite mesh.',
-                time: 'Just now',
-                icon: <Activity className="w-4 h-4" />
-            };
-            setLiveBlocks(prev => [newBlock, ...prev.slice(0, 4)]);
-        }, 8000);
-
-        return () => clearInterval(interval);
     }, [t]);
+
+    // Handle the 360 Audit Flow
+    const handleStartAudit = async () => {
+        setIsAuditing(true);
+        setAuditStep(0);
+        setIsComplete(false);
+        setAuditResult(null);
+        
+        // Simulate Camera Guidance Steps
+        for (let i = 0; i < captureGuidance.length; i++) {
+            setAuditStep(i);
+            await new Promise(resolve => setTimeout(resolve, 2500));
+        }
+
+        setIsProcessing(true);
+        setIsAuditing(false);
+
+        try {
+            // 1. Run Vision Audit
+            const result = await performQualityAudit();
+            setAuditResult(result);
+
+            // 2. Prepare Record for Hashing
+            const record: ProvenanceRecord = {
+                userId: "USER_7721", // In real app, get from Context
+                timestamp: new Date().toISOString(),
+                location: { lat: 18.5204, lng: 73.8567 }, // Mocked Pune coords
+                qualityScore: result.quality_score,
+                decayStatus: 4.2, // Mocked from weather/Q10
+                crop: t('tomato'),
+                shadowPrice: 2850 // Simulating a premium calculation
+            };
+
+            // 3. Generate SHA-256 Hash
+            const hash = await generateProvenanceHash(record);
+            setProvenanceHash(hash);
+
+            // 4. Commit to "Blockchain" (Supabase)
+            await commitProvenanceToBlockchain(hash, record);
+
+            // 5. Update Live Feed
+            const newBlock = {
+                id: `0x${hash.slice(0, 4)}...${hash.slice(-4)}`,
+                event: t('yieldAudit'),
+                msg: `${t('auditSuccess')} - ${result.grade} Grade`,
+                time: t('justNow'),
+                icon: <ShieldCheck className="w-4 h-4" />
+            };
+            setLiveBlocks(prev => [newBlock, ...prev.slice(0, 3)]);
+
+            setIsComplete(true);
+        } catch (error) {
+            console.error("Audit failed:", error);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     return (
         <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
@@ -68,46 +132,154 @@ export default function TransparencyLedgerPage() {
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Main Stats Area */}
+                {/* Main Action Area */}
                 <div className="lg:col-span-8 space-y-8">
-                    {/* Batch Certificate */}
-                    <GlassCard className="p-8 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-mint/5 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-mint/10 transition-colors" />
-                        
-                        <div className="relative z-10">
-                            <div className="flex justify-between items-start mb-12">
-                                <div>
-                                    <span className="text-[10px] font-black text-mint uppercase tracking-widest mb-1 block">Active Batch ID</span>
-                                    <h2 className="text-4xl font-black text-white font-mono tracking-tighter">MITTI-2024-QX92</h2>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1 block">Network Status</span>
-                                    <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-mint/10 border border-mint/20 text-[10px] text-mint font-black uppercase">
-                                        <Globe className="w-3 h-3" />
-                                        <span>Mainnet Live</span>
-                                    </span>
-                                </div>
-                            </div>
+                    <AnimatePresence mode="wait">
+                        {!isAuditing && !isProcessing && !isComplete && (
+                            <motion.div
+                                key="start"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                            >
+                                <GlassCard className="p-12 text-center relative overflow-hidden group border-mint/20">
+                                    <div className="absolute inset-0 bg-gradient-to-b from-mint/5 to-transparent pointer-events-none"></div>
+                                    <div className="relative z-10 flex flex-col items-center">
+                                        <div className="w-20 h-20 rounded-[2rem] bg-mint/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-mint/20">
+                                            <Camera className="w-8 h-8 text-mint" />
+                                        </div>
+                                        <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-4">{t('auditYourYield')}</h2>
+                                        <p className="text-gray-400 max-w-sm mx-auto mb-8 font-medium italic">
+                                            {t('auditYieldDesc')}
+                                        </p>
+                                        <button 
+                                            onClick={handleStartAudit}
+                                            className="group flex items-center space-x-3 px-8 py-4 bg-mint text-forest rounded-2xl font-black uppercase tracking-widest text-xs shadow-[0_0_40px_rgba(32,255,189,0.3)] hover:scale-105 active:scale-95 transition-all"
+                                        >
+                                            <span>{t('startQualityAudit')}</span>
+                                            <ArrowRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                    <div className="mt-12 flex justify-center space-x-12 opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700">
+                                        <div className="flex flex-col items-center space-y-2">
+                                            <Cpu className="w-5 h-5" />
+                                            <span className="text-[8px] font-black uppercase tracking-widest">TF.js AI</span>
+                                        </div>
+                                        <div className="flex flex-col items-center space-y-2">
+                                            <Lock className="w-5 h-5" />
+                                            <span className="text-[8px] font-black uppercase tracking-widest">SHA-256</span>
+                                        </div>
+                                        <div className="flex flex-col items-center space-y-2">
+                                            <Globe className="w-5 h-5" />
+                                            <span className="text-[8px] font-black uppercase tracking-widest">Supabase DB</span>
+                                        </div>
+                                    </div>
+                                </GlassCard>
+                            </motion.div>
+                        )}
 
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">{t('genesisDate')}</span>
-                                    <p className="text-white font-bold">12 Oct 2024</p>
-                                </div>
-                                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">Trust Score</span>
-                                    <p className="text-mint font-black text-xl">98/100</p>
-                                </div>
-                                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">Data Points</span>
-                                    <p className="text-white font-bold">142 verified</p>
-                                </div>
-                            </div>
-                        </div>
-                    </GlassCard>
+                        {isAuditing && (
+                            <motion.div
+                                key="auditing"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.05 }}
+                            >
+                                <GlassCard className="p-4 md:p-8 flex flex-col items-center border-mint/40 shadow-[0_0_50px_rgba(32,255,189,0.1)] relative">
+                                    <button 
+                                        onClick={() => setIsAuditing(false)}
+                                        className="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-500 transition-colors z-30"
+                                    >
+                                        <RefreshCw className="w-4 h-4" />
+                                    </button>
+                                    <div className="w-full aspect-video md:w-[500px] md:h-[300px] mb-8">
+                                        <CameraFeed 
+                                            onError={(err) => setCameraError(err)}
+                                        />
+                                    </div>
+                                    
+                                    <div className="text-center space-y-4 max-w-sm">
+                                        <div className="px-4 py-1 rounded-full bg-mint/10 border border-mint/20 inline-block mb-2">
+                                            <span className="text-[10px] text-mint font-black uppercase tracking-widest animate-pulse">STEP {auditStep + 1}/4</span>
+                                        </div>
+                                        <h3 className="text-2xl font-black text-white italic tracking-tight min-h-[3rem]">
+                                            {t(captureGuidance[auditStep] as any)}
+                                        </h3>
+                                        <div className="w-48 h-1 bg-white/5 rounded-full mx-auto overflow-hidden">
+                                            <motion.div 
+                                                className="h-full bg-mint"
+                                                initial={{ width: "0%" }}
+                                                animate={{ width: `${((auditStep + 1) / 4) * 100}%` }}
+                                                transition={{ duration: 0.5 }}
+                                            />
+                                        </div>
+                                    </div>
+                                </GlassCard>
+                            </motion.div>
+                        )}
 
-                    {/* Immutable Audit Log */}
-                    <div className="space-y-4">
+                        {isProcessing && (
+                            <motion.div
+                                key="processing"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="flex flex-col items-center justify-center p-20 space-y-6"
+                            >
+                                <RefreshCw className="w-12 h-12 text-mint animate-spin" />
+                                <div className="text-center">
+                                    <p className="text-xl font-black text-white uppercase tracking-tighter mb-1">{t('analyzingQuality')}</p>
+                                    <p className="text-xs text-mint/60 font-bold uppercase tracking-widest">{t('securingBatch')}</p>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {isComplete && auditResult && provenanceHash && (
+                            <motion.div
+                                key="complete"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="space-y-8"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-sm font-black text-white uppercase tracking-[0.4em] mb-4">{t('digitalMandiPass')}</h2>
+                                    <div className="flex space-x-2">
+                                        <button className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 border border-white/10 transition-colors">
+                                            <Share2 className="w-4 h-4" />
+                                        </button>
+                                        <button className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 border border-white/10 transition-colors">
+                                            <Printer className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <MandiPass 
+                                    hash={provenanceHash}
+                                    record={{
+                                        userId: "USER_7721",
+                                        timestamp: new Date().toISOString(),
+                                        qualityScore: auditResult.quality_score,
+                                        grade: auditResult.grade,
+                                        shadowPrice: 2850,
+                                        mandiPrice: 2500,
+                                        crop: t('tomato')
+                                    }}
+                                />
+
+                                <div className="flex justify-center pt-4">
+                                    <button 
+                                        onClick={() => setIsComplete(false)}
+                                        className="text-[10px] font-black text-gray-500 hover:text-mint uppercase tracking-widest transition-colors flex items-center space-x-2"
+                                    >
+                                        <RefreshCw className="w-3 h-3" />
+                                        <span>{t('reAuditBatch')}</span>
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Immutable Audit Log Feed (Always visible at bottom or context) */}
+                    <div className="pt-8 space-y-4">
                         <div className="flex items-center justify-between px-2">
                             <h3 className="text-xs font-black text-white uppercase tracking-[0.3em]">{t('immutableLogs')}</h3>
                             <div className="flex items-center space-x-2 text-[10px] text-gray-500 font-bold uppercase">
@@ -118,12 +290,9 @@ export default function TransparencyLedgerPage() {
                         
                         <div className="space-y-4">
                             <AnimatePresence mode="popLayout">
-                                {liveBlocks.map((block, idx) => (
+                                {liveBlocks.map((block) => (
                                     <motion.div
                                         key={block.id}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, scale: 0.95 }}
                                         layout
                                         className="group p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-mint/30 hover:bg-white/[0.04] transition-all"
                                     >
@@ -147,9 +316,6 @@ export default function TransparencyLedgerPage() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button className="p-3 rounded-xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/10 text-gray-400">
-                                                <ExternalLink className="w-4 h-4" />
-                                            </button>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -160,6 +326,31 @@ export default function TransparencyLedgerPage() {
 
                 {/* Sidebar Info */}
                 <div className="lg:col-span-4 space-y-8">
+                    {/* Batch Certificate Info */}
+                    <GlassCard className="p-8 relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <div className="space-y-6">
+                                <div>
+                                    <span className="text-[10px] font-black text-mint uppercase tracking-widest mb-1 block">Active Batch ID</span>
+                                    <h2 className="text-2xl font-black text-white font-mono tracking-tighter">MITTI-2024-QX92</h2>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">{t('genesisDate')}</span>
+                                        <p className="text-white font-bold">12 Oct 2024</p>
+                                    </div>
+                                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">Network Status</span>
+                                        <div className="flex items-center space-x-2 mt-1">
+                                            <div className="w-1.5 h-1.5 bg-mint rounded-full animate-pulse" />
+                                            <span className="text-xs text-mint font-black uppercase">Mainnet Live</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </GlassCard>
+
                     {/* Digital Asset Card */}
                     <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-mint/20 via-transparent to-transparent border border-mint/20 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-6 opacity-10 blur-sm group-hover:blur-none transition-all duration-700">
@@ -189,26 +380,8 @@ export default function TransparencyLedgerPage() {
                                 <span className="text-xs text-gray-400">Block Time</span>
                                 <span className="text-xs text-white font-bold font-mono">1.2s avg</span>
                             </div>
-                            <div className="flex justify-between items-center py-2">
-                                <span className="text-xs text-gray-400">Encryption</span>
-                                <span className="text-xs text-white font-bold font-mono">NIST-Post-Quantum</span>
-                            </div>
                         </div>
                     </GlassCard>
-
-                    {/* Verification Action */}
-                    <div className="p-6 rounded-3xl bg-black/40 border border-white/10 flex items-center justify-between group cursor-pointer hover:bg-black/60 transition-colors">
-                        <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-mint transition-colors">
-                                <Search className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <p className="text-xs font-black text-white uppercase tracking-wider">Public Explorer</p>
-                                <p className="text-[9px] text-gray-500 font-bold uppercase">View on mitti-scan.io</p>
-                            </div>
-                        </div>
-                        <ExternalLink className="w-4 h-4 text-gray-600 group-hover:text-white transition-colors" />
-                    </div>
                 </div>
             </div>
         </div>
