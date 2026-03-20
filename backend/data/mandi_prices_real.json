@@ -1,5 +1,5 @@
 {
-    "updated_at": "2026-03-20T11:00:00Z",
+    "updated_at": "2026-03-20T11:56:18.566947Z",
     "source": "Aggregated Search Snippets (CommodityOnline/Agmarknet)",
     "commodities": {
         "cotton": {
@@ -8,14 +8,54 @@
             "max_price": 7910.0,
             "unit": "INR/Quintal",
             "markets": [
-                { "name": "Akola", "price": 8010.0, "lat": 20.7002, "lng": 77.0082 },
-                { "name": "Amravati", "price": 7525.0, "lat": 20.9320, "lng": 77.7523 },
-                { "name": "Jalna", "price": 7874.0, "lat": 19.8297, "lng": 75.8800 },
-                { "name": "Umred", "price": 7530.0, "lat": 20.8524, "lng": 79.3262 },
-                { "name": "Wardha", "price": 7650.0, "lat": 20.7453, "lng": 78.6022 },
-                { "name": "Yavatmal", "price": 7720.0, "lat": 20.3899, "lng": 78.1307 },
-                { "name": "Hinganghat", "price": 7800.0, "lat": 20.4552, "lng": 78.8329 },
-                { "name": "Adilabad", "price": 7450.0, "lat": 19.6641, "lng": 78.5320 }
+                {
+                    "name": "Akola",
+                    "price": 8010.0,
+                    "lat": 20.7002,
+                    "lng": 77.0082
+                },
+                {
+                    "name": "Amravati",
+                    "price": 7525.0,
+                    "lat": 20.932,
+                    "lng": 77.7523
+                },
+                {
+                    "name": "Jalna",
+                    "price": 7874.0,
+                    "lat": 19.8297,
+                    "lng": 75.88
+                },
+                {
+                    "name": "Umred",
+                    "price": 7530.0,
+                    "lat": 20.8524,
+                    "lng": 79.3262
+                },
+                {
+                    "name": "Wardha",
+                    "price": 7650.0,
+                    "lat": 20.7453,
+                    "lng": 78.6022
+                },
+                {
+                    "name": "Yavatmal",
+                    "price": 7720.0,
+                    "lat": 20.3899,
+                    "lng": 78.1307
+                },
+                {
+                    "name": "Hinganghat",
+                    "price": 7800.0,
+                    "lat": 20.4552,
+                    "lng": 78.8329
+                },
+                {
+                    "name": "Adilabad",
+                    "price": 7450.0,
+                    "lat": 19.6641,
+                    "lng": 78.532
+                }
             ]
         },
         "tomato": {
@@ -24,13 +64,48 @@
             "max_price": 7200.0,
             "unit": "INR/Quintal",
             "markets": [
-                { "name": "Navi Mumbai (Vashi)", "price": 1780.0, "lat": 19.0732, "lng": 73.0011 },
-                { "name": "Kalyan", "price": 1720.0, "lat": 19.2433, "lng": 73.1333 },
-                { "name": "Nashik", "price": 1850.0, "lat": 19.9975, "lng": 73.7898 },
-                { "name": "Pune", "price": 1700.0, "lat": 18.5204, "lng": 73.8567 },
-                { "name": "Kolar", "price": 1600.0, "lat": 13.1362, "lng": 78.1291 },
-                { "name": "Azadpur (Delhi)", "price": 1950.0, "lat": 28.7159, "lng": 77.1750 },
-                { "name": "Nagpur", "price": 1650.0, "lat": 21.1458, "lng": 79.0882 }
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 1780.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
+                    "name": "Kalyan",
+                    "price": 1720.0,
+                    "lat": 19.2433,
+                    "lng": 73.1333
+                },
+                {
+                    "name": "Nashik",
+                    "price": 1850.0,
+                    "lat": 19.9975,
+                    "lng": 73.7898
+                },
+                {
+                    "name": "Pune",
+                    "price": 1700.0,
+                    "lat": 18.5204,
+                    "lng": 73.8567
+                },
+                {
+                    "name": "Kolar",
+                    "price": 1600.0,
+                    "lat": 13.1362,
+                    "lng": 78.1291
+                },
+                {
+                    "name": "Azadpur (Delhi)",
+                    "price": 1950.0,
+                    "lat": 28.7159,
+                    "lng": 77.175
+                },
+                {
+                    "name": "Nagpur",
+                    "price": 1650.0,
+                    "lat": 21.1458,
+                    "lng": 79.0882
+                }
             ]
         },
         "potato": {
@@ -39,12 +114,42 @@
             "max_price": 3200.0,
             "unit": "INR/Quintal",
             "markets": [
-                { "name": "Navi Mumbai (Vashi)", "price": 2600.0, "lat": 19.0732, "lng": 73.0011 },
-                { "name": "Agra", "price": 2400.0, "lat": 27.1767, "lng": 78.0081 },
-                { "name": "Farrukhabad", "price": 2350.0, "lat": 27.3820, "lng": 79.5857 },
-                { "name": "Indore", "price": 2600.0, "lat": 22.7196, "lng": 75.8577 },
-                { "name": "Pune", "price": 2650.0, "lat": 18.5204, "lng": 73.8567 },
-                { "name": "Nashik", "price": 2680.0, "lat": 19.9975, "lng": 73.7898 }
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 2600.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
+                    "name": "Agra",
+                    "price": 2400.0,
+                    "lat": 27.1767,
+                    "lng": 78.0081
+                },
+                {
+                    "name": "Farrukhabad",
+                    "price": 2350.0,
+                    "lat": 27.382,
+                    "lng": 79.5857
+                },
+                {
+                    "name": "Indore",
+                    "price": 2600.0,
+                    "lat": 22.7196,
+                    "lng": 75.8577
+                },
+                {
+                    "name": "Pune",
+                    "price": 2650.0,
+                    "lat": 18.5204,
+                    "lng": 73.8567
+                },
+                {
+                    "name": "Nashik",
+                    "price": 2680.0,
+                    "lat": 19.9975,
+                    "lng": 73.7898
+                }
             ]
         },
         "onion": {
@@ -53,13 +158,48 @@
             "max_price": 2300.0,
             "unit": "INR/Quintal",
             "markets": [
-                { "name": "Navi Mumbai (Vashi)", "price": 1250.0, "lat": 19.0732, "lng": 73.0011 },
-                { "name": "Lasalgaon", "price": 1350.0, "lat": 20.1472, "lng": 74.2274 },
-                { "name": "Solapur", "price": 1150.0, "lat": 17.6599, "lng": 75.9064 },
-                { "name": "Indore", "price": 1200.0, "lat": 22.7196, "lng": 75.8577 },
-                { "name": "Ankleshwar", "price": 1200.0, "lat": 21.6264, "lng": 73.0152 },
-                { "name": "Azadpur (Delhi)", "price": 2400.0, "lat": 28.7159, "lng": 77.1750 },
-                { "name": "Bangalore", "price": 1800.0, "lat": 12.9716, "lng": 77.5946 }
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 1250.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
+                    "name": "Lasalgaon",
+                    "price": 1350.0,
+                    "lat": 20.1472,
+                    "lng": 74.2274
+                },
+                {
+                    "name": "Solapur",
+                    "price": 1150.0,
+                    "lat": 17.6599,
+                    "lng": 75.9064
+                },
+                {
+                    "name": "Indore",
+                    "price": 1200.0,
+                    "lat": 22.7196,
+                    "lng": 75.8577
+                },
+                {
+                    "name": "Ankleshwar",
+                    "price": 1200.0,
+                    "lat": 21.6264,
+                    "lng": 73.0152
+                },
+                {
+                    "name": "Azadpur (Delhi)",
+                    "price": 2400.0,
+                    "lat": 28.7159,
+                    "lng": 77.175
+                },
+                {
+                    "name": "Bangalore",
+                    "price": 1800.0,
+                    "lat": 12.9716,
+                    "lng": 77.5946
+                }
             ]
         },
         "soybean": {
@@ -68,12 +208,42 @@
             "max_price": 5050.0,
             "unit": "INR/Quintal",
             "markets": [
-                { "name": "Navi Mumbai (Vashi)", "price": 5020.0, "lat": 19.0732, "lng": 73.0011 },
-                { "name": "Indore", "price": 4900.0, "lat": 22.7196, "lng": 75.8577 },
-                { "name": "Ujjain", "price": 4750.0, "lat": 23.1793, "lng": 75.7849 },
-                { "name": "Latur", "price": 5050.0, "lat": 18.4088, "lng": 76.5604 },
-                { "name": "Hingoli", "price": 4850.0, "lat": 19.7163, "lng": 77.1437 },
-                { "name": "Nagpur", "price": 4600.0, "lat": 21.1458, "lng": 79.0882 }
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 5020.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
+                    "name": "Indore",
+                    "price": 4900.0,
+                    "lat": 22.7196,
+                    "lng": 75.8577
+                },
+                {
+                    "name": "Ujjain",
+                    "price": 4750.0,
+                    "lat": 23.1793,
+                    "lng": 75.7849
+                },
+                {
+                    "name": "Latur",
+                    "price": 5050.0,
+                    "lat": 18.4088,
+                    "lng": 76.5604
+                },
+                {
+                    "name": "Hingoli",
+                    "price": 4850.0,
+                    "lat": 19.7163,
+                    "lng": 77.1437
+                },
+                {
+                    "name": "Nagpur",
+                    "price": 4600.0,
+                    "lat": 21.1458,
+                    "lng": 79.0882
+                }
             ]
         },
         "wheat": {
@@ -82,12 +252,42 @@
             "max_price": 3850.0,
             "unit": "INR/Quintal",
             "markets": [
-                { "name": "Navi Mumbai (Vashi)", "price": 2980.0, "lat": 19.0732, "lng": 73.0011 },
-                { "name": "Himatnagar", "price": 2800.0, "lat": 23.5959, "lng": 72.9641 },
-                { "name": "Indore", "price": 2950.0, "lat": 22.7196, "lng": 75.8577 },
-                { "name": "Karnal", "price": 2750.0, "lat": 29.6857, "lng": 76.9907 },
-                { "name": "Khanna", "price": 2820.0, "lat": 30.7071, "lng": 76.2166 },
-                { "name": "Nagpur", "price": 2850.0, "lat": 21.1458, "lng": 79.0882 }
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 2980.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
+                    "name": "Himatnagar",
+                    "price": 2800.0,
+                    "lat": 23.5959,
+                    "lng": 72.9641
+                },
+                {
+                    "name": "Indore",
+                    "price": 2950.0,
+                    "lat": 22.7196,
+                    "lng": 75.8577
+                },
+                {
+                    "name": "Karnal",
+                    "price": 2750.0,
+                    "lat": 29.6857,
+                    "lng": 76.9907
+                },
+                {
+                    "name": "Khanna",
+                    "price": 2820.0,
+                    "lat": 30.7071,
+                    "lng": 76.2166
+                },
+                {
+                    "name": "Nagpur",
+                    "price": 2850.0,
+                    "lat": 21.1458,
+                    "lng": 79.0882
+                }
             ]
         },
         "rice": {
@@ -96,13 +296,48 @@
             "max_price": 8300.0,
             "unit": "INR/Quintal",
             "markets": [
-                { "name": "Navi Mumbai (Vashi)", "price": 2450.0, "lat": 19.0732, "lng": 73.0011 },
-                { "name": "Gondia", "price": 2350.0, "lat": 21.4624, "lng": 80.2209 },
-                { "name": "Bhandara", "price": 2380.0, "lat": 21.1645, "lng": 79.6467 },
-                { "name": "Raipur", "price": 2500.0, "lat": 21.2514, "lng": 81.6296 },
-                { "name": "Shimoga", "price": 2400.0, "lat": 13.9299, "lng": 75.5681 },
-                { "name": "Guntur", "price": 4500.0, "lat": 16.3067, "lng": 80.4365 },
-                { "name": "Bardhaman", "price": 2600.0, "lat": 23.2324, "lng": 87.8615 }
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 2450.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
+                    "name": "Gondia",
+                    "price": 2350.0,
+                    "lat": 21.4624,
+                    "lng": 80.2209
+                },
+                {
+                    "name": "Bhandara",
+                    "price": 2380.0,
+                    "lat": 21.1645,
+                    "lng": 79.6467
+                },
+                {
+                    "name": "Raipur",
+                    "price": 2500.0,
+                    "lat": 21.2514,
+                    "lng": 81.6296
+                },
+                {
+                    "name": "Shimoga",
+                    "price": 2400.0,
+                    "lat": 13.9299,
+                    "lng": 75.5681
+                },
+                {
+                    "name": "Guntur",
+                    "price": 4500.0,
+                    "lat": 16.3067,
+                    "lng": 80.4365
+                },
+                {
+                    "name": "Bardhaman",
+                    "price": 2600.0,
+                    "lat": 23.2324,
+                    "lng": 87.8615
+                }
             ]
         }
     }

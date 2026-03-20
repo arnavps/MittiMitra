@@ -54,6 +54,17 @@ app.include_router(ecosystem_router, prefix="/ecosystem", tags=["FPO & B2B Ecosy
 app.include_router(oracle_router, prefix="/oracle", tags=["Harvest Oracle"])
 app.include_router(community_router, prefix="/community", tags=["Farmer Community"])
 
+import asyncio
+@app.on_event("startup")
+async def startup_event():
+    # Start the automated market data synchronization in the background
+    from logic.market_sync import sync_all_commodities, start_periodic_sync
+    # Run one sync immediately in background
+    asyncio.create_task(sync_all_commodities())
+    # Start periodic loop
+    asyncio.create_task(start_periodic_sync())
+    logger.info("Market Data Automator initialized.")
+
 class HarvestRequest(BaseModel):
     crop: str = ""
     location: dict
