@@ -8,6 +8,10 @@ if sys.platform == "win32":
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from engine.profit_calc import get_net_realization
 from engine.map_logic import calculate_spatial_profit
@@ -51,7 +55,7 @@ app.include_router(community_router, prefix="/community", tags=["Farmer Communit
 class HarvestRequest(BaseModel):
     crop: str = ""
     location: dict
-    yield_est_quintals: float
+    yield_est_quintals: float = 50.0
     base_spoilage_rate: float = 0.05 
     language: str = "en"
     planting_date: str = None 
@@ -78,7 +82,7 @@ async def get_area_name(lat: float, lng: float) -> str:
         logger.error(f"Geocoding failed: {e}")
     return "Your Area"
 
-@app.post("/api/shadow-price")
+@app.post("/shadow-price")
 def get_shadow_price(data: dict):
     # data: {base_price: float, grade: str, spoilage_risk: float, severity_index: float}
     return calculate_shadow_price(
@@ -98,11 +102,27 @@ async def get_harvest_recommendation(data: HarvestRequest):
     4. Integrates Harvest Oracle for maturity-aware tactics.
     """
     try:
+        if not data.location or "lat" not in data.location or "lng" not in data.location:
+            raise ValueError("Invalid location data provided")
+
+        print(f"DEBUG: Processing recommendation for {data.crop} at {data.location}")
+        
         # 1. Fetch Integration Data
-        weather_data = await fetch_district_weather(data.location)
-        mandi_response = await fetch_mandi_prices(data.crop, data.location, data.language)
-        primary_mandi = mandi_response["primary"]
-        regional_mandis = mandi_response["regional_options"]
+        try:
+            weather_data = await fetch_district_weather(data.location)
+            print("DEBUG: Weather data fetched")
+        except Exception as e:
+            print(f"DEBUG: Weather fetch failed: {e}")
+            weather_data = {"temperature_c": 25, "humidity_percent": 50, "rain_probability_percent": 0}
+
+        try:
+            mandi_response = await fetch_mandi_prices(data.crop, data.location, data.language)
+            print("DEBUG: Mandi data fetched")
+            primary_mandi = mandi_response["primary"]
+            regional_mandis = mandi_response["regional_options"]
+        except Exception as e:
+            print(f"DEBUG: Mandi fetch failed: {e}")
+            raise e # Let's see if this is the one
         
         # 1.5 Harvest Oracle Integration (New)
         oracle_window = None
@@ -120,6 +140,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
                 weather_forecast=[], # TODO: Pass actual forecast
                 crop=data.crop
             )
+            print("DEBUG: Oracle data processed")
         
         # 2. Risk & Shock Analysis (on Primary Mandi)
         price_shock = detect_market_shock(primary_mandi["current_price"], primary_mandi["7_day_history"])
@@ -138,6 +159,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
                 "is_shock": True,
                 "pivot_advice": "EMERGENCY: Cover your produce immediately or delay transit!"
             }
+        print("DEBUG: Shock analysis done")
 
         # 3. Spatial Profit Analysis (Map Logic)
         temp_today = weather_data["temperature_c"]
@@ -349,7 +371,25 @@ async def get_harvest_recommendation(data: HarvestRequest):
     except Exception as e:
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"CRITICAL: Recommendation Engine Failed: {str(e)}")
+        # Return a safe fallback schema to prevent UI 500s
+        return {
+            "status": "GRAY",
+            "error_mode": True,
+            "message": "Engine temporarily offline for this location.",
+            "source_area": "System Recovery",
+            "net_realization_inr": 0,
+            "total_net_profit": 0,
+            "mandi_stats": {
+                "name": "Local Market",
+                "current_price": 0,
+                "distance_km": 0
+            },
+            "weather": {
+                "temperature_c": 0,
+                "humidity_percent": 0
+            }
+        }
 
 @app.post("/schemes")
 async def get_ranked_schemes(data: dict):
@@ -358,4 +398,4 @@ async def get_ranked_schemes(data: dict):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8001)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

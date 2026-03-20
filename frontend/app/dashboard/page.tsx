@@ -104,11 +104,12 @@ export default function DashboardPage() {
 
     // Auto-sync whenever location or manual location changes
     useEffect(() => {
-        if (location || manualLocation) {
-            console.log("Location updated, matching data...");
+        // Only sync if profile is loaded and the user has a yield estimate
+        if (profileLoaded && (location || manualLocation)) {
+            console.log("Location/State ready, matching data...");
             fetchRecommendation();
         }
-    }, [location, manualLocation, userCrop]);
+    }, [location, manualLocation, userCrop, profileLoaded, isHarvested]);
 
     const getNearestHubName = (lat: number, lng: number) => {
         const R = 6371; // Earth's radius in km
@@ -216,6 +217,7 @@ export default function DashboardPage() {
     };
 
     const fetchRecommendation = async (isDemo = false) => {
+        if (!profileLoaded) return; // Prevent premature calls
         setLoading(true);
         try {
             if (!isOnline && cachedData && !isDemo) {
