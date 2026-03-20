@@ -259,7 +259,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                                             {action.action_id ? t(action.action_id as any) : action.action}
                                                          </h4>
                                                          <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm">
-                                                            {action.action_id ? t(`${action.action_id}_desc` as any, { crop: t(data.crop.toLowerCase() as any) }) : action.description}
+                                                            {action.action_id ? t(`${action.action_id}_desc` as any, { crop: t((data.crop || userCrop || 'tomato').toLowerCase() as any) }) : action.description}
                                                          </p>
                                                     </div>
                                                 </div>
@@ -276,8 +276,8 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                                     <button 
                                                         onClick={() => {
                                                             const adviceText = action.action_id ? t(`${action.action_id}_advice` as any, { 
-                                                                crop: t(data.crop.toLowerCase() as any), 
-                                                                temp: data.metrics.temp, 
+                                                                crop: t((data.crop || userCrop || 'tomato').toLowerCase() as any), 
+                                                                temp: data.metrics?.temp || 0, 
                                                                 saving: action.net_saving_inr 
                                                             }) : action.ai_advice;
                                                             speak(adviceText, language);
@@ -290,8 +290,8 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                                         <div className="text-[10px] font-black text-mint uppercase tracking-widest mb-1">{t('aiAdvice')}</div>
                                                          <p className="text-sm text-gray-300 italic font-medium leading-relaxed">
                                                             "{action.action_id ? t(`${action.action_id}_advice` as any, { 
-                                                                crop: t(data.crop.toLowerCase() as any), 
-                                                                temp: data.metrics.temp, 
+                                                                crop: t((data.crop || userCrop || 'tomato').toLowerCase() as any), 
+                                                                temp: data.metrics?.temp || 0, 
                                                                 saving: action.net_saving_inr 
                                                             }) : action.ai_advice}"
                                                         </p>
