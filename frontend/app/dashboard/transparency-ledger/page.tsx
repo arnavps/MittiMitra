@@ -153,6 +153,30 @@ export default function TransparencyLedgerPage() {
         }
     };
 
+    const handlePrint = () => {
+        window.print();
+    };
+
+    const handleShare = async () => {
+        if (navigator.share && provenanceHash) {
+            try {
+                await navigator.share({
+                    title: t('digitalMandiPass'),
+                    text: `${t('provenanceVerified')} - ${activeCrop}`,
+                    url: `https://mittimitra.io/trust/${provenanceHash}`
+                });
+            } catch (error) {
+                console.error("Error sharing:", error);
+            }
+        } else {
+            // Fallback: Copy to clipboard
+            if (provenanceHash) {
+                navigator.clipboard.writeText(`https://mittimitra.io/trust/${provenanceHash}`);
+                alert(t('linkCopied') || "Link copied to clipboard!");
+            }
+        }
+    };
+
     return (
         <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-8">
@@ -287,10 +311,10 @@ export default function TransparencyLedgerPage() {
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-sm font-black text-white uppercase tracking-[0.4em] mb-4">{t('digitalMandiPass')}</h2>
                                     <div className="flex space-x-2">
-                                        <button className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 border border-white/10 transition-colors">
+                                        <button className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 border border-white/10 transition-colors" onClick={handleShare}>
                                             <Share2 className="w-4 h-4" />
                                         </button>
-                                        <button className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 border border-white/10 transition-colors">
+                                        <button className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 border border-white/10 transition-colors" onClick={handlePrint}>
                                             <Printer className="w-4 h-4" />
                                         </button>
                                     </div>
