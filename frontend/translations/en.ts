@@ -11,6 +11,14 @@ export const en = {
     blog: "Blog",
     contactUs: "Contact Us",
     getStarted: "Get Started",
+    selectLanguage: "Select Language",
+    english: "English",
+    hindi: "हिन्दी",
+    marathi: "मराठी",
+    telugu: "తెలుగు",
+    tamil: "தமிழ்",
+    gujarati: "ગુજરાતી",
+    punjabi: "ਪੰਜਾਬੀ",
 
     // Hero Section
     heroBadge: "The 72-Hour Temporal Arbitrage Engine",

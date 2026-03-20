@@ -11,6 +11,14 @@ export const te = {
     blog: "బ్లాగ్",
     contactUs: "మమ్మల్ని సంప్రదించండి",
     getStarted: "మొదలు పెట్టండి",
+    selectLanguage: "భాషను ఎంచుకోండి",
+    english: "English",
+    hindi: "हिन्दी",
+    marathi: "मराठी",
+    telugu: "తెలుగు",
+    tamil: "தமிழ்",
+    gujarati: "ગુજરાતી",
+    punjabi: "ਪੰਜਾਬੀ",
 
     // Hero Section
     heroBadge: "72-గంటల టెంపోరల్ ఆర్బిట్రేజ్ ఇంజిన్",

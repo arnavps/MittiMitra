@@ -60,6 +60,24 @@ class HarvestRequest(BaseModel):
     disease_severity: float = 0.0 # Phase 9
     is_harvested: bool = False
 
+async def get_area_name(lat: float, lng: float) -> str:
+    """Resolves coordinates to a city/district name using Nominatim."""
+    try:
+        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=10"
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            # Nominatim requires a descriptive User-Agent
+            headers = {"User-Agent": "MittiMitra-Decision-Engine-v2/1.0 (Agricultural-Advisory-System)"}
+            res = await client.get(url, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                addr = data.get("address", {})
+                # Selective fallback for area name
+                area = addr.get("city") or addr.get("town") or addr.get("district") or addr.get("suburb") or addr.get("county") or addr.get("state")
+                return area if area else "Rural Area"
+    except Exception as e:
+        logger.error(f"Geocoding failed: {e}")
+    return "Rural Area"
+
 @app.post("/api/shadow-price")
 def get_shadow_price(data: dict):
     # data: {base_price: float, grade: str, spoilage_risk: float, severity_index: float}
@@ -228,6 +246,11 @@ async def get_harvest_recommendation(data: HarvestRequest):
         is_selling_optimal = profit_today >= profit_48h
         status = "GREEN" if is_selling_optimal else "RED"
         
+        # 4.2 Resolve Source Area Name (for dashboard display)
+        lat_in = data.location.get("lat", 18.5204)
+        lng_in = data.location.get("lng", 73.8567)
+        source_area = await get_area_name(lat_in, lng_in)
+
         # 4.5 UNIFIED OVERRIDE: Maturity Protection
         # If crop is too young (<85%), force WAIT unless Oracle says SELL (Strategic Exit)
         if not data.is_harvested and oracle_window and oracle_window["current_maturity_pct"] < 85:
@@ -272,7 +295,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
             
         recommendation = {
             "status": status,
-            "source_area": primary_mandi["name"].replace(" Mandi", ""),
+            "source_area": source_area,
             "net_realization_inr_per_quintal": round(profit_today, 2),
             "total_net_profit": round(total_profit_today, 2),
             "yield_quintals": data.yield_est_quintals,

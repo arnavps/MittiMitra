@@ -11,6 +11,14 @@ export const pa = {
     blog: "ਬਲੌਗ",
     contactUs: "ਸਾਡੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ",
     getStarted: "ਸ਼ੁਰੂ ਕਰੋ",
+    selectLanguage: "ਭਾਸ਼ਾ ਚੁਣੋ",
+    english: "English",
+    hindi: "हिन्दी",
+    marathi: "मराठी",
+    telugu: "తెలుగు",
+    tamil: "தமிழ்",
+    gujarati: "ગુજરાતી",
+    punjabi: "ਪੰਜਾਬੀ",
 
     // Hero Section
     heroBadge: "72-ਘੰਟੇ ਦਾ ਟੈਂਪੋਰਲ ਆਰਬਿਟਰੇਜ ਇੰਜਨ",

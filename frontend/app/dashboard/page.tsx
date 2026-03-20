@@ -102,14 +102,19 @@ export default function DashboardPage() {
             }
         });
 
-        // If backend provided a specific area name, use it
-        if (data?.source_area) {
-            return `${data.source_area} ${t('today') === 'आज' ? 'क्षेत्र' : 'Area'}`;
+        // Use area from backend if available
+        const areaName = data?.source_area;
+        if (areaName) {
+            const suffix = t('today') === 'आज' ? 'क्षेत्र' : 'Area';
+            if (areaName.includes('Area') || areaName.includes('क्षेत्र')) return areaName;
+            return `${areaName} ${suffix}`;
         }
 
-        // If within 100km of a predefined hub, return that hub name
+        // Fallback to nearest hub if within 100km
         if (minDistance < 100) {
-            return `${nearestHub.name.split(',')[0]} ${t('today') === 'आज' ? 'क्षेत्र' : 'Area'}`;
+            const hubBase = nearestHub.name.split(',')[0];
+            const suffix = t('today') === 'आज' ? 'क्षेत्र' : 'Area';
+            return `${hubBase} ${suffix}`;
         }
         return `${lat.toFixed(2)}, ${lng.toFixed(2)}`;
     };
@@ -126,7 +131,7 @@ export default function DashboardPage() {
 
         if (newOverrides[tempKey]) {
             updated.weather.temperature_c = newOverrides[tempKey];
-            
+
             // Offline math fallback
             const offlineSpoilageRisk = calculateOfflineSpoilage(0.005, newOverrides[tempKey], 20.0, 48.0);
             updated.spoilage_risk_pct = offlineSpoilageRisk;
@@ -240,15 +245,15 @@ export default function DashboardPage() {
                     ]);
 
                     const secondaryFetches = [];
-                    
+
                     // Only fetch oracle if NOT harvested
                     if (!isHarvested) {
                         secondaryFetches.push(
                             fetch('/api/oracle/forecast', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ 
-                                    planting_date: plantingDate || data?.planting_date || new Date().toISOString().split('T')[0], 
+                                body: JSON.stringify({
+                                    planting_date: plantingDate || data?.planting_date || new Date().toISOString().split('T')[0],
                                     crop: userCrop || data?.crop || "Tomato",
                                     sync_panic_days: heatmap,
                                     weather_forecast: forecast
@@ -320,7 +325,8 @@ export default function DashboardPage() {
     })) : [];
 
     return (
-        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">            {/* Header */}
+        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
+            {/* Header */}
             <header className="relative z-50 flex items-center justify-between mb-8">
                 <div>
                     <div className="flex items-center space-x-3 mb-2">
@@ -350,9 +356,9 @@ export default function DashboardPage() {
                             >
                                 <svg className="w-3 h-3 text-mint group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                 <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">
-                                    {manualLocation 
-                                        ? (hubs.find(h => h.lat === manualLocation.lat && h.lng === manualLocation.lng)?.name || t('customFix')) 
-                                        : location 
+                                    {manualLocation
+                                        ? (hubs.find(h => h.lat === manualLocation.lat && h.lng === manualLocation.lng)?.name || t('customFix'))
+                                        : location
                                             ? getNearestHubName(location.latitude, location.longitude)
                                             : t('puneHub')}
                                 </span>
@@ -392,19 +398,19 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left Panel: Primary Recommendation & Key Metrics (Span 7) */}
                 <div className="lg:col-span-7 space-y-8 flex flex-col">
-                    <VerdictCard 
-                        data={data} 
+                    <VerdictCard
+                        data={data}
                         userCrop={userCrop}
                         isHarvested={isHarvested}
                         onExplain={(q) => setVakeelQuery(q)}
                         oracleData={oracleData}
                         clusterData={clusterData}
                     />
-                    
-                    <MetricsGrid 
-                        data={data} 
+
+                    <MetricsGrid
+                        data={data}
                         isHarvested={isHarvested}
-                        onMetricClick={handleMetricClick} 
+                        onMetricClick={handleMetricClick}
                         onExplain={(q: string) => setVakeelQuery(q)}
                     />
                 </div>
@@ -438,13 +444,13 @@ export default function DashboardPage() {
                                     </div>
                                 </div>
                                 <div className="flex space-x-2">
-                                    <button 
+                                    <button
                                         onClick={() => window.location.href = '/dashboard/soil-health'}
                                         className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
                                     >
                                         {t('fieldSuite')} &rarr;
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={() => window.location.href = '/dashboard/irrigation-planner'}
                                         className="flex-1 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
                                     >
@@ -565,7 +571,22 @@ export default function DashboardPage() {
                             <svg className="w-6 h-6 text-mint mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                             {t('correctionFieldLocation')}
                         </h3>
-                        <p className="text-xs text-gray-400 mb-6 leading-relaxed">{t('gpsWeakDesc')}</p>
+                        <p className="text-xs text-gray-400 mb-2 leading-relaxed">{t('gpsWeakDesc')}</p>
+                        
+                        {/* Coordinate Verification (New) */}
+                        <div className="mb-6 p-3 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between">
+                            <div>
+                                <p className="text-[8px] text-gray-500 font-black uppercase tracking-widest mb-1">Current Coordinates</p>
+                                <p className="text-[10px] text-mint font-mono">
+                                    {manualLocation 
+                                        ? `${manualLocation.lat.toFixed(4)}, ${manualLocation.lng.toFixed(4)}` 
+                                        : location 
+                                            ? `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}` 
+                                            : 'No Signal'}
+                                </p>
+                            </div>
+                            <div className={`w-2 h-2 rounded-full ${(!manualLocation && location) ? 'bg-mint animate-pulse' : 'bg-gray-600'}`} />
+                        </div>
 
                         <div className="space-y-3 mb-8">
                             <button

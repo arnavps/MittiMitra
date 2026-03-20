@@ -11,6 +11,14 @@ export const hi = {
     blog: "ब्लॉग",
     contactUs: "संपर्क करें",
     getStarted: "शुरू करें",
+    selectLanguage: "भाषा चुनें",
+    english: "English",
+    hindi: "हिन्दी",
+    marathi: "मराठी",
+    telugu: "తెలుగు",
+    tamil: "தமிழ்",
+    gujarati: "ગુજરાતી",
+    punjabi: "ਪੰਜਾਬੀ",
 
     // Hero Section
     heroBadge: "72-घंटे का टेंपोरल आर्बिट्रेज इंजन",

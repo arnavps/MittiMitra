@@ -10,7 +10,7 @@ export function LanguageSwitcher({ direction = "up", textColor = "text-gray-200"
 
     const languages = [
         { code: "en", label: "English" },
-        { code: "hi", label: "हिंदी" },
+        { code: "hi", label: "हिन्दी" },
         { code: "mr", label: "मराठी" },
         { code: "te", label: "తెలుగు" },
         { code: "ta", label: "தமிழ்" },

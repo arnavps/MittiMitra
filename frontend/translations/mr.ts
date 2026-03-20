@@ -11,6 +11,14 @@ export const mr = {
     blog: "ब्लॉग",
     contactUs: "संपर्क साधा",
     getStarted: "सुरू करा",
+    selectLanguage: "भाषा निवडा",
+    english: "English",
+    hindi: "हिन्दी",
+    marathi: "मराठी",
+    telugu: "తెలుగు",
+    tamil: "தமிழ்",
+    gujarati: "ગુજરાતી",
+    punjabi: "ਪੰਜਾਬੀ",
 
     // Hero Section
     heroBadge: "७२-तासांचे टेम्पोरल आर्बिट्रेज इंजिन",

@@ -11,6 +11,14 @@ export const gu = {
     blog: "બ્લોગ",
     contactUs: "સંપર્ક કરો",
     getStarted: "શરૂ કરો",
+    selectLanguage: "ભાષા પસંદ કરો",
+    english: "English",
+    hindi: "हिन्दी",
+    marathi: "मराठी",
+    telugu: "తెలుగు",
+    tamil: "தமிழ்",
+    gujarati: "ગુજરાતી",
+    punjabi: "ਪੰਜਾਬੀ",
 
     // Hero Section
     heroBadge: "72-કલાકનું ટેમ્પોરલ આર્બિટ્રેજ એન્જિન",

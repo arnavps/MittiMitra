@@ -415,23 +415,23 @@ export default function OnboardingPage() {
                     >
                         <GlassCard className="max-w-md w-full p-8 text-center shadow-[0_0_100px_rgba(32,255,189,0.1)]">
                             <Zap className="w-12 h-12 text-mint mx-auto mb-6 animate-pulse" />
-                            <h2 className="text-2xl font-black mb-2 tracking-tight">Select Language</h2>
+                            <h2 className="text-2xl font-black mb-2 tracking-tight">{t('selectLanguage')}</h2>
                             <div className="grid grid-cols-2 gap-4 mt-8">
                                 {[
-                                    { code: 'en', name: 'English' },
-                                    { code: 'hi', name: 'Hindi' },
-                                    { code: 'mr', name: 'Marathi' },
-                                    { code: 'ta', name: 'Tamil' },
-                                    { code: 'te', name: 'Telugu' },
-                                    { code: 'gu', name: 'Gujarati' },
-                                    { code: 'pa', name: 'Punjabi' }
+                                    { code: 'en', name: 'English', label: t('english') },
+                                    { code: 'hi', name: 'Hindi', label: t('hindi') },
+                                    { code: 'mr', name: 'Marathi', label: t('marathi') },
+                                    { code: 'ta', name: 'Tamil', label: t('tamil') },
+                                    { code: 'te', name: 'Telugu', label: t('telugu') },
+                                    { code: 'gu', name: 'Gujarati', label: t('gujarati') },
+                                    { code: 'pa', name: 'Punjabi', label: t('punjabi') }
                                 ].map(l => (
                                     <button 
                                         key={l.code}
                                         onClick={() => handleLanguageSelect(l.code, l.name)}
                                         className="p-4 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-mint/20 hover:border-mint transition-all"
                                     >
-                                        {l.name}
+                                        {l.label}
                                     </button>
                                 ))}
                             </div>

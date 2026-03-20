@@ -11,6 +11,14 @@ export const ta = {
     blog: "வலைப்பதிவு",
     contactUs: "எங்களைத் தொடர்பு கொள்ளவும்",
     getStarted: "தொடங்குவோம்",
+    selectLanguage: "மொழியைத் தேர்ந்தெடுக்கவும்",
+    english: "English",
+    hindi: "हिन्दी",
+    marathi: "मराठी",
+    telugu: "తెలుగు",
+    tamil: "தமிழ்",
+    gujarati: "ગુજરાતી",
+    punjabi: "ਪੰਜਾਬੀ",
 
     // Hero Section
     heroBadge: "72-மணிநேர டெம்போரல் ஆர்பிட்ரேஜ் என்ஜின்",
