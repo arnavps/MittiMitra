@@ -210,8 +210,8 @@ export default function DashboardLayout({
             ) : (
                 <>
                     {/* Desktop Sidebar */}
-            <aside className="hidden md:flex flex-col w-72 border-r border-white/20 bg-white/5 backdrop-blur-xl">
-                <div className="p-6 flex items-center space-x-3">
+            <aside className="hidden md:flex flex-col w-64 border-r border-white/20 bg-white/5 backdrop-blur-xl">
+                <div className="p-5 flex items-center space-x-3">
                     <img
                         src="/logo_notext.jpeg"
                         alt="MittiMitra Logo"
@@ -227,13 +227,13 @@ export default function DashboardLayout({
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-colors duration-200 ${isActive
+                                className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-colors duration-200 ${isActive
                                     ? 'bg-white/10 text-white border-l-4 border-mint shadow-lg'
                                     : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
                                     }`}
                             >
                                 {item.icon}
-                                <span className="font-medium">{t(item.tKey as any) || item.name}</span>
+                                <span className="font-medium tracking-tight whitespace-nowrap">{t(item.tKey as any) || item.name}</span>
                             </Link>
                         );
                     })}
@@ -251,8 +251,8 @@ export default function DashboardLayout({
                         <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-mint to-teal-500 flex items-center justify-center text-forest font-bold text-sm group-hover:scale-110 transition-transform">
                             {profileName ? profileName.charAt(0).toUpperCase() : 'U'}
                         </div>
-                        <div className="flex-1">
-                            <p className="text-sm font-medium">{profileName || t('farmerLogin')}</p>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{profileName || t('farmerLogin')}</p>
                             <p className="text-xs text-gray-400">{t('proFarmer')}</p>
                         </div>
                         <svg className="w-4 h-4 text-gray-500 group-hover:text-mint transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
