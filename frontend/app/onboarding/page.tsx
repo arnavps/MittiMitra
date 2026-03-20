@@ -182,94 +182,106 @@ export default function OnboardingPage() {
 
     const processAIExtraction = async (text: string) => {
         setIsThinking(true);
-        const res = await fetch('/api/chat/onboarding_extract', { 
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                step: currentStepRef.current,
-                text_input: text,
-                language: langStr,
-                current_name: "Farmer",
-                current_crop: crop,
-                consent_granted: consentGranted
-            })
-        });
+        try {
+            const res = await fetch('/api/chat/onboarding_extract', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    step: currentStepRef.current,
+                    text_input: text,
+                    language: langStr,
+                    current_name: "Farmer",
+                    current_crop: crop,
+                    consent_granted: consentGranted
+                })
+            });
 
-        const data = await res.json();
-        setIsThinking(false);
-        setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: data.ai_reply }]);
+            if (!res.ok) throw new Error("API responded with error");
+            const data = await res.json();
+            setIsThinking(false);
+            
+            if (data.ai_reply) {
+                setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: data.ai_reply }]);
+            }
 
-        // Logic for state transitions based on onboarding.md
-        if (currentStepRef.current === 'Consent') {
-            if (data.consent_granted) {
-                setConsentGranted(true);
-                setCurrentStep('CropName');
+            // Logic for state transitions based on onboarding.md
+            if (currentStepRef.current === 'Consent') {
+                if (data.consent_granted) {
+                    setConsentGranted(true);
+                    setCurrentStep('CropName');
+                }
+            } else if (currentStepRef.current === 'CropName') {
+                if (data.crop) {
+                    setCrop(data.crop);
+                    cropRef.current = data.crop;
+                    setCurrentStep('YieldVolume');
+                }
+            } else if (currentStepRef.current === 'YieldVolume') {
+                if (data.yield_quintals) {
+                    setYieldAmount(data.yield_quintals);
+                    yieldAmountRef.current = data.yield_quintals;
+                    setCurrentStep('LocationPermission');
+                }
+            } else if (currentStepRef.current === 'LocationPermission') {
+                requestLocation();
+            } else if (currentStepRef.current === 'HarvestStatus') {
+                if (data.harvest_status === 'already_harvested') {
+                    setHarvestStatus('Already Harvested');
+                    harvestStatusRef.current = 'Already Harvested';
+                    setCurrentStep('StorageAudit');
+                } else if (data.harvest_status === 'not_yet_harvested') {
+                    setHarvestStatus('Not Yet Harvested');
+                    harvestStatusRef.current = 'Not Yet Harvested';
+                    setCurrentStep('MaturityCheck');
+                }
+            } else if (currentStepRef.current === 'StorageAudit') {
+                if (data.storage_type) {
+                    setStorageType(data.storage_type);
+                    storageTypeRef.current = data.storage_type;
+                }
+                if (data.health_issue === true) {
+                    setHealthStatus("Issue Reported");
+                    setCurrentStep('HealthAudit');
+                } else if (data.health_issue === false) {
+                    setHealthStatus("Healthy");
+                    setCurrentStep('TransitConfig');
+                }
+            } else if (currentStepRef.current === 'HealthAudit') {
+                if (data.health_issue === false || (data.ai_reply && (data.ai_reply.toLowerCase().includes("transport") || data.ai_reply.toLowerCase().includes("transit")))) {
+                    setHealthStatus("Visual Data Captured");
+                    setCurrentStep('TransitConfig');
+                }
+            } else if (currentStepRef.current === 'MaturityCheck') {
+                if (data.sowing_date) {
+                    setSowingDate(data.sowing_date);
+                    setCurrentStep('Success');
+                }
+            } else if (currentStepRef.current === 'TransitConfig') {
+                if (data.transport_type) {
+                    setTransportType(data.transport_type);
+                    transportTypeRef.current = data.transport_type;
+                    setCurrentStep('Success');
+                }
             }
-        } else if (currentStepRef.current === 'CropName') {
-            if (data.crop) {
-                setCrop(data.crop);
-                cropRef.current = data.crop;
-                setCurrentStep('YieldVolume');
+
+            if (data.ai_reply) {
+                speakResponse(data.ai_reply, langStr, async () => {
+                    const nextStep = currentStepRef.current;
+                    if (nextStep === 'Success') {
+                        await saveOnboardingData();
+                        fetchFinalRecommendation();
+                    } else if (nextStep !== 'HealthAudit') {
+                        startListening();
+                    }
+                });
             }
-        } else if (currentStepRef.current === 'YieldVolume') {
-            if (data.yield_quintals) {
-                setYieldAmount(data.yield_quintals);
-                yieldAmountRef.current = data.yield_quintals;
-                setCurrentStep('LocationPermission');
-            }
-        } else if (currentStepRef.current === 'LocationPermission') {
-            // Initiate location request
-            requestLocation();
-            // Don't auto-advance yet - wait for useEffect below to see 'location'
-        } else if (currentStepRef.current === 'HarvestStatus') {
-            if (data.harvest_status === 'already_harvested') {
-                setHarvestStatus('Already Harvested');
-                harvestStatusRef.current = 'Already Harvested';
-                setCurrentStep('StorageAudit');
-            } else if (data.harvest_status === 'not_yet_harvested') {
-                setHarvestStatus('Not Yet Harvested');
-                harvestStatusRef.current = 'Not Yet Harvested';
-                setCurrentStep('MaturityCheck');
-            }
-        } else if (currentStepRef.current === 'StorageAudit') {
-            if (data.storage_type) {
-                setStorageType(data.storage_type);
-                storageTypeRef.current = data.storage_type;
-            }
-            if (data.health_issue === true) {
-                setHealthStatus("Issue Reported");
-                setCurrentStep('HealthAudit');
-            } else if (data.health_issue === false) {
-                setHealthStatus("Healthy");
-                setCurrentStep('TransitConfig');
-            }
-        } else if (currentStepRef.current === 'HealthAudit') {
-            if (data.health_issue === false || (data.ai_reply && (data.ai_reply.toLowerCase().includes("transport") || data.ai_reply.toLowerCase().includes("transit")))) {
-                setHealthStatus("Visual Data Captured");
-                setCurrentStep('TransitConfig');
-            }
-        } else if (currentStepRef.current === 'MaturityCheck') {
-            if (data.sowing_date) {
-                setSowingDate(data.sowing_date);
-                setCurrentStep('Success'); // Directly to success for immature crops
-            }
-        } else if (currentStepRef.current === 'TransitConfig') {
-            if (data.transport_type) {
-                setTransportType(data.transport_type);
-                transportTypeRef.current = data.transport_type;
-                setCurrentStep('Success'); // Simplified flow: End of onboarding
-            }
+        } catch (err) {
+            console.error("AI Extraction failed", err);
+            setIsThinking(false);
+            const errorMsg = langStr === "Hindi" ? "क्षमा करें, मुझे समझने में दिक्कत हुई। कृपया फिर से कहें।" : "Sorry, I had trouble processing that. Could you please say it again?";
+            setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: errorMsg }]);
+            speakResponse(errorMsg, langStr, () => startListening());
         }
-
-        speakResponse(data.ai_reply, langStr, async () => {
-            const nextStep = currentStepRef.current;
-            if (nextStep === 'Success') {
-                await saveOnboardingData();
-                fetchFinalRecommendation();
-            } else if (nextStep !== 'HealthAudit') {
-                startListening();
-            }
-        });
     };
 
     const fetchFinalRecommendation = async () => {
