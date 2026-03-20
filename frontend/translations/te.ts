@@ -33,6 +33,17 @@ export const te = {
     invalidPhone: "దయచేసి సరైన 10-అంకెల ఫోన్ నంబర్‌ను నమోదు చేయండి.",
     invalidOtp: "తప్పుడు OTP.",
     sessionExpired: "సెషన్ గడువు ముగిసింది. దయచేసి కొత్త OTP ని అభ్యర్థించండి.",
+    mittiMitraPortal: "మిట్టిమిత్ర పోర్టల్",
+    portalDescription: "ప్రతి కోత బ్యాచ్ ఆన్-చైన్ ధృవీకరించబడే హై-ఫిడిలిటీ డెసిషన్ ఇంజిన్‌లోకి ప్రవేశించండి.",
+    mandiVolatility: "మండి అస్థిరత",
+    spoilageRiskTicker: "పాడైపోయే ప్రమాదం",
+    secureAccess: "సురక్షిత ప్రవేశం",
+    authPersonnelOnly: "అధికారిక సిబ్బందికి మాత్రమే.",
+    phonePlaceholder: "XXXXX-XXXXX",
+    otpPlaceholder: "······",
+    loginPasskey: "పాస్‌కీతో లాగిన్ చేయండి",
+    low: "తక్కువ",
+    stable: "స్థిరంగా ఉంది",
 
     // Dashboard General & Header
     decisionHub: "డెసిషన్ హబ్",

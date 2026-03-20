@@ -33,6 +33,17 @@ export const ta = {
     invalidPhone: "தயவுசெய்து சரியான 10-இலக்க தொலைபேசி எண்ணை உள்ளிடவும்.",
     invalidOtp: "தவறான OTP.",
     sessionExpired: "அமர்வு காலாவதியானது. தயவுசெய்து புதிய OTP-யைக் கோரவும்.",
+    mittiMitraPortal: "மிட்டிமித்ரா போர்டல்",
+    portalDescription: "ஒவ்வொரு அறுவடை தொகுப்பும் ஆன்-செயினில் சரிபார்க்கப்படும் உயர்-நிலை முடிவு இயந்திரத்திற்குள் நுழையுங்கள்.",
+    mandiVolatility: "மண்டி ஏற்ற இறக்கம்",
+    spoilageRiskTicker: "அழுகும் அபாயம்",
+    secureAccess: "பாதுகாப்பான அணுகல்",
+    authPersonnelOnly: "அங்கீகரிக்கப்பட்ட ஊழியர்களுக்கு மட்டுமே.",
+    phonePlaceholder: "XXXXX-XXXXX",
+    otpPlaceholder: "······",
+    loginPasskey: "பாஸ்கீ மூலம் உள்நுழைக",
+    low: "குறைவு",
+    stable: "நிலையானது",
 
     // Dashboard General & Header
     decisionHub: "டெசிஷன் ஹப்",

@@ -33,6 +33,17 @@ export const gu = {
     invalidPhone: "કૃપા કરીને માન્ય 10-આંકડાનો ફોન નંબર દાખલ કરો.",
     invalidOtp: "અમાન્ય OTP.",
     sessionExpired: "સત્ર સમાપ્ત થઈ ગયું છે. કૃપા કરીને નવો OTP વિનંતી કરો.",
+    mittiMitraPortal: "મિત્તીમિત્ર પોર્ટલ",
+    portalDescription: "હાઈ-ફિડેલિટી ડિસિઝન એન્જિનમાં પ્રવેશ કરો જ્યાં દરેક લણણી બેચ ઓન-ચેન ચકાસવામાં આવે છે.",
+    mandiVolatility: "મંડી અસ્થિરતા",
+    spoilageRiskTicker: "બગાડનું જોખમ",
+    secureAccess: "સુરક્ષિત પ્રવેશ",
+    authPersonnelOnly: "માત્ર અધિકૃત કર્મચારીઓ.",
+    phonePlaceholder: "XXXXX-XXXXX",
+    otpPlaceholder: "······",
+    loginPasskey: "પાસકી સાથે લોગિન કરો",
+    low: "ઓછું",
+    stable: "સ્થિર",
 
     // Dashboard General & Header
     decisionHub: "ડિસિઝન હબ",

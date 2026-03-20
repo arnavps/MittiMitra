@@ -33,6 +33,17 @@ export const pa = {
     invalidPhone: "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਵੈਧ 10-ਅੰਕਾਂ ਦਾ ਫ਼ੋਨ ਨੰਬਰ ਦਰਜ ਕਰੋ।",
     invalidOtp: "ਗਲਤ OTP।",
     sessionExpired: "ਸੈਸ਼ਨ ਖਤਮ ਹੋ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਨਵਾਂ OTP ਮੰਗੋ।",
+    mittiMitraPortal: "ਮਿੱਟੀਮਿੱਤਰਾ ਪੋਰਟਲ",
+    portalDescription: "ਹਾਈ-ਫਿਡੇਲਿటీ ਡੈਸੀਜਨ ਇੰਜਨ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ ਜਿੱਥੇ ਹਰ ਕਟਾਈ ਬੈਚ ਦੀ ਆਨ-ਚੇਨ ਤਸਦੀਕ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।",
+    mandiVolatility: "ਮੰਡੀ ਉਤਾਰ-ਚੜ੍ਹਾਅ",
+    spoilageRiskTicker: "ਖਰਾਬ ਹੋਣ ਦਾ ਖਤਰਾ",
+    secureAccess: "ਸੁਰੱਖਿਅਤ ਪਹੁੰਚ",
+    authPersonnelOnly: "ਸਿਰਫ ਅਧਿਕਾਰਤ ਕਰਮਚਾਰੀ।",
+    phonePlaceholder: "XXXXX-XXXXX",
+    otpPlaceholder: "······",
+    loginPasskey: "ਪਾਸ-ਕੀ ਨਾਲ ਲੌਗਇਨ ਕਰੋ",
+    low: "ਘੱਟ",
+    stable: "ਸਥਿਰ",
 
     // Dashboard General & Header
     decisionHub: "ਡੈਸੀਜਨ ਹਬ",

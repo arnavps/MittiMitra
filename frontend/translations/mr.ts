@@ -33,6 +33,17 @@ export const mr = {
     invalidPhone: "कृपया वैध १०-अंकी फोन नंबर प्रविष्ट करा.",
     invalidOtp: "अवैध ओटीपी.",
     sessionExpired: "सत्र कालबाह्य झाले. कृपया नवीन ओटीपीची विनंती करा.",
+    mittiMitraPortal: "मिट्टीमित्र पोर्टल",
+    portalDescription: "हाय-फिडेलिटी डिસીજન એન્જિનમાં પ્રવેશ કરો જ્યાં દરેક લણણી બેચ ઓન-ચેન ચકાસવામાં આવે છે.",
+    mandiVolatility: "मंडी अस्थिरता",
+    spoilageRiskTicker: "नासाडीचा धोका",
+    secureAccess: "सुरक्षित प्रवेश",
+    authPersonnelOnly: "केवळ अधिकृत कर्मचारी.",
+    phonePlaceholder: "XXXXX-XXXXX",
+    otpPlaceholder: "······",
+    loginPasskey: "पास-की सह लॉगिन करा",
+    low: "कमी",
+    stable: "स्थिर",
 
     // Dashboard General & Header
     decisionHub: "डिसीजन हब",

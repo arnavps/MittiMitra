@@ -157,11 +157,11 @@ export default function LoginPage() {
                             animate={{ opacity: 1, x: 0 }}
                             className="text-6xl font-black text-white tracking-tighter leading-[0.9] mb-6"
                         >
-                            THE MITTIMITRA <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint to-teal-400">PORTAL</span>
+                            {t('mittiMitraPortal').split(' ').slice(0, -1).join(' ')} <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mint to-teal-400">{t('mittiMitraPortal').split(' ').slice(-1)}</span>
                         </motion.h1>
                         <p className="text-gray-300 text-lg max-w-md font-medium leading-relaxed opacity-80">
-                            Enter the high-fidelity decision engine where every harvest batch is verified on-chain.
+                            {t('portalDescription')}
                         </p>
                     </div>
 
@@ -169,13 +169,13 @@ export default function LoginPage() {
                     <div className="flex space-x-6">
                         <TickerBox
                             icon={<TrendingUp className="w-4 h-4 text-emerald-400" />}
-                            label="Mandi Volatility"
-                            value="Low"
-                            trend="Stable"
+                            label={t('mandiVolatility')}
+                            value={t('low')}
+                            trend={t('stable')}
                         />
                         <TickerBox
                             icon={<AlertTriangle className="w-4 h-4 text-yellow-400" />}
-                            label="Spoilage Risk"
+                            label={t('spoilageRiskTicker')}
                             value="12%"
                             trend="(Nashik)"
                         />
@@ -194,10 +194,10 @@ export default function LoginPage() {
                     {/* Header */}
                     <div className="text-center lg:text-left">
                         <h2 className="text-3xl font-black text-white tracking-tight mb-2">
-                            Secure Access
+                            {t('secureAccess')}
                         </h2>
                         <p className="text-gray-400 text-sm font-medium">
-                            Authorized personnel only.
+                            {t('authPersonnelOnly')}
                         </p>
                     </div>
 
@@ -240,7 +240,7 @@ export default function LoginPage() {
                                         </div>
                                         <input
                                             type="tel"
-                                            placeholder="XXXXX-XXXXX"
+                                            placeholder={t('phonePlaceholder')}
                                             onFocus={() => setIsFocused(true)}
                                             onBlur={() => setIsFocused(false)}
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-20 pr-4 text-white font-mono placeholder-gray-600 focus:outline-none focus:border-mint/50 transition-all"
@@ -251,7 +251,7 @@ export default function LoginPage() {
                                 ) : (
                                     <input
                                         type="text"
-                                        placeholder="······"
+                                        placeholder={t('otpPlaceholder')}
                                         onFocus={() => setIsFocused(true)}
                                         onBlur={() => setIsFocused(false)}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-white font-mono text-center tracking-[1em] text-xl placeholder-gray-600 focus:outline-none focus:border-mint/50 transition-all"
@@ -288,7 +288,7 @@ export default function LoginPage() {
                             <div className="mt-6 pt-6 border-t border-white/5">
                                 <button className="w-full h-12 flex items-center justify-center space-x-3 text-gray-500 hover:text-white transition-colors text-xs font-bold">
                                     <Key className="w-4 h-4" />
-                                    <span>Login with Passkey</span>
+                                    <span>{t('loginPasskey')}</span>
                                 </button>
                             </div>
                         )}
@@ -302,7 +302,7 @@ export default function LoginPage() {
                                 className="text-xs font-bold text-gray-500 hover:text-mint transition-colors inline-flex items-center"
                             >
                                 <ArrowRight className="w-3 h-3 rotate-180 mr-2" />
-                                Change Number
+                                {t('changeNumber')}
                             </button>
                         )}
                     </div>

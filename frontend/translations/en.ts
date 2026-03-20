@@ -33,6 +33,17 @@ export const en = {
     invalidPhone: "Please enter a valid 10-digit phone number.",
     invalidOtp: "Invalid OTP.",
     sessionExpired: "Session expired. Please request a new OTP.",
+    mittiMitraPortal: "THE MITTIMITRA PORTAL",
+    portalDescription: "Enter the high-fidelity decision engine where every harvest batch is verified on-chain.",
+    mandiVolatility: "Mandi Volatility",
+    spoilageRiskTicker: "Spoilage Risk",
+    secureAccess: "Secure Access",
+    authPersonnelOnly: "Authorized personnel only.",
+    phonePlaceholder: "XXXXX-XXXXX",
+    otpPlaceholder: "······",
+    loginPasskey: "Login with Passkey",
+    low: "Low",
+    stable: "Stable",
 
     // Dashboard General & Header
     decisionHub: "Decision Hub",
