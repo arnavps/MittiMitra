@@ -30,14 +30,38 @@ def get_heat_multiplier(method: str) -> float:
     }
     return multipliers.get(method, 1.0)
 
-def get_preservation_actions(crop_value: float, current_spoilage_pct: float, temp_c: float, storage_type: str) -> Dict[str, Any]:
+def get_preservation_actions(crop_value: float, current_spoilage_pct: float, temp_c: float, storage_type: str, crop_type: str = "Cotton") -> Dict[str, Any]:
     """
-    Evaluates ROI of preservation actions.
+    Evaluates ROI of preservation actions with descriptive details.
     """
     actions = [
-        {"name": "Move to Shade", "cost": 0, "time_mins": 15, "spoilage_reduction_pct": 2.5, "condition": storage_type == "Open Field"},
-        {"name": "Wet the Bags", "cost": 50, "time_mins": 10, "spoilage_reduction_pct": 4.0, "condition": temp_c > 35},
-        {"name": "Use a Tarp", "cost": 250, "time_mins": 5, "spoilage_reduction_pct": 8.0, "condition": True} # rental
+        {
+            "name": "Move to Shade",
+            "cost": 0,
+            "time_mins": 15,
+            "spoilage_reduction_pct": 2.5,
+            "condition": storage_type == "Open Field",
+            "description": f"Moving {crop_type} from direct sunlight to a shaded area reduces internal heat buildup.",
+            "ai_advice": f"Namaste! Since your {crop_type} is currently in the open field at {temp_c}°C, moving it to shade is a zero-cost way to save ₹{{saving}} today. The sun is your biggest enemy right now."
+        },
+        {
+            "name": "Wet the Bags",
+            "cost": 50,
+            "time_mins": 10,
+            "spoilage_reduction_pct": 4.0,
+            "condition": temp_c > 32,
+            "description": "Evaporative cooling through wet jute bags can lower the crop temperature by 3-5 degrees.",
+            "ai_advice": f"I recommend wetting the gunny bags. As the water evaporates, it pulls heat away from the {crop_type}, acting like a natural refrigerator. This is very effective for {crop_type} in this heat."
+        },
+        {
+            "name": "Use a Tarp",
+            "cost": 250,
+            "time_mins": 5,
+            "spoilage_reduction_pct": 8.0,
+            "condition": True,
+            "description": "A high-quality breathable tarpaulin protects from humidity and sudden temperature spikes.",
+            "ai_advice": f"Using a silver-coated tarp will reflect 90% of solar radiation. For {crop_type}, this prevents the 'sweating' effect that leads to rapid fungal growth. It's an investment that pays for itself in hours."
+        }
     ]
     
     best_action = None
@@ -58,7 +82,9 @@ def get_preservation_actions(crop_value: float, current_spoilage_pct: float, tem
                 "loss_saved_inr": round(potential_loss_saved, 2),
                 "net_saving_inr": round(net_saving, 2),
                 "is_recommended": is_recommended,
-                "spoilage_reduction_pct": action["spoilage_reduction_pct"]
+                "spoilage_reduction_pct": action["spoilage_reduction_pct"],
+                "description": action["description"],
+                "ai_advice": action["ai_advice"].replace("{saving}", str(round(net_saving, 2)))
             }
             action_details.append(detail)
             

@@ -16,11 +16,13 @@ import { getClusterMaturityHeatmap } from '@/services/supplyOrchestrator';
 import { getWeatherForecast } from '@/services/weatherService';
 import Link from 'next/link';
 import { speak } from '@/services/ttsService';
-import { Volume2 } from 'lucide-react';
+import { Volume2, X, TrendingUp, Zap, Clock, ShieldCheck, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData, clusterData }: VerdictCardProps) {
     const { t, n, language } = useLanguage();
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     if (!data) return null;
 
@@ -165,26 +167,19 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
             {/* Preservation Priority Action */}
             {priorityAction && priorityAction.is_recommended && (
                 <div className="z-10 w-full mt-2 mb-4 animate-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-gradient-to-r from-mint/20 to-emerald-500/10 border border-mint/30 rounded-2xl p-4 flex items-center justify-between shadow-[0_0_20px_rgba(32,255,189,0.15)] relative overflow-hidden group">
+                    <button 
+                        onClick={() => setIsModalOpen(true)}
+                        className="w-full bg-gradient-to-r from-mint/20 to-emerald-500/10 border border-mint/30 rounded-2xl p-4 flex items-center justify-between shadow-[0_0_20px_rgba(32,255,189,0.15)] relative overflow-hidden group text-left"
+                    >
                         <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="flex items-center text-left">
+                        <div className="flex items-center">
                             <div className="w-10 h-10 rounded-full bg-mint/20 flex items-center justify-center mr-3 border border-mint/40">
-                                <svg className="w-5 h-5 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                <Zap className="w-5 h-5 text-mint" />
                             </div>
                             <div>
                                 <div className="flex items-center space-x-2">
                                     <p className="text-[10px] text-mint uppercase tracking-widest font-black opacity-80 mb-0.5">{t('urgent')}</p>
-                                    <button 
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            const audioText = `${t('urgent')}: ${priorityAction.action}. ${t('loss24h')} ${n(priorityAction.net_saving_inr)} ${t('rupees')}.`;
-                                            speak(audioText, language);
-                                        }}
-                                        className="p-1 hover:bg-mint/20 rounded-full transition-colors group/audio"
-                                        title="Listen to Priority Action"
-                                    >
-                                        <Volume2 className="w-3 h-3 text-mint/60 group-hover/audio:text-mint transition-colors" />
-                                    </button>
+                                    <ChevronRight className="w-3 h-3 text-mint/40 group-hover:translate-x-1 transition-transform" />
                                 </div>
                                 <p className="text-white text-sm font-bold">{priorityAction.action}</p>
                             </div>
@@ -193,9 +188,117 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                             <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-0.5">{t('loss24h')}</p>
                             <p className="text-mint font-mono font-black text-lg">₹{n(priorityAction.net_saving_inr)}</p>
                         </div>
-                    </div>
+                    </button>
                 </div>
             )}
+
+            {/* Preservation Details Modal */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-6">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+                        />
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-2xl bg-forest border border-white/10 rounded-[2.5rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex flex-col max-h-[90vh]"
+                        >
+                            {/* Modal Header */}
+                            <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                                <div>
+                                    <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.3em] text-mint/60 mb-2">
+                                        <ShieldCheck className="w-4 h-4" />
+                                        <span>{t('preservationStrategies')}</span>
+                                    </div>
+                                    <h2 className="text-3xl font-black tracking-tighter uppercase leading-none">
+                                        Action <span className="text-mint">Intelligence</span>
+                                    </h2>
+                                </div>
+                                <button 
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                                >
+                                    <X className="w-6 h-6 text-white/60" />
+                                </button>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+                                {/* ROI Summary */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem]">
+                                        <TrendingUp className="w-5 h-5 text-mint mb-4" />
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-mint/60 mb-1">{t('totalPreservationSavings')}</div>
+                                        <div className="text-2xl font-black text-mint font-mono">₹{n(data.preservation?.all_actions?.reduce((acc: number, curr: any) => acc + (curr.is_recommended ? curr.net_saving_inr : 0), 0) || 0)}</div>
+                                    </div>
+                                    <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem]">
+                                        <Clock className="w-5 h-5 text-mint mb-4" />
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-mint/60 mb-1">Execution Time</div>
+                                        <div className="text-2xl font-black text-white font-mono">15-20 {t('mins')}</div>
+                                    </div>
+                                </div>
+
+                                {/* Actions List */}
+                                <div className="space-y-4">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-4">{t('actionDetails')}</h3>
+                                    {data.preservation?.all_actions?.filter((a: any) => a.is_recommended).map((action: any, idx: number) => (
+                                        <div key={idx} className="bg-white/[0.03] border border-white/10 rounded-3xl p-6 space-y-4 group hover:border-mint/30 transition-colors">
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="w-12 h-12 rounded-2xl bg-mint/10 flex items-center justify-center border border-mint/20 text-mint font-bold italic">
+                                                        #{idx + 1}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-lg font-black text-white">{action.action}</h4>
+                                                        <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm">{action.description}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-[10px] font-black text-mint uppercase tracking-widest mb-1">{t('netGain')}</div>
+                                                    <div className="text-xl font-black text-mint font-mono">+₹{n(action.net_saving_inr)}</div>
+                                                </div>
+                                            </div>
+
+                                            {/* AI Advice Bubble */}
+                                            <div className="bg-forest border border-mint/20 rounded-2xl p-5 relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-24 h-24 bg-mint/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                                                <div className="flex items-start space-x-4 relative z-10">
+                                                    <button 
+                                                        onClick={() => speak(action.ai_advice, language)}
+                                                        className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center shrink-0 hover:scale-110 active:scale-95 transition-all shadow-lg"
+                                                    >
+                                                        <Volume2 className="w-5 h-5" />
+                                                    </button>
+                                                    <div>
+                                                        <div className="text-[10px] font-black text-mint uppercase tracking-widest mb-1">{t('aiAdvice')}</div>
+                                                        <p className="text-sm text-gray-300 italic font-medium leading-relaxed">"{action.ai_advice}"</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="p-8 border-t border-white/5 bg-white/[0.02] flex justify-center">
+                                <button 
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="px-10 h-14 bg-mint text-forest rounded-2xl font-black uppercase tracking-[0.2em] shadow-[0_0_40px_rgba(32,255,189,0.2)] hover:scale-[1.03] active:scale-95 transition-all text-xs"
+                                >
+                                    {t('close')}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Harvest Oracle: Simplified Dashboard View */}
             {oracleData && !isHarvested && (

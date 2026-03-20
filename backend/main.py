@@ -280,7 +280,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
         
         # Calculate Total Crop Value for Preservation Math
         total_crop_value = gross_rev
-        preservation_data = get_preservation_actions(total_crop_value, quality_loss_pct, temp_today, data.storage_type)
+        preservation_data = get_preservation_actions(total_crop_value, quality_loss_pct, temp_today, data.storage_type, data.crop)
         
         # Phase 1.5: Logistics Audit & Profit Leaks
         current_state = {
