@@ -220,7 +220,7 @@ export default function DashboardLayout({
             ) : (
                 <>
                     {/* Desktop Sidebar */}
-            <aside className="hidden md:flex flex-col w-64 border-r border-white/20 bg-black/20 backdrop-blur-xl">
+            <aside className="hidden md:flex flex-col w-72 border-r border-white/20 bg-white/5 backdrop-blur-xl">
                 <div className="p-6 flex items-center space-x-3">
                     <img
                         src="/logo_notext.jpeg"
@@ -237,9 +237,9 @@ export default function DashboardLayout({
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${isActive
-                                    ? 'bg-mint/10 text-mint border border-mint/20 shadow-[0_0_15px_rgba(32,255,189,0.1)]'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-gray-200 border border-transparent'
+                                className={`flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-colors duration-200 ${isActive
+                                    ? 'bg-white/10 text-white border-l-4 border-mint shadow-lg'
+                                    : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
                                     }`}
                             >
                                 {item.icon}
@@ -267,7 +267,7 @@ export default function DashboardLayout({
             </aside>
 
             {/* Mobile Bottom Bar (Optional, simpler implementation for now) */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xl border-t border-white/10 flex flex-col pb-safe">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/5 backdrop-blur-xl border-t border-white/10 flex flex-col pb-safe">
                 {/* Global Mobile Language Switcher (sits right above the nav icons) */}
                 <div className="flex justify-center py-2 border-b border-white/5 bg-black/60">
                     <LanguageSwitcher />
