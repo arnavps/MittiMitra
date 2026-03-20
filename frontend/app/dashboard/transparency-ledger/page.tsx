@@ -27,9 +27,10 @@ import { performQualityAudit, captureGuidance, QualityAuditResult } from '@/serv
 import { generateProvenanceHash, commitProvenanceToBlockchain, ProvenanceRecord } from '@/utils/provenance';
 import { MandiPass } from '@/components/dashboard/MandiPass';
 import { CameraFeed } from '@/components/dashboard/CameraFeed';
+import { fetchProfile } from '@/services/user';
 
 export default function TransparencyLedgerPage() {
-    const { t, n } = useLanguage();
+    const { t, n, language } = useLanguage();
     
     // UI States
     const [isAuditing, setIsAuditing] = useState(false);
@@ -40,9 +41,48 @@ export default function TransparencyLedgerPage() {
     const [isComplete, setIsComplete] = useState(false);
     const [cameraError, setCameraError] = useState<string | null>(null);
     
+    // Real Data States
+    const [activeCrop, setActiveCrop] = useState<string>('Tomato');
+    const [realMandiPrice, setRealMandiPrice] = useState<number>(1719.1);
+    const [activeLocation, setActiveLocation] = useState<{lat: number, lng: number}>({ lat: 18.5204, lng: 73.8567 });
     const [liveBlocks, setLiveBlocks] = useState<any[]>([]);
 
-    // Simulate live block updates for background context
+    // Fetch Real Profile and Market Data
+    useEffect(() => {
+        const syncData = async () => {
+            const profile = await fetchProfile();
+            if (profile?.crop) {
+                const cropName = profile.crop;
+                setActiveCrop(cropName);
+                const loc = { lat: profile.latitude || 18.5204, lng: profile.longitude || 73.8567 };
+                setActiveLocation(loc);
+                
+                // Fetch current market price for this crop
+                try {
+                    const res = await fetch('/api/recommendation', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            crop: cropName,
+                            location: loc,
+                            language: language
+                        })
+                    });
+                    if (res.ok) {
+                        const rec = await res.json();
+                        if (rec.mandi_stats?.current_price) {
+                            setRealMandiPrice(rec.mandi_stats.current_price);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch market price for ledger:", err);
+                }
+            }
+        };
+        syncData();
+    }, [language]);
+
+    // Simulate live block updates
     useEffect(() => {
         const initialBlocks = [
             { id: '0x82fb...812a', event: t('npkSourced'), msg: t('npkLogMsg'), time: '2 mins ago', icon: <Database className="w-4 h-4" /> },
@@ -74,17 +114,17 @@ export default function TransparencyLedgerPage() {
             setAuditResult(result);
 
             // 2. Prepare Record for Hashing (Match real data for Tomato)
-            const baseMandiPrice = 1719.1; // Modal price from mandi_prices_real.json for Tomato
+            // 2. Prepare Record for Hashing (Dynamic Real Data)
             const premiumMultiplier = result.grade === 'A' ? 1.1 : 1.0;
-            const shadowPrice = Math.round(baseMandiPrice * premiumMultiplier);
+            const shadowPrice = Math.round(realMandiPrice * premiumMultiplier);
 
             const record: ProvenanceRecord = {
                 userId: "USER_7721", 
                 timestamp: new Date().toISOString(),
-                location: { lat: 18.5204, lng: 73.8567 },
+                location: activeLocation,
                 qualityScore: result.quality_score,
                 decayStatus: 4.2, 
-                crop: t('tomato'),
+                crop: t(activeCrop.toLowerCase() as any),
                 shadowPrice: shadowPrice
             };
 
@@ -207,7 +247,7 @@ export default function TransparencyLedgerPage() {
                                             <span className="text-[10px] text-mint font-black uppercase tracking-widest animate-pulse">STEP {auditStep + 1}/4</span>
                                         </div>
                                         <h3 className="text-2xl font-black text-white italic tracking-tight min-h-[3rem]">
-                                            {t(captureGuidance[auditStep] as any)}
+                                            {t(activeCrop.toLowerCase() as any)} - {t(captureGuidance[auditStep] as any)}
                                         </h3>
                                         <div className="w-48 h-1 bg-white/5 rounded-full mx-auto overflow-hidden">
                                             <motion.div 
@@ -263,9 +303,9 @@ export default function TransparencyLedgerPage() {
                                         timestamp: new Date().toISOString(),
                                         qualityScore: auditResult.quality_score,
                                         grade: auditResult.grade,
-                                        shadowPrice: Math.round(1719.1 * (auditResult.grade === 'A' ? 1.1 : 1.0)),
-                                        mandiPrice: 1719.1,
-                                        crop: t('tomato')
+                                        shadowPrice: Math.round(realMandiPrice * (auditResult.grade === 'A' ? 1.1 : 1.0)),
+                                        mandiPrice: realMandiPrice,
+                                        crop: t(activeCrop.toLowerCase() as any)
                                     }}
                                 />
 
@@ -336,12 +376,12 @@ export default function TransparencyLedgerPage() {
                             <div className="space-y-6">
                                 <div>
                                     <span className="text-[10px] font-black text-mint uppercase tracking-widest mb-1 block">Active Batch ID</span>
-                                    <h2 className="text-2xl font-black text-white font-mono tracking-tighter">MITTI-2024-QX92</h2>
+                                    <h2 className="text-2xl font-black text-white font-mono tracking-tighter">MITTI-2026-QX92</h2>
                                 </div>
                                 <div className="space-y-4">
                                     <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
                                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">{t('genesisDate')}</span>
-                                        <p className="text-white font-bold">12 Oct 2024</p>
+                                        <p className="text-white font-bold">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                                     </div>
                                     <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
                                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">Network Status</span>
