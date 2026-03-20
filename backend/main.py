@@ -8,7 +8,8 @@ if sys.platform == "win32":
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
-import logging
+import logging 
+
 import httpx
 
 logging.basicConfig(level=logging.INFO)

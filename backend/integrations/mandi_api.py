@@ -179,7 +179,7 @@ def _generate_mock_fallback(crop: str, language: str, user_loc: dict) -> Dict[st
         "transport_rate_per_km": 15.0
     }
     regional_options = [primary_mandi]
-    for i in range(3):
+    for i in range(5): # Total 6 mandis for the dashboard table
         price = round(base_price + random.uniform(-200, 200), 2)
         dist_km = random.uniform(20.0, 150.0)
         angle = random.uniform(0, 2 * math.pi)

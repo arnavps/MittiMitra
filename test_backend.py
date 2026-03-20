@@ -8,10 +8,12 @@ def test():
         "yield_est_quintals": 50.0
     }
     try:
-        res = httpx.post("http://127.0.0.1:8000/recommendation", json=payload, timeout=5.0)
+        res = httpx.post("http://127.0.0.1:8000/recommendation", json=payload, timeout=10.0)
         print(f"Status: {res.status_code}")
-        print(f"Body: {res.json().get('source_area')}")
-        print(f"Full Body Sample: {json.dumps(res.json(), indent=2)[:500]}")
+        json_data = res.json()
+        print(f"Body: {json_data.get('source_area')}")
+        print(f"Mandi Count: {len(json_data.get('regional_options', []))}")
+        print(f"Full Body Sample: {json.dumps(json_data, indent=2)[:500]}")
     except Exception as e:
         print(f"Error: {e}")
 

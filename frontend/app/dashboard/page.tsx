@@ -347,13 +347,13 @@ export default function DashboardPage() {
         );
     }
 
-    const mandiList = data?.regional_options ? data.regional_options.map((option: any, index: number) => ({
+    const mandiList = data?.regional_options ? data.regional_options.slice(0, 6).map((option: any, index: number) => ({
         id: index.toString(),
-        name: option.mandi_name,
+        name: option.mandi_name || option.name,
         distanceKm: roundVal(option.distance_km),
-        currentPrice: option.market_price,
-        netProfit: option.total_net_profit,
-        isOptimal: index === 0 // The backend sorts by most profitable first
+        currentPrice: option.market_price || option.current_price,
+        netProfit: option.total_net_profit || (option.current_price * (yieldEst || 50)),
+        isOptimal: index === 0
     })) : [];
 
     return (
