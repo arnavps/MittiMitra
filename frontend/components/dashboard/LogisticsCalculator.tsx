@@ -46,23 +46,31 @@ export function LogisticsCalculator({
 
     const getLoadingInfo = (vehicleId: string, currentCrop: string) => {
         const cropLower = currentCrop.toLowerCase();
+        const vIdLower = vehicleId.toLowerCase();
         console.log(`[Logistics] selectedId: ${vehicleId}, crop: ${currentCrop}`);
+
+        // Define image as per user mapping:
+        // bike_loading for two wheeler
+        // loading_guide for open trolley
+        // stacking_padding for truck
+        const vImage = vIdLower.includes('trolley') ? "/loading_guide.png" : 
+                       vIdLower.includes('truck') ? "/stacking_padding.png" : "/bike_loading.png";
         
         if (cropLower.includes('potato') || cropLower.includes('onion')) {
-            if (vehicleId.toLowerCase().includes('trolley')) {
+            if (vIdLower.includes('trolley')) {
                 return {
                     title: "Chimney Pattern Stacking",
                     description: "Stack in 3x3 rows with a hollow center column for maximum core cooling.",
-                    img: "/loading_guide.png",
+                    img: vImage,
                     goal: "Prevents internal rot by 22% on long trips.",
                     layout: 'grid'
                 };
             }
-            if (vehicleId.toLowerCase().includes('truck')) {
+            if (vIdLower.includes('truck')) {
                 return {
                     title: "Layered Stacking",
                     description: "Use 4-inch straw padding and limit to 4 layers to prevent bottom-layer bruising.",
-                    img: "/stacking_padding.png",
+                    img: vImage,
                     goal: "Reduces 'silent profit leaks' from Mandis.",
                     layout: 'stack'
                 };
@@ -70,38 +78,47 @@ export function LogisticsCalculator({
             return {
                 title: "Secure Single Load",
                 description: "Ensure load is centered behind the rider. Use high-tension ropes and avoid rear-heavy placement.",
-                img: "/bike_loading.png",
+                img: vImage,
                 goal: "Ensures rider safety and zero transit spill.",
                 layout: 'bike'
             };
         }
 
         if (cropLower.includes('tomato')) {
-            if (vehicleId.toLowerCase().includes('pickup') || vehicleId.toLowerCase().includes('wheeler')) {
+            if (vIdLower.includes('trolley')) {
                 return {
-                    title: "Compact Crate Stacking",
-                    description: "Secure crates in a 1x2 column. Ensure load does not disrupt vehicle balance.",
-                    img: "/bike_loading.png",
-                    goal: "Safe transport for high-value small loads.",
-                    layout: 'bike'
+                    title: "Trolley Crate Distribution",
+                    description: "Spread crates across the trolley floor. Do not stack more than 3 high.",
+                    img: vImage,
+                    goal: "Minimize bruising of delicate tomatoes.",
+                    layout: 'grid'
+                };
+            }
+            if (vIdLower.includes('truck')) {
+                return {
+                    title: "Interlocking Crate Stacking",
+                    description: "Use plastic crates with interlocking lids. Do not exceed vehicle sideboard height.",
+                    img: vImage,
+                    goal: "Prevents sun-scald and crushing during transit.",
+                    layout: 'stack'
                 };
             }
             return {
-                title: "Interlocking Crate Stacking",
-                description: "Use plastic crates with interlocking lids. Do not exceed vehicle sideboard height.",
-                img: "/tomato_crating.png",
-                goal: "Prevents sun-scald and crushing during transit.",
-                layout: 'stack'
+                title: "Compact Crate Stacking",
+                description: "Secure crates in a stable column. Ensure load does not disrupt balance.",
+                img: vImage,
+                goal: "Safe transport for high-value small loads.",
+                layout: 'bike'
             };
         }
 
         return {
             title: "Balanced Distribution",
             description: "Distribute load evenly across the vehicle floor to maintain balance and airflow.",
-            img: vehicleId.toLowerCase().includes('trolley') ? "/loading_guide.png" : "/bike_loading.png",
+            img: vImage,
             goal: "Ensures vehicle stability and basic heat dissipation.",
-            layout: vehicleId.toLowerCase().includes('trolley') ? 'grid' : 
-                    vehicleId.toLowerCase().includes('truck') ? 'stack' : 'bike'
+            layout: vIdLower.includes('trolley') ? 'grid' : 
+                    vIdLower.includes('truck') ? 'stack' : 'bike'
         };
     };
 
