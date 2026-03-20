@@ -58,7 +58,7 @@ export async function commitProvenanceToBlockchain(hash: string, record: Provena
         ]);
 
     if (error) {
-        console.error("[Provenance] Supabase storage failed:", error);
+        console.error("[Provenance] Supabase storage failed:", error.message, error.details, error.hint);
         // Fallback to local cache if DB is offline
         cacheProvenanceHash(hash, record);
         return false;
