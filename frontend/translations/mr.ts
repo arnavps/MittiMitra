@@ -324,6 +324,8 @@ export const mr = {
     mittiIdAdvice: "तुमचे उत्पादन आता मिट्टी-आयडी मालमत्ता आहे, जी कर्ज किंवा बँक कामासाठी तयार आहे.",
     digitalMandiPass: "डिजिटल मंडी पास",
     provenanceVerified: "उत्पत्ति सत्यापित व हॅश केली गेली",
+    metaMaskNotFound: "मेटामास्क एक्स्टेंशन सापडले नाही. आपली कापणी ब्लॉकचेनवर जोडण्यासाठी कृपया ते इंस्टॉल करा.",
+    installMetaMask: "मेटामास्क इंस्टॉल करा",
     qualityGrade: "गुणवत्ता श्रेणी",
     auditScore: "ऑडिट स्कोअर",
     shadowPricePrediction: "शैडो किंमत भाकीत",

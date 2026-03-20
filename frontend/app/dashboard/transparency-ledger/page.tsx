@@ -44,6 +44,7 @@ export default function TransparencyLedgerPage() {
     const [cameraError, setCameraError] = useState<string | null>(null);
     const [walletAddress, setWalletAddress] = useState<string | null>(null);
     const [isAnchoring, setIsAnchoring] = useState(false);
+    const [walletError, setWalletError] = useState<string | null>(null);
     
     // Real Data States
     const [activeCrop, setActiveCrop] = useState<string>('Tomato');
@@ -197,9 +198,18 @@ export default function TransparencyLedgerPage() {
     };
 
     const handleConnectWallet = async () => {
+        setWalletError(null);
+        if (typeof window !== 'undefined' && !(window as any).ethereum) {
+            setWalletError("no_metamask");
+            return;
+        }
+        
         const address = await connectWallet();
         if (address) {
             setWalletAddress(address);
+        } else {
+            // If address is null but ethereum exists, it might be a user rejection or other issue
+            console.log("Wallet connection returned null");
         }
     };
 
@@ -224,7 +234,7 @@ export default function TransparencyLedgerPage() {
                             {walletAddress ? t('walletConnected') : t('immutableLogActive')}
                         </span>
                     </div>
-                    {!walletAddress && (
+                     {!walletAddress && (
                         <button 
                             onClick={handleConnectWallet}
                             className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white transition-all"
@@ -234,6 +244,34 @@ export default function TransparencyLedgerPage() {
                     )}
                  </div>
             </header>
+
+            <AnimatePresence>
+                {walletError === "no_metamask" && (
+                    <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                    >
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex items-center space-x-3">
+                                <AlertCircle className="w-5 h-5 text-red-500" />
+                                <p className="text-xs text-red-200 font-medium">
+                                    {t('metaMaskNotFound')}
+                                </p>
+                            </div>
+                            <a 
+                                href="https://metamask.io/download/" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="px-4 py-2 bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-colors whitespace-nowrap"
+                            >
+                                {t('installMetaMask')}
+                            </a>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Main Action Area */}

@@ -324,6 +324,8 @@ export const hi = {
     mittiIdAdvice: "आपकी उपज अब एक मिट्टी-आईडी संपत्ति है, जो ऋण मध्यस्थता या बैंक ऋण के लिए तैयार है।",
     digitalMandiPass: "डिजिटल मंडी पास",
     provenanceVerified: "उत्पत्ति सत्यापित और हैश की गई",
+    metaMaskNotFound: "मेटामास्क एक्सटेंशन नहीं मिला। अपने फसल को ब्लॉकचेन पर जोड़ने के लिए कृपया इसे इंस्टॉल करें।",
+    installMetaMask: "मेटामास्क इंस्टॉल करें",
     qualityGrade: "गुणवत्ता ग्रेड",
     auditScore: "ऑडिट स्कोर",
     shadowPricePrediction: "शैडो प्राइस भविष्यवाणी",

@@ -328,6 +328,8 @@ export const en = {
     polygonL2Verified: "Polygon L2 Verified",
     connectWallet: "Connect Wallet",
     walletConnected: "Wallet Connected",
+    metaMaskNotFound: "MetaMask extension not found. Please install it to anchor your harvest on the blockchain.",
+    installMetaMask: "Install MetaMask",
     anchorOnChain: "Anchor on Polygon L2",
     anchoring: "Anchoring...",
     viewOnExplorer: "View on Explorer",

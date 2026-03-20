@@ -14,7 +14,6 @@ const AMOY_CONFIG = {
 
 export async function connectWallet(): Promise<string | null> {
     if (typeof window === 'undefined' || !(window as any).ethereum) {
-        console.error("MetaMask not found");
         return null;
     }
 
