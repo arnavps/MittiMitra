@@ -73,15 +73,19 @@ export default function TransparencyLedgerPage() {
             const result = await performQualityAudit();
             setAuditResult(result);
 
-            // 2. Prepare Record for Hashing
+            // 2. Prepare Record for Hashing (Match real data for Tomato)
+            const baseMandiPrice = 1719.1; // Modal price from mandi_prices_real.json for Tomato
+            const premiumMultiplier = result.grade === 'A' ? 1.1 : 1.0;
+            const shadowPrice = Math.round(baseMandiPrice * premiumMultiplier);
+
             const record: ProvenanceRecord = {
-                userId: "USER_7721", // In real app, get from Context
+                userId: "USER_7721", 
                 timestamp: new Date().toISOString(),
-                location: { lat: 18.5204, lng: 73.8567 }, // Mocked Pune coords
+                location: { lat: 18.5204, lng: 73.8567 },
                 qualityScore: result.quality_score,
-                decayStatus: 4.2, // Mocked from weather/Q10
+                decayStatus: 4.2, 
                 crop: t('tomato'),
-                shadowPrice: 2850 // Simulating a premium calculation
+                shadowPrice: shadowPrice
             };
 
             // 3. Generate SHA-256 Hash
@@ -259,8 +263,8 @@ export default function TransparencyLedgerPage() {
                                         timestamp: new Date().toISOString(),
                                         qualityScore: auditResult.quality_score,
                                         grade: auditResult.grade,
-                                        shadowPrice: 2850,
-                                        mandiPrice: 2500,
+                                        shadowPrice: Math.round(1719.1 * (auditResult.grade === 'A' ? 1.1 : 1.0)),
+                                        mandiPrice: 1719.1,
                                         crop: t('tomato')
                                     }}
                                 />
