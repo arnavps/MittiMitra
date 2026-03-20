@@ -58,7 +58,7 @@ async def fetch_mandi_prices(crop: str, location: dict, language: str = "en") ->
         enam_data = await enam_client.get_agm_gps_min_max_model_price()
         if enam_data and "error" not in enam_data and len(enam_data.get("records", [])) > 0:
              # If real production token worked and has records
-             return _parse_gov_api_data(enam_data["records"], crop_input)
+             return _parse_gov_api_data(enam_data["records"], crop_input, location)
     except Exception as e:
         logger.error(f"UMANG API failed: {e}")
 
@@ -71,26 +71,28 @@ async def fetch_mandi_prices(crop: str, location: dict, language: str = "en") ->
             if res.status_code == 200:
                 data = res.json()
                 if "records" in data and len(data["records"]) > 0:
-                    return _parse_gov_api_data(data["records"], crop_query)
+                    return _parse_gov_api_data(data["records"], crop_query, location)
     except Exception:
         pass
             
     # 4. FINAL FALLBACK: Heuristic Engine
     logger.warning(f"No real data for {crop_input}. Falling back to mocks.")
-    return _generate_mock_fallback(crop_input, language)
+    return _generate_mock_fallback(crop_input, language, location)
 
 def _parse_real_json_data(commodity_data: Dict[str, Any], crop: str, user_loc: dict) -> Dict[str, Any]:
     # user_loc is {"lat": ..., "lng": ...}
     base_price = float(commodity_data["modal_price"])
+    user_lat = user_loc.get("lat", 18.5204)
+    user_lng = user_loc.get("lng", 73.8567)
     
     # Map all markets and calculate REAL distance
     mandi_options = []
     for m in commodity_data["markets"]:
         price = float(m.get("price", base_price))
-        m_lat = m.get("lat", 18.5204) # Fallback to Pune if missing
-        m_lng = m.get("lng", 73.8567)
+        m_lat = m.get("lat", user_lat) # Fallback to user loc if missing
+        m_lng = m.get("lng", user_lng)
         
-        dist = calculate_haversine(user_loc.get("lat", 18.5204), user_loc.get("lng", 73.8567), m_lat, m_lng)
+        dist = calculate_haversine(user_lat, user_lng, m_lat, m_lng)
         
         mandi_options.append({
             "name": f"{m['name']} Mandi",
@@ -114,13 +116,19 @@ def _parse_real_json_data(commodity_data: Dict[str, Any], crop: str, user_loc: d
         "regional_options": mandi_options
     }
 
-def _parse_gov_api_data(records: List[Dict[str, Any]], crop: str) -> Dict[str, Any]:
+def _parse_gov_api_data(records: List[Dict[str, Any]], crop: str, user_loc: dict) -> Dict[str, Any]:
     primary_record = records[0]
+    user_lat = user_loc.get("lat", 18.5204)
+    user_lng = user_loc.get("lng", 73.8567)
+
     # NO DIVIDING BY 100.
     try:
         current_price = float(primary_record.get("modal_price", 5000))
     except:
         current_price = 5000.0
+    
+    # For government data, we often don't have lat/lng directly in the record
+    # but we can simulate proximity for the primary one
     primary_mandi = {
         "name": f"{primary_record.get('market', 'Local APMC')} ({primary_record.get('state', 'India')})",
         "crop": crop,
@@ -138,25 +146,28 @@ def _parse_gov_api_data(records: List[Dict[str, Any]], crop: str) -> Dict[str, A
             price = float(rec.get("modal_price", 5000))
         except:
             price = current_price
-        dist_km = random.uniform(20.0, 500.0)
-        # Generate plausible coordinates based on distance
+        dist_km = random.uniform(20.0, 150.0) # Reduced radius for realistic options
+        # Generate plausible coordinates based on distance from user
         angle = random.uniform(0, 2 * math.pi)
         lat_offset = (dist_km / 111.0) * math.cos(angle)
-        lng_offset = (dist_km / (111.0 * math.cos(math.radians(18.5)))) * math.sin(angle)
+        lng_offset = (dist_km / (111.0 * math.cos(math.radians(user_lat)))) * math.sin(angle)
         
         regional_options.append({
             "name": f"{rec.get('market', 'Regional APMC')} ({rec.get('state', 'India')})",
             "current_price": round(price, 2),
             "distance_km": round(dist_km, 1),
-            "lat": 18.5204 + lat_offset, # Use Pune as base for now
-            "lng": 73.8567 + lng_offset,
+            "lat": user_lat + lat_offset,
+            "lng": user_lng + lng_offset,
             "transport_rate_per_km": 15.0
         })
     return {"primary": primary_mandi, "regional_options": regional_options}
 
-def _generate_mock_fallback(crop: str, language: str) -> Dict[str, Any]:
+def _generate_mock_fallback(crop: str, language: str, user_loc: dict) -> Dict[str, Any]:
     # Raw INR per Quintal
     base_price = round(random.uniform(2500.0, 5500.0), 2)
+    user_lat = user_loc.get("lat", 18.5204)
+    user_lng = user_loc.get("lng", 73.8567)
+
     primary_mandi = {
         "name": "Local District Mandi",
         "crop": crop,
@@ -170,18 +181,18 @@ def _generate_mock_fallback(crop: str, language: str) -> Dict[str, Any]:
     regional_options = [primary_mandi]
     for i in range(3):
         price = round(base_price + random.uniform(-200, 200), 2)
-        dist_km = random.uniform(20.0, 500.0)
+        dist_km = random.uniform(20.0, 150.0)
         angle = random.uniform(0, 2 * math.pi)
         lat_offset = (dist_km / 111.0) * math.cos(angle)
-        lng_offset = (dist_km / (111.0 * math.cos(math.radians(18.5)))) * math.sin(angle)
+        lng_offset = (dist_km / (111.0 * math.cos(math.radians(user_lat)))) * math.sin(angle)
 
         regional_options.append({
             "name": f"Regional Mandi #{i+1}",
             "crop": crop,
             "current_price": price,
             "distance_km": round(dist_km, 1),
-            "lat": 18.5204 + lat_offset,
-            "lng": 73.8567 + lng_offset,
+            "lat": user_lat + lat_offset,
+            "lng": user_lng + lng_offset,
             "transport_rate_per_km": 15.0
         })
     return {"primary": primary_mandi, "regional_options": regional_options}
