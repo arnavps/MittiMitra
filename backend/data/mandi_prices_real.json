@@ -11,7 +11,11 @@
                 { "name": "Akola", "price": 8010.0, "lat": 20.7002, "lng": 77.0082 },
                 { "name": "Amravati", "price": 7525.0, "lat": 20.9320, "lng": 77.7523 },
                 { "name": "Jalna", "price": 7874.0, "lat": 19.8297, "lng": 75.8800 },
-                { "name": "Umred", "price": 7530.0, "lat": 20.8524, "lng": 79.3262 }
+                { "name": "Umred", "price": 7530.0, "lat": 20.8524, "lng": 79.3262 },
+                { "name": "Wardha", "price": 7650.0, "lat": 20.7453, "lng": 78.6022 },
+                { "name": "Yavatmal", "price": 7720.0, "lat": 20.3899, "lng": 78.1307 },
+                { "name": "Hinganghat", "price": 7800.0, "lat": 20.4552, "lng": 78.8329 },
+                { "name": "Adilabad", "price": 7450.0, "lat": 19.6641, "lng": 78.5320 }
             ]
         },
         "tomato": {
@@ -51,9 +55,11 @@
             "markets": [
                 { "name": "Navi Mumbai (Vashi)", "price": 1250.0, "lat": 19.0732, "lng": 73.0011 },
                 { "name": "Lasalgaon", "price": 1350.0, "lat": 20.1472, "lng": 74.2274 },
-                { "name": "Shimoga", "price": 2050.0, "lat": 13.9299, "lng": 75.5681 },
+                { "name": "Solapur", "price": 1150.0, "lat": 17.6599, "lng": 75.9064 },
+                { "name": "Indore", "price": 1200.0, "lat": 22.7196, "lng": 75.8577 },
                 { "name": "Ankleshwar", "price": 1200.0, "lat": 21.6264, "lng": 73.0152 },
-                { "name": "Azadpur (Delhi)", "price": 2400.0, "lat": 28.7159, "lng": 77.1750 }
+                { "name": "Azadpur (Delhi)", "price": 2400.0, "lat": 28.7159, "lng": 77.1750 },
+                { "name": "Bangalore", "price": 1800.0, "lat": 12.9716, "lng": 77.5946 }
             ]
         },
         "soybean": {
@@ -91,8 +97,12 @@
             "unit": "INR/Quintal",
             "markets": [
                 { "name": "Navi Mumbai (Vashi)", "price": 2450.0, "lat": 19.0732, "lng": 73.0011 },
+                { "name": "Gondia", "price": 2350.0, "lat": 21.4624, "lng": 80.2209 },
+                { "name": "Bhandara", "price": 2380.0, "lat": 21.1645, "lng": 79.6467 },
+                { "name": "Raipur", "price": 2500.0, "lat": 21.2514, "lng": 81.6296 },
                 { "name": "Shimoga", "price": 2400.0, "lat": 13.9299, "lng": 75.5681 },
-                { "name": "Guntur", "price": 4500.0, "lat": 16.3067, "lng": 80.4365 }
+                { "name": "Guntur", "price": 4500.0, "lat": 16.3067, "lng": 80.4365 },
+                { "name": "Bardhaman", "price": 2600.0, "lat": 23.2324, "lng": 87.8615 }
             ]
         }
     }

@@ -111,30 +111,6 @@ def _parse_real_json_data(commodity_data: Dict[str, Any], crop: str, user_loc: d
     # Sort by distance (nearest first)
     mandi_options.sort(key=lambda x: x["distance_km"])
     
-    # PAD WITH MOCK DATA to ensure at least 6 options for the UI
-    if len(mandi_options) < 6:
-        import math
-        needed = 6 - len(mandi_options)
-        for i in range(needed):
-            # Deterministic/jittered mock addition based on primary
-            m_lat = user_lat + (random.uniform(-0.5, 0.5))
-            m_lng = user_lng + (random.uniform(-0.5, 0.5))
-            dist = calculate_haversine(user_lat, user_lng, m_lat, m_lng)
-            
-            mandi_options.append({
-                "name": f"Regional APMC #{i+1}",
-                "crop": crop,
-                "current_price": round(base_price + random.uniform(-100, 100), 2),
-                "7_day_history": [round(base_price + random.uniform(-50, 50), 2) for _ in range(7)],
-                "current_volume_quintals": random.randint(50, 200),
-                "average_volume_quintals": 150,
-                "distance_km": round(dist, 1),
-                "lat": m_lat,
-                "lng": m_lng,
-                "transport_rate_per_km": 15.0,
-                "is_verified_real": False 
-            })
-
     return {
         "primary": mandi_options[0], 
         "regional_options": mandi_options
