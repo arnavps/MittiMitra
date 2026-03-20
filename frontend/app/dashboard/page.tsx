@@ -31,6 +31,8 @@ export default function DashboardPage() {
     const [plantingDate, setPlantingDate] = useState('');
     const [isHarvested, setIsHarvested] = useState(false);
     const [profileLoaded, setProfileLoaded] = useState(false);
+    const [storageType, setStorageType] = useState('');
+    const [transportType, setTransportType] = useState('');
     const [oracleData, setOracleData] = useState<any>(null);
     const [clusterData, setClusterData] = useState<any>(null);
     const [vakeelQuery, setVakeelQuery] = useState('');
@@ -85,6 +87,8 @@ export default function DashboardPage() {
             if (data?.latitude && data?.longitude) {
                 setProfileLocation({ lat: data.latitude, lng: data.longitude });
             }
+            if (data?.storage_type) setStorageType(data.storage_type);
+            if (data?.transport_type) setTransportType(data.transport_type);
             setProfileLoaded(true);
         };
         loadProfile();
@@ -233,6 +237,8 @@ export default function DashboardPage() {
                 base_spoilage_rate: 0.05,
                 language: language,
                 planting_date: plantingDate,
+                storage_type: storageType || "Open Field",
+                transport_type: transportType || "Open Trolley",
                 is_harvested: isHarvested
             };
 
