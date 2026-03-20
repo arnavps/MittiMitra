@@ -25,16 +25,17 @@ def calculate_shadow_price(base_price: float, quality_grade: str, spoilage_risk:
         'C': 0.85
     }
     
+    # Shadow_Price = (Live_Mandi_Price) * (Quality_Multiplier)
     base_multiplier = multipliers.get(quality_grade, 0.8)
     
-    # Apply extra premium for pristine yield (Grade A + Low Risk + No Disease)
+    # Rule: If Grade-A and <5% spoilage, ensure 1.1x premium (already handled by multipliers but explicit here)
     if quality_grade == 'A' and spoilage_risk < 5.0 and severity_index < 0.1:
-        base_multiplier = 1.15 
+        base_multiplier = 1.10 
         
-    # Calculate pre-penalty price
+    # Calculate price
     shadow_price = base_price * base_multiplier
     
-    # Apply Pathological Penalty
+    # Pathological Penalty (if any)
     disease_penalty_multiplier = 1.0 - (severity_index * 0.5)
     final_price = shadow_price * disease_penalty_multiplier
     

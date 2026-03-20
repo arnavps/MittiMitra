@@ -22,6 +22,17 @@ const withPWA = withPWAInit({
           },
         },
       },
+      {
+        urlPattern: ({ url }) => url.origin === 'https://quickchart.io',
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'qrCache',
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+          },
+        },
+      },
     ],
   },
 });

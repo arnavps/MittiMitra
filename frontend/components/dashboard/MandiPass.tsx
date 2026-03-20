@@ -18,8 +18,9 @@ interface MandiPassProps {
 
 export const MandiPass: React.FC<MandiPassProps> = ({ hash, record }) => {
     const { t, n } = useLanguage();
-    // Using standard high-contrast colors (Black on White) for maximum scannability
-    const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(hash)}&size=300&dark=000000&light=ffffff&ecLevel=H`;
+    // Trust Page URL: Includes the immutable hash for verification
+    const trustUrl = `https://mittimitra.io/trust/${hash}`;
+    const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(trustUrl)}&size=300&dark=000000&light=ffffff&ecLevel=H`;
 
     return (
         <div className="print-container">
