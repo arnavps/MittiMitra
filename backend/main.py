@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
 import logging
+import httpx
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -65,21 +66,37 @@ class HarvestRequest(BaseModel):
     is_harvested: bool = False
 
 async def get_area_name(lat: float, lng: float) -> str:
-    """Resolves coordinates to a city/district name using Nominatim."""
-    try:
-        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=14"
-        async with httpx.AsyncClient(timeout=3.0) as client:
-            # Nominatim requires a descriptive User-Agent
-            headers = {"User-Agent": "MittiMitra-Decision-Engine-v2/1.0 (Agricultural-Advisory-System)"}
-            res = await client.get(url, headers=headers)
-            if res.status_code == 200:
-                data = res.json()
-                addr = data.get("address", {})
-                # Selective fallback for area name - Prioritizing Suburb over City
-                area = addr.get("suburb") or addr.get("neighbourhood") or addr.get("city_district") or addr.get("district") or addr.get("town") or addr.get("village") or addr.get("city") or addr.get("county") or addr.get("state")
-                return area if area else "Your Area"
-    except Exception as e:
-        logger.error(f"Geocoding failed: {e}")
+    """Resolves coordinates to a city/district name using Nominatim with multi-zoom fallback."""
+    headers = {"User-Agent": "MittiMitra-Decision-Engine-v2/1.0 (Agricultural-Advisory-System)"}
+    
+    # Try multiple zoom levels: 14 (Granular) then 10 (District level)
+    for zoom in [14, 10]:
+        try:
+            url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom={zoom}"
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                res = await client.get(url, headers=headers)
+                if res.status_code == 200:
+                    data = res.json()
+                    addr = data.get("address", {})
+                    print(f"DEBUG: Nominatim address for zoom {zoom}: {addr}")
+                    # Expanded field mapping for Indian hierarchy
+                    area = (
+                        addr.get("suburb") or 
+                        addr.get("neighbourhood") or 
+                        addr.get("village") or 
+                        addr.get("town") or 
+                        addr.get("city_district") or 
+                        addr.get("district") or 
+                        addr.get("state_district") or
+                        addr.get("city") or 
+                        addr.get("county") or 
+                        addr.get("state")
+                    )
+                    if area:
+                        return area
+        except Exception as e:
+            logger.error(f"Geocoding attempt (zoom {zoom}) failed: {e}")
+            
     return "Your Area"
 
 @app.post("/shadow-price")

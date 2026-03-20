@@ -10,7 +10,8 @@ def test():
     try:
         res = httpx.post("http://127.0.0.1:8000/recommendation", json=payload, timeout=5.0)
         print(f"Status: {res.status_code}")
-        print(f"Body: {res.text[:500]}")
+        print(f"Body: {res.json().get('source_area')}")
+        print(f"Full Body Sample: {json.dumps(res.json(), indent=2)[:500]}")
     except Exception as e:
         print(f"Error: {e}")
 
