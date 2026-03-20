@@ -71,12 +71,12 @@ async def get_area_name(lat: float, lng: float) -> str:
             if res.status_code == 200:
                 data = res.json()
                 addr = data.get("address", {})
-                # Selective fallback for area name
-                area = addr.get("city") or addr.get("town") or addr.get("district") or addr.get("suburb") or addr.get("county") or addr.get("state")
-                return area if area else "Rural Area"
+                # Selective fallback for area name - Prioritizing Suburb over City
+                area = addr.get("suburb") or addr.get("neighbourhood") or addr.get("city_district") or addr.get("district") or addr.get("town") or addr.get("village") or addr.get("city") or addr.get("county") or addr.get("state")
+                return area if area else "Your Area"
     except Exception as e:
         logger.error(f"Geocoding failed: {e}")
-    return "Rural Area"
+    return "Your Area"
 
 @app.post("/api/shadow-price")
 def get_shadow_price(data: dict):

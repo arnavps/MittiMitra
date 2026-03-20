@@ -116,7 +116,9 @@ export default function DashboardPage() {
             const suffix = t('today') === 'आज' ? 'क्षेत्र' : 'Area';
             return `${hubBase} ${suffix}`;
         }
-        return `${lat.toFixed(2)}, ${lng.toFixed(2)}`;
+        
+        // Final fallback: No raw coordinates!
+        return t('today') === 'आज' ? 'तुमचे क्षेत्र' : 'Your Area';
     };
 
     // Trigger re-calculation when overrides or yield change locally
