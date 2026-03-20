@@ -346,6 +346,8 @@ export const pa = {
     rotateCrop: "ਫਸਲ ਨੂੰ ਹੌਲੀ-ਹੌਲੀ ਘੁਮਾਓ (360 ਡਿਗਰੀ)।",
     ensureLighting: "ਚਮੜੀ ਦੇ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ ਚੰਗੀ ਰੋਸ਼ਨੀ ਯਕੀਨੀ ਬਣਾਓ।",
     auditComplete: "ਆਡਿਟ ਪੂਰਾ ਹੋਇਆ। ਕੁਆਲਿਟੀ ਮਾਰਕਰਾਂ ਦੀ ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
+    genesisDate: "ਸ਼ੁਰੂਆਤੀ ਮਿਤੀ",
+    verified: "ਪ੍ਰਮਾਣਿਤ",
 
     // Sources
     sourceEnam: "ਸਰੋਤ: e-NAM (ਲਾਈਵ)",

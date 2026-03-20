@@ -346,6 +346,8 @@ export const gu = {
     rotateCrop: "પાકને ધીમેથી ફેરવો (360 ડિગ્રી).",
     ensureLighting: "ચામડીના વિશ્લેષણ માટે સારી લાઇટિંગની ખાતરી કરો.",
     auditComplete: "ઓડિટ પૂર્ણ થયું. ગુણવત્તા માર્કર્સ પ્રક્રિયામાં છે...",
+    genesisDate: "ઉત્પત્તિ તારીખ",
+    verified: "ચકાસાયેલ",
 
     // Sources
     sourceEnam: "સ્ત્રોત: e-NAM (લાઇવ)",

@@ -346,6 +346,8 @@ export const en = {
     rotateCrop: "Rotate the crop slowly (360 degrees).",
     ensureLighting: "Ensure good lighting for skin analysis.",
     auditComplete: "Audit complete. Processing quality markers...",
+    genesisDate: "Genesis Date",
+    verified: "Verified",
 
     // Sources
     sourceEnam: "Source: e-NAM (Live)",

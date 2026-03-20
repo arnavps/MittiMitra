@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { GlassCard } from '@/components/glass-card';
 import { StatusPill } from '@/components/status-pill';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -13,7 +14,8 @@ import {
     Archive,
     Search,
     Cpu,
-    Check
+    Check,
+    ExternalLink
 } from 'lucide-react';
 import { 
     ComposedChart, 
@@ -104,12 +106,13 @@ export default function YieldProjectionPage() {
                                 <ShieldCheck className="w-4 h-4 text-mint" />
                                 <h3 className="text-xs font-black text-white uppercase tracking-widest">{t('immutableLogs')}</h3>
                             </div>
-                            <button 
-                                onClick={() => setAuditLogVisible(!auditLogVisible)}
-                                className="text-[10px] text-mint font-black uppercase tracking-widest hover:underline"
+                            <Link 
+                                href="/dashboard/transparency-ledger"
+                                className="text-[10px] text-mint font-black uppercase tracking-widest hover:underline flex items-center space-x-1"
                             >
-                                {auditLogVisible ? t('hideLogs') : t('viewImmutableLogs')}
-                            </button>
+                                <span>{t('viewImmutableLogs')}</span>
+                                <ExternalLink className="w-3 h-3" />
+                            </Link>
                         </div>
 
                         <div className="space-y-4">
@@ -127,12 +130,6 @@ export default function YieldProjectionPage() {
                                 </p>
                                 <Check className="w-3 h-3 text-mint opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
-                            {auditLogVisible && (
-                                <div className="p-3 rounded-lg bg-black/40 font-mono text-[8px] text-gray-500 animate-in fade-in slide-in-from-top-1">
-                                    <p>HASH: 0x82fb...812a | TIMESTAMP: 2026-03-17T14:12:00Z</p>
-                                    <p>SIGNATURE: ed25519_node_782_verify</p>
-                                </div>
-                            )}
                         </div>
                     </GlassCard>
                 </div>
