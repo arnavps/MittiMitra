@@ -65,6 +65,18 @@
                     "lng": 77.1750
                 },
                 {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 1780.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
+                    "name": "Kalyan",
+                    "price": 1720.0,
+                    "lat": 19.2433,
+                    "lng": 73.1333
+                },
+                {
                     "name": "Nagpur",
                     "price": 1650.0,
                     "lat": 21.1458,
@@ -109,6 +121,12 @@
                     "lng": 79.0882
                 },
                 {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 2600.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
                     "name": "Nashik",
                     "price": 2680.0,
                     "lat": 19.9975,
@@ -139,6 +157,12 @@
                     "price": 1200.0,
                     "lat": 21.6264,
                     "lng": 73.0152
+                },
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 1250.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
                 },
                 {
                     "name": "Azadpur (Delhi)",
@@ -177,6 +201,12 @@
                     "price": 4850.0,
                     "lat": 19.7163,
                     "lng": 77.1437
+                },
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 5020.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
                 },
                 {
                     "name": "Nagpur",
@@ -247,6 +277,12 @@
                     "lng": 76.2166
                 },
                 {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 2980.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
+                },
+                {
                     "name": "Nagpur",
                     "price": 2850.0,
                     "lat": 21.1458,
@@ -289,6 +325,12 @@
                     "price": 2400.0,
                     "lat": 13.9299,
                     "lng": 75.5681
+                },
+                {
+                    "name": "Navi Mumbai (Vashi)",
+                    "price": 2450.0,
+                    "lat": 19.0732,
+                    "lng": 73.0011
                 },
                 {
                     "name": "Guntur",
