@@ -457,4 +457,10 @@ export const hi = {
     tryAgain: "पुनः प्रयास करें",
     typeQuestionIn: "अपना प्रश्न टाइप करें",
     aiEngine: "एआई इंजन",
+    transportRate: "परिवहन दर",
+    baseTransitSpeed: "आधार परिवहन गति",
+    netRealizationFormula: "शुद्ध लाभ (Net Realization) = (कीमत × उपज) - रसद - बर्बादी",
+    netRealizationDetail: "यह आपका वास्तविक शुद्ध लाभ है। हम मंडी की मूल कीमत से ईंधन की लागत और गर्मी से होने वाली गुणवत्ता हानि को घटाते हैं।",
+    aiRouteAnalysisTitle: "एग्री-वकील इंटेलिजेंस",
+    aiRouteAnalysisDesc: "हमारा एआई आपके {crop} के लिए सबसे सुरक्षित रास्ता खोजने के लिए सड़क की स्थिति, वास्तविक समय के ट्रैफिक और तापमान से जुड़े जोखिमों का विश्लेषण करता है।",
 };

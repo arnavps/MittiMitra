@@ -161,9 +161,12 @@ export default function MarketMapsPage() {
                                     <div>
                                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-mint mb-1 flex items-center">
                                             <span className="w-1.5 h-1.5 rounded-full bg-mint mr-2 animate-pulse" />
-                                            AI Intelligence Briefing
+                                            {t('aiRouteAnalysisTitle')}
                                         </h3>
-                                        <p className="text-white font-bold text-lg">{selectedRouteObject.name} Analysis</p>
+                                        <p className="text-white font-bold text-lg">{selectedRouteObject.name}</p>
+                                        <p className="text-xs text-gray-400 mt-1 max-w-md">
+                                            {t('aiRouteAnalysisDesc', { crop: t((cachedData?.crop || 'Tomato').toLowerCase() as any) })}
+                                        </p>
                                     </div>
                                     <button 
                                         onClick={handleAskVakeel}
@@ -287,8 +290,14 @@ export default function MarketMapsPage() {
 
                     {/* Logic Detail Card */}
                     <GlassCard className="p-6 border-white/5 bg-white/[0.02]">
-                        <h2 className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-4">{t('routeOptimizationLogic')}</h2>
+                        <h2 className="text-[10px] font-bold text-mint uppercase tracking-[0.2em] mb-4">{t('routeOptimizationLogic')}</h2>
                         <div className="space-y-4 font-mono text-sm">
+                            <div className="p-3 rounded-lg bg-mint/10 border border-mint/20 mb-4">
+                                <span className="text-[10px] text-mint font-bold block mb-1 uppercase tracking-wider">{t('netRealizationFormula')}</span>
+                                <p className="text-[11px] text-gray-300 leading-relaxed italic">
+                                    {t('netRealizationDetail')}
+                                </p>
+                            </div>
                             <div className="flex justify-between items-center pb-2 border-b border-white/5">
                                 <span className="text-gray-500 text-[10px] uppercase">{t('transportRate')}</span>
                                 <span className="text-white font-bold">₹{n(15.0)} / {t('km')}</span>
