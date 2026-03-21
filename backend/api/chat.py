@@ -253,7 +253,7 @@ def chat_explain(req: ChatRequest):
                 {"role": "user", "content": req.farmer_query or "Please explain my dashboard recommendation."}
             ],
             temperature=0.3, # Low temperature for factual consistency
-            max_tokens=100, # Decreased to enforce punchy replies
+            max_tokens=400, # Increased to allow for descriptive replies in Indian languages
         )
         
         reply = completion.choices[0].message.content
