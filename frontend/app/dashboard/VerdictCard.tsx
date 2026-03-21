@@ -378,7 +378,23 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
             {isHarvested && (
                 <div className="z-10 w-full mb-4 px-2">
                     <div className="flex justify-between items-end mb-1.5">
-                        <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">{t('transitSpoilageRisk')}</span>
+                        <div className="flex items-center space-x-2">
+                            <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">{t('transitSpoilageRisk')}</span>
+                            <button 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    const audioText = `${t('transitSpoilageRisk')}: ${n(spoilageRiskPct)}%.`;
+                                    speak(audioText, language);
+                                    
+                                    // Trigger AI Explanation for Transit Spoilage specifically
+                                    if (onExplain) onExplain(`Explain why my transit spoilage risk is ${n(spoilageRiskPct)}% for this trip to ${data.mandi_stats?.name}.`);
+                                }}
+                                className="p-1 hover:bg-white/10 rounded-full transition-colors group/audio"
+                                title="Explain Spoilage Risk"
+                            >
+                                <Volume2 className="w-3 h-3 text-gray-500 group-hover/audio:text-mint transition-colors" />
+                            </button>
+                        </div>
                         <span className={`text-xs font-mono font-black ${spoilageRiskPct > 50 ? 'text-red-400' : spoilageRiskPct > 20 ? 'text-yellow-400' : 'text-mint'}`}>
                             {n(spoilageRiskPct)}%
                         </span>
