@@ -133,6 +133,7 @@ Here is the CURRENT REAL-TIME DATA for the farmer:
 - Net Realization value: ₹{per_quintal} per quintal
 - Best Market to sell: {best_mandi} (Current Price: ₹{mandi.get('current_price', 0)}/Qtl)
 - Weather: {weather.get('temperature_c', 0)}°C, Rain Probability: {weather.get('rain_probability_percent', 0)}%
+- Transit Spoilage Risk (48h): {context.get('spoilage_risk_pct', 0)}%
 - Temporal Arbitrage Analysis (Risk vs Reward):
   * Total Profit Today: ₹{total_today}
   * Predicted Total Profit in 48h (after spoilage/rot): ₹{total_48h}
@@ -157,9 +158,11 @@ If the dashboard context includes a `priority_action` under `preservation`, you 
     # GENERAL SCIENTIFIC PRINCIPLES FOR EXPLAINING 'WHY':
     prompt += f"""
 MITTIMITRA SCIENTIFIC KNOWLEDGE (Use these to explain 'Why'):
-1. SPOILAGE (Q10 Rule): For every 10 degree Celsius increase in temperature, the rate of crop decay (respiration) doubles. Explain this to the farmer when they see high spoilage.
-2. RISK-ADJUSTED PROFIT: Transit duration > 12 hours significantly increases the risk of market price drops or vehicle breakdowns. We penalize far-away mandis by 10% per day of travel to protect the farmer's time and money.
-3. HARVEST ORACLE: If the crop is <95% ripe, it is still in the 'Weight Gain' phase. Wait for peak biomass to maximize profit, unless weather or prices force an early 'Strategic Exit'.
+1. SHELF-LIFE RISK (48h): The dashboard shows the risk of 100% loss (spoilage) if the crop is not sold within 48 hours for certain storage/transport types (e.g. Open Trolley).
+2. TRANSIT RISK: The risk (%) for the specific 2-hour or 4-hour trip. This is usually much lower (e.g. 2-5%).
+3. SPOILAGE (Q10 Rule): For every 10 degree Celsius increase in temperature, the rate of crop decay (respiration) doubles. Explain this to the farmer when they see high spoilage.
+4. RISK-ADJUSTED PROFIT: Transit duration > 12 hours significantly increases the risk of market price drops or vehicle breakdowns. We penalize far-away mandis by 10% per day of travel to protect the farmer's time and money.
+5. HARVEST ORACLE: If the crop is <95% ripe, it is still in the 'Weight Gain' phase. Wait for peak biomass to maximize profit, unless weather or prices force an early 'Strategic Exit'.
 """
     # Phase 9: Pathological Alerts
     pathology = context.get("pathology", {})
