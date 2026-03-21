@@ -59,24 +59,7 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                 <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-400/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
             )}
 
-            <div className="flex items-center space-x-2 mb-4 z-10 opacity-60">
-                <h2 className="text-gray-400 uppercase tracking-[0.3em] text-[10px] font-black">{t('recommendation')}</h2>
-                <button 
-                    onClick={(e) => {
-                        e.preventDefault();
-                        const verdict = data.status === 'GREEN' ? t('sell') : data.status === 'RED' ? t('wait') : t('hold');
-                        const audioText = `${t('recommendation')}: ${verdict}. ${isHarvested ? `${t('estimatedTakeHome')}: ₹${n(totalTakeHome)}.` : ''}`;
-                        speak(audioText, language);
-                        
-                        // Trigger AI Explanation
-                        if (onExplain) onExplain(t('askWhy'));
-                    }}
-                    className="p-1 hover:bg-mint/20 rounded-full transition-colors group/audio"
-                    title="Ask Vakeel to Explain"
-                >
-                    <Volume2 className="w-3 h-3 text-mint/60 group-hover/audio:text-mint transition-colors" />
-                </button>
-            </div>
+            <h2 className="text-gray-400 uppercase tracking-[0.3em] text-[10px] font-black mb-4 z-10 opacity-60">{t('recommendation')}</h2>
 
             {userCrop && (
                 <div className="z-10 mb-4 flex items-center space-x-3">
@@ -146,6 +129,18 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                 </div>
             )}
 
+
+            {onExplain && (
+                <div className="z-10 mb-8">
+                    <button
+                        onClick={() => onExplain(t('askWhy'))}
+                        className="px-6 py-2.5 bg-white/10 hover:bg-mint text-white hover:text-forest border border-white/20 hover:border-mint rounded-full text-xs font-black transition-all flex items-center space-x-2 mx-auto uppercase tracking-widest shadow-xl group"
+                    >
+                        <svg className="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>{t('askVakeelWhy')}</span>
+                    </button>
+                </div>
+            )}
 
             {/* Emergency Cold Storage Gateway */}
             {showEmergencyStorage && (

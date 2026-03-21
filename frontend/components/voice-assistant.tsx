@@ -5,6 +5,7 @@ import { useOfflineCache } from "@/hooks/useOfflineCache";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getVoiceContextMode } from "@/services/voiceOrchestrator";
 import { usePathname } from 'next/navigation';
+import { stopAllSpeech } from "@/services/ttsService";
 
 interface VoiceAssistantProps {
     dashboardData: any; // The full response from /recommendation
@@ -159,8 +160,18 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
     useEffect(() => {
         initRecognition();
 
-        // Cleanup audio on unmount
+        // Listen for global stop audio requests
+        const handleStop = () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            }
+        };
+        window.addEventListener('agriVakeelStopAudio', handleStop);
+
+        // Cleanup audio and listeners on unmount
         return () => {
+            window.removeEventListener('agriVakeelStopAudio', handleStop);
             if (audioRef.current) {
                 audioRef.current.pause();
                 audioRef.current.removeAttribute('src');
@@ -265,6 +276,9 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
 
     const speakResponse = async (text: string) => {
         if (!text) return;
+        
+        // Stop any currently playing global audio before starting Vakeel's audio
+        stopAllSpeech();
 
         if (audioRef.current) {
             audioRef.current.pause();
@@ -385,7 +399,10 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
                 {['English', 'Hindi', 'Marathi', 'Telugu', 'Tamil', 'Gujarati', 'Punjabi'].map((lang) => (
                     <button
                         key={lang}
-                        onClick={() => setLanguage(lang)}
+                        onClick={() => {
+                            setLanguage(lang);
+                            stopAllSpeech();
+                        }}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${language === lang
                             ? 'bg-mint text-forest'
                             : 'bg-glass-bg border border-glass-border text-gray-300 hover:bg-white/5'
