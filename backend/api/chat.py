@@ -75,6 +75,7 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     
     loading_advice = get_loading_instructions(context.get("crop", "Produce"), best_vehicle, yield_qtl)
     shared_logistics = context.get("shared_logistics", {})
+    logistics_audit = context.get("logistics_audit", {})
     
     optimal_route = next((r for r in routing.get("routes", []) if r["id"] == routing.get("optimal_id")), None)
     route_info = ""
@@ -140,7 +141,9 @@ Here is the CURRENT REAL-TIME DATA for the farmer:
 
 If the dashboard context includes a `priority_action` under `preservation`, you MUST mention it and tell the farmer exactly how much money they will save by doing it. Example format: "Also, by [action], you can save ₹[net_saving_inr] today." (translate to {language}).
 
-If `logistics_audit.is_high_risk` is true, you MUST explicitly state the following (translated to {language}): "Vakeel found a profit leak. Your current setup ({context.get("logistics_audit", {}).get("current_setup")}) is costing you ₹{context.get("logistics_audit", {}).get("leak_inr_per_hour")} per hour in spoilage compared to the ideal setup ({context.get("logistics_audit", {}).get("ideal_setup")})."
+    if logistics_audit.get("is_high_risk"):
+        reasons = " ".join(logistics_audit.get("reasons", []))
+        prompt += f"\nLOGISTICS AUDIT ALERT: You MUST explain that the current setup ({logistics_audit.get('current_setup')}) is costing ₹{logistics_audit.get('leak_inr_per_hour')} per hour. Explain the PHYSICAL REASON: {reasons}. Suggest switching to {logistics_audit.get('ideal_setup')} to save money (Translate to {language}).\n"
 
 - ROUTING CONTEXT:
 {route_info}
