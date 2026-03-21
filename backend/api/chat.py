@@ -74,8 +74,8 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
         vehicle_comparison += f"- {v['name']}: Total Cost ₹{v['total_cost']}, Spoilage Risk {v['spoilage_risk_pct']}%, Net Realization ₹{v['net_realization_per_q']}/Qtl.\n"
     
     loading_advice = get_loading_instructions(context.get("crop", "Produce"), best_vehicle, yield_qtl)
-    shared_logistics = context.get("shared_logistics", {})
-    logistics_audit = context.get("logistics_audit", {})
+    shared_logistics = context.get("shared_logistics") or {}
+    logistics_audit = context.get("logistics_audit") or {}
     
     optimal_route = next((r for r in routing.get("routes", []) if r["id"] == routing.get("optimal_id")), None)
     route_info = ""
@@ -140,16 +140,26 @@ Here is the CURRENT REAL-TIME DATA for the farmer:
 {f"CRITICAL: The farmer has MANUALLY CALIBRATED the environmental data ({context.get('manual_override_count')} overrides). Trust the farmer's ground truth over the sensors. Acknowledge this in your opening." if context.get('is_manual_override') else ""}
 
 If the dashboard context includes a `priority_action` under `preservation`, you MUST mention it and tell the farmer exactly how much money they will save by doing it. Example format: "Also, by [action], you can save ₹[net_saving_inr] today." (translate to {language}).
-
-    if logistics_audit.get("is_high_risk"):
+"""
+    
+    if logistics_audit and logistics_audit.get("is_high_risk"):
         reasons = " ".join(logistics_audit.get("reasons", []))
-        prompt += f"\nLOGISTICS AUDIT ALERT: You MUST explain that the current setup ({logistics_audit.get('current_setup')}) is costing ₹{logistics_audit.get('leak_inr_per_hour')} per hour. Explain the PHYSICAL REASON: {reasons}. Suggest switching to {logistics_audit.get('ideal_setup')} to save money (Translate to {language}).\n"
+        prompt += f"\nLOGISTICS AUDIT ALERT: You MUST explain that the current setup ({logistics_audit.get('current_setup', 'Unknown')}) is costing ₹{logistics_audit.get('leak_inr_per_hour', 0)} per hour. Explain the PHYSICAL REASON: {reasons}. Suggest switching to {logistics_audit.get('ideal_setup', 'Ideal Setup')} to save money (Translate to {language}).\n"
 
+    prompt += f"""
 - ROUTING CONTEXT:
 {route_info}
 
 - HARVEST ORACLE (MATURITY): {maturity_pct}% Ripe. Oracle Verdict: {oracle_verdict}. 
 - MATURITY ADVICE: {maturity_advice}
+"""
+    
+    # GENERAL SCIENTIFIC PRINCIPLES FOR EXPLAINING 'WHY':
+    prompt += f"""
+MITTIMITRA SCIENTIFIC KNOWLEDGE (Use these to explain 'Why'):
+1. SPOILAGE (Q10 Rule): For every 10 degree Celsius increase in temperature, the rate of crop decay (respiration) doubles. Explain this to the farmer when they see high spoilage.
+2. RISK-ADJUSTED PROFIT: Transit duration > 12 hours significantly increases the risk of market price drops or vehicle breakdowns. We penalize far-away mandis by 10% per day of travel to protect the farmer's time and money.
+3. HARVEST ORACLE: If the crop is <95% ripe, it is still in the 'Weight Gain' phase. Wait for peak biomass to maximize profit, unless weather or prices force an early 'Strategic Exit'.
 """
     # Phase 9: Pathological Alerts
     pathology = context.get("pathology", {})
@@ -250,6 +260,8 @@ def chat_explain(req: ChatRequest):
         return {"response": reply}
         
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/onboarding_extract")
