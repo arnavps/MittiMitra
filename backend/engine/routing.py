@@ -47,6 +47,19 @@ def calculate_path_spoilage(
         
     return min(total_loss_pct, 100.0)
 
+def calculate_risk_penalty(market_price: float, duration_hours: float) -> float:
+    """
+    Calculates a risk penalty based on transit duration and market price.
+    Encapsulates:
+    1. Market price volatility (the longer the trip, the more the price can swing).
+    2. Operational fatigue/uncertainty.
+    
+    Formula: 10% risk factor per 24 hours of travel.
+    """
+    risk_factor_per_hour = 0.10 / 24.0 # 10% per day
+    penalty = market_price * duration_hours * risk_factor_per_hour
+    return penalty
+
 def score_routes(
     market_price: float,
     yield_qtl: float,
@@ -58,7 +71,7 @@ def score_routes(
     disease_multiplier: float = 1.0
 ) -> List[Dict[str, Any]]:
     """
-    Formula: Route_Score (Net Realization) = Market_Price - (Fuel_Cost + Spoilage_Penalty)
+    Formula: Route_Score (Risk-Adjusted Net Realization) = Market_Price - (Fuel_Cost + Spoilage + Risk_Penalty)
     All costs are PER QUINTAL.
     """
     scored_routes = []
@@ -75,13 +88,17 @@ def score_routes(
         loss_pct = calculate_path_spoilage(crop, segments, storage_type, transport_type, disease_multiplier=disease_multiplier)
         spoilage_penalty = (loss_pct / 100.0) * market_price
         
-        # 3. Final Score
-        net_realization = market_price - fuel_cost - spoilage_penalty
+        # 3. Risk Penalty (Operational & Market Variance)
+        risk_penalty = calculate_risk_penalty(market_price, duration)
+        
+        # 4. Final Score
+        net_realization = market_price - fuel_cost - spoilage_penalty - risk_penalty
         
         scored_routes.append({
             **route,
             "fuel_cost_inr": round(fuel_cost, 2),
             "spoilage_penalty_inr": round(spoilage_penalty, 2),
+            "risk_penalty_inr": round(risk_penalty, 2),
             "quality_loss_pct": round(loss_pct, 2),
             "net_realization_inr": round(net_realization, 2),
             "total_net_profit": round(net_realization * yield_qtl, 2)
