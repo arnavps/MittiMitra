@@ -21,27 +21,37 @@ def identify_profit_leaks(current_state: Dict[str, str], crop_type: str, temp_c:
     
     # Define multipliers for current vs ideal
     # Current state multipliers
-    storage_multipliers = {
-        "Open Field": 1.8,
-        "Shaded": 1.0,
-        "Crated": 0.8 # Best airflow
+    transport_multipliers = {
+        "Open Trolley": {"mult": 1.5, "reason": "No solar protection and lack of thermal insulation allows rapid temperature spikes."},
+        "Open Pickup": {"mult": 1.5, "reason": "Exposure to direct sunlight heats the vehicle bed, cooking the bottom layers."},
+        "Covered Pickup": {"mult": 0.9, "reason": "Tarp protection reflects solar radiation but can still trap some ambient heat."},
+        "Reefer": {"mult": 0.3, "reason": "Active cooling maintains optimal physiological temperature, pausing decay."}
     }
     
-    transport_multipliers = {
-        "Open Trolley": 1.5,
-        "Covered Pickup": 0.9,
-        "Reefer": 0.3 # Optimal
+    storage_multipliers = {
+        "Open Field": {"mult": 1.8, "reason": "Direct solar exposure and lack of ventilation causes moisture loss and heat stress."},
+        "Shaded": {"mult": 1.0, "reason": "Shade prevents solar heating, but ambient temperature still drives respiration."},
+        "Crated": {"mult": 0.8, "reason": "Crates allow 360-degree airflow, removing the 'respiration heat' that building up in bags."},
+        "Cold Storage": {"mult": 0.2, "reason": "Near-freezing temperatures effectively put the crop into 'hibernation'."}
     }
     
     current_storage = current_state.get("storage_environment", "Open Field")
     current_transport = current_state.get("vehicle_type", "Open Trolley")
     
-    current_multiplier = (storage_multipliers.get(current_storage, 1.8) + transport_multipliers.get(current_transport, 1.5)) / 2.0
+    s_info = storage_multipliers.get(current_storage, storage_multipliers["Open Field"])
+    t_info = transport_multipliers.get(current_transport, transport_multipliers["Open Trolley"])
     
-    # Ideal state multipliers (always the best options based on perishability, simplified here to generally good options)
-    ideal_multiplier = (storage_multipliers["Shaded"] + transport_multipliers["Covered Pickup"]) / 2.0
-    if crop_type.lower() == "tomato":
-        ideal_multiplier = (storage_multipliers["Crated"] + transport_multipliers["Covered Pickup"]) / 2.0
+    current_multiplier = (s_info["mult"] + t_info["mult"]) / 2.0
+    current_reasons = [s_info["reason"], t_info["reason"]]
+    
+    # Ideal state multipliers
+    ideal_storage = "Crated" if crop_type.lower() == "tomato" else "Shaded"
+    ideal_transport = "Covered Pickup"
+    
+    i_s_info = storage_multipliers[ideal_storage]
+    i_t_info = transport_multipliers[ideal_transport]
+    
+    ideal_multiplier = (i_s_info["mult"] + i_t_info["mult"]) / 2.0
 
     # Calculate 24h Spoilage % for both
     base_rate = get_base_spoilage_rate(crop_type)
@@ -66,10 +76,11 @@ def identify_profit_leaks(current_state: Dict[str, str], crop_type: str, temp_c:
     
     return {
         "current_setup": f"{current_storage} + {current_transport}",
-        "ideal_setup": "Crated + Covered Pickup" if crop_type.lower() == "tomato" else "Shaded + Covered Pickup",
+        "ideal_setup": f"{ideal_storage} + {ideal_transport}",
         "leak_inr_24h": round(leak_inr_24h, 2),
         "leak_inr_per_hour": round(leak_per_hour, 2),
         "is_high_risk": is_high_risk,
         "current_spoilage_24h_pct": round(current_spoilage_pct, 2),
-        "ideal_spoilage_24h_pct": round(ideal_spoilage_pct, 2)
+        "ideal_spoilage_24h_pct": round(ideal_spoilage_pct, 2),
+        "reasons": current_reasons
     }
