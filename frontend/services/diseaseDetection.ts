@@ -12,9 +12,9 @@ export interface DiseaseAuditResult {
 }
 
 const KNOWN_DISEASES = [
-    { name: "Late Blight", base_multiplier: 3.0, symptoms: ["Water-soaked spots", "White fuzzy growth", "Dark lesions"] },
-    { name: "Anthracnose", base_multiplier: 2.2, symptoms: ["Sunken black spots", "Pinkish spore masses"] },
-    { name: "Sour Rot", base_multiplier: 3.5, symptoms: ["Soft watery tissue", "Vinegar-like odor"] }
+    { name: "lateBlight", base_multiplier: 3.0, symptoms: ["symptomWaterSoakedSpots", "symptomWhiteFuzzyGrowth", "symptomDarkLesions"] },
+    { name: "anthracnose", base_multiplier: 2.2, symptoms: ["symptomSunkenBlackSpots", "symptomPinkishSporeMasses"] },
+    { name: "sourRot", base_multiplier: 3.5, symptoms: ["symptomSoftWateryTissue", "symptomVinegarOdor"] }
 ];
 
 /**
@@ -60,8 +60,8 @@ function round(val: number, precision: number) {
 }
 
 export const diseaseGuidance = [
-    "Place a sample crate in direct sunlight.",
-    "Take a clear, high-resolution close-up.",
-    "Scanning for necrotic lesions and spore patterns...",
-    "Audit complete. Synchronizing biological risk..."
+    "guidance1",
+    "guidance2",
+    "guidance3",
+    "guidance4"
 ];
