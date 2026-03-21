@@ -35,33 +35,27 @@ export function AuditSummaryCard({ auditData }: AuditSummaryCardProps) {
                     </div>
                     <div className="flex items-center space-x-2">
                         <h3 className="text-white font-bold tracking-widest uppercase text-xs">{t('logisticsAudit')}</h3>
-                        <div className="flex items-center space-x-1">
-                            <button 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    const reasonText = auditData.reasons ? ` ${t('dueTo')} ${auditData.reasons.join(' ')}` : '';
-                                    const audioText = `${t('logisticsAudit')}: ${t('yourSetupIs')} ${current_setup} ${t('with')} ${n(current_spoilage_24h_pct)}% ${t('spoilageLoss')}.${reasonText} ${t('idealSetupIs')} ${ideal_setup}. ${leak_inr_24h > 0 ? `${t('losing')} ${n(leak_inr_per_hour)} ${t('rupees')} ${t('perHour')}.` : ''}`;
-                                    speak(audioText, language);
-                                }}
-                                className="p-1 hover:bg-mint/20 rounded-full transition-colors group/audio"
-                                title="Listen to Logistics Audit"
-                            >
-                                <Volume2 className="w-3 h-3 text-mint/60 group-hover/audio:text-mint transition-colors" />
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    const event = new CustomEvent('agriVakeelAsk', { 
-                                        detail: { 
-                                            query: `Explain the profit leak in my ${current_setup}. Why am I losing ₹${n(leak_inr_per_hour)} every hour?` 
-                                        } 
-                                    });
-                                    window.dispatchEvent(event);
-                                }}
-                                className="text-[10px] text-mint/80 font-black uppercase tracking-widest flex items-center hover:text-white focus:outline-none bg-mint/5 px-2 py-0.5 rounded border border-mint/10 hover:border-mint/30 transition-all font-mono"
-                            >
-                                {t('askWhy') || 'Ask Why?'}
-                            </button>
-                        </div>
+                        <button 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                // Trigger AI Explanation
+                                const event = new CustomEvent('agriVakeelAsk', { 
+                                    detail: { 
+                                        query: `Explain the profit leak in my ${current_setup}. Why am I losing ₹${n(leak_inr_per_hour)} every hour?` 
+                                    } 
+                                });
+                                window.dispatchEvent(event);
+                                
+                                // Also speak basic local info (Optional, but usually expected for a speaker icon)
+                                const reasonText = auditData.reasons ? ` ${t('dueTo')} ${auditData.reasons.join(' ')}` : '';
+                                const audioText = `${t('logisticsAudit')}: ${t('yourSetupIs')} ${current_setup} ${t('with')} ${n(current_spoilage_24h_pct)}% ${t('spoilageLoss')}.${reasonText}`;
+                                speak(audioText, language);
+                            }}
+                            className="p-1 hover:bg-mint/20 rounded-full transition-colors group/audio"
+                            title="Ask Vakeel to Explain"
+                        >
+                            <Volume2 className="w-3 h-3 text-mint/60 group-hover/audio:text-mint transition-colors" />
+                        </button>
                     </div>
                 </div>
                 {is_high_risk ? (

@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { GlassCard } from '@/components/glass-card';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { speak } from '@/services/ttsService';
+import { Volume2 } from 'lucide-react';
 
 interface VehicleOption {
     id: string;
@@ -40,6 +43,7 @@ export function LogisticsCalculator({
     yieldQtl,
     crop
 }: LogisticsCalculatorProps) {
+    const { language } = useLanguage();
     const [selectedId, setSelectedId] = useState(recommendations[0]?.id || '');
     const [isHired, setIsHired] = useState(true);
     const [showDiagram, setShowDiagram] = useState(false);
@@ -282,11 +286,14 @@ export function LogisticsCalculator({
                                             } 
                                         });
                                         window.dispatchEvent(event);
+                                        
+                                        // Standard speak info
+                                        speak(`${selectedVehicle?.name}. ${loadingInfo.description}`, language);
                                     }}
-                                    className="text-[10px] text-white/70 font-black uppercase tracking-widest flex items-center hover:text-white focus:outline-none bg-white/5 px-2 py-1 rounded border border-white/5 hover:border-white/20 transition-all font-mono"
+                                    className="p-1.5 hover:bg-mint/20 rounded-full transition-all group/audio border border-white/5 hover:border-mint/30 bg-white/5 shadow-lg"
+                                    title="Ask Vakeel to Explain"
                                 >
-                                    <svg className="w-3 h-3 mr-1 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-                                    Ask Why?
+                                    <Volume2 className="w-4 h-4 text-mint/60 group-hover/audio:text-mint transition-colors" />
                                 </button>
                             </div>
                         </div>
