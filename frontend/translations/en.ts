@@ -144,6 +144,7 @@ export const en = {
     with: "with",
     spoilageLoss: "spoilage loss",
     losing: "You are losing",
+    dueTo: "due to",
 
     // Harvest Oracle
     harvestOracle: "Harvest Oracle",

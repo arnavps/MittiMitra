@@ -144,6 +144,7 @@ export const mr = {
     with: "सह",
     spoilageLoss: "नासाडीचे नुकसान",
     losing: "तुम्ही गमावत आहात",
+    dueTo: "यामुळे:",
 
     // Harvest Oracle
     harvestOracle: "हार्वेस्ट ओरेकल",

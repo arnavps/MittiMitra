@@ -144,6 +144,7 @@ export const hi = {
     with: "के साथ",
     spoilageLoss: "बर्बादी का नुकसान",
     losing: "आप खो रहे हैं",
+    dueTo: "इसके कारण:",
 
     // Harvest Oracle
     harvestOracle: "हार्वेस्ट ओरेकल",
