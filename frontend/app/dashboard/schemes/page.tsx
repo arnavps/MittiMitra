@@ -19,7 +19,7 @@ interface Scheme {
 }
 
 export default function SchemesPage() {
-    const { t, language } = useLanguage();
+    const { t, n, language } = useLanguage();
     const [schemes, setSchemes] = useState<Scheme[]>([]);
     const [loading, setLoading] = useState(true);
     const [expandedScheme, setExpandedScheme] = useState<string | null>(null);
@@ -32,7 +32,6 @@ export default function SchemesPage() {
                 const phone = auth.currentUser?.phoneNumber || localStorage.getItem('demo_phone') || "9999999999";
                 
                 // Get recommendation data if available to get risk scores
-                // For demo/simplicity, we'll fetch from a dedicated endpoint if it exists or use defaults
                 const res = await fetch('/api/schemes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -96,7 +95,7 @@ export default function SchemesPage() {
             <div className="flex items-center justify-center h-screen bg-[#1B3022]">
                 <div className="text-center space-y-4">
                     <div className="w-12 h-12 border-4 border-mint border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-mint font-bold uppercase tracking-widest text-xs">Curating Govt Schemes...</p>
+                    <p className="text-mint font-bold uppercase tracking-widest text-xs">{t('curatingSchemes')}</p>
                 </div>
             </div>
         );
@@ -115,7 +114,7 @@ export default function SchemesPage() {
                     <h1 className="text-4xl font-extrabold text-white tracking-tighter uppercase italic">{t('schemesHub')}</h1>
                 </div>
                 <p className="text-gray-400 font-medium max-w-xl">
-                    Personalized government subsidies and schemes ranked by your specific farm risk profile. Powered by MittiMitra's Financial Advisor Engine.
+                    {t('personalizedSubsidies')}
                 </p>
             </div>
 
@@ -156,7 +155,7 @@ export default function SchemesPage() {
                                         onClick={() => setExpandedScheme(expandedScheme === scheme.id ? null : scheme.id)}
                                         className="text-xs font-bold text-white/40 hover:text-white uppercase tracking-widest flex items-center space-x-2"
                                     >
-                                        <span>{expandedScheme === scheme.id ? "Hide Details" : "View Eligibility & Docs"}</span>
+                                        <span>{expandedScheme === scheme.id ? t('hideDetails') : t('viewEligibilityDocs')}</span>
                                         <svg className={`w-3 h-3 transition-transform ${expandedScheme === scheme.id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
@@ -172,11 +171,11 @@ export default function SchemesPage() {
                                             >
                                                 <div className="bg-black/40 rounded-xl p-4 space-y-4 border border-white/5 mt-2">
                                                     <div>
-                                                        <p className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1">Eligibility</p>
+                                                        <p className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1">{t('eligibility')}</p>
                                                         <p className="text-xs text-gray-300">{scheme.eligibility}</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1">Required Documents</p>
+                                                        <p className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1">{t('requiredDocuments')}</p>
                                                         <p className="text-xs text-gray-300">{scheme.documents}</p>
                                                     </div>
                                                 </div>
@@ -192,7 +191,7 @@ export default function SchemesPage() {
                                     target="_blank" 
                                     className="block w-full py-3 bg-white/5 hover:bg-mint text-white hover:text-forest font-bold text-center rounded-xl transition-all border border-white/10 hover:border-mint"
                                 >
-                                    Apply on Portal (Redirect)
+                                    {t('applyOnPortal')}
                                 </a>
                             </div>
                         </GlassCard>
@@ -207,12 +206,12 @@ export default function SchemesPage() {
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
                     </div>
                     <div>
-                        <p className="text-xs font-bold text-white uppercase tracking-widest">DPDP Act 2023 Compliant</p>
-                        <p className="text-xs text-gray-500">Your yield data is only shared with government portals after your explicit voice confirmation.</p>
+                        <p className="text-xs font-bold text-white uppercase tracking-widest">{t('dpdpCompliant')}</p>
+                        <p className="text-xs text-gray-500">{t('dpdpDesc')}</p>
                     </div>
                 </div>
                 <div className="text-xs font-mono text-gray-600 bg-white/5 px-4 py-2 rounded-full border border-white/5">
-                    Consent Status: <span className="text-mint">ACTIVE_ENCRYPTED</span>
+                    {t('consentStatus')}: <span className="text-mint">{t('activeEncrypted')}</span>
                 </div>
             </div>
         </div>

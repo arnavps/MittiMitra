@@ -28,7 +28,7 @@ interface Post {
 }
 
 export default function CommunityPage() {
-    const { t, language } = useLanguage();
+    const { t, n, language } = useLanguage();
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [isRecording, setIsRecording] = useState(false);
@@ -179,13 +179,13 @@ export default function CommunityPage() {
                         </div>
                         <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase">{t('communityHub')}</h1>
                     </div>
-                    <p className="text-gray-400 font-medium">The 'Chowk' Ground-Truth Forum. Share experiences, ask questions, and record voice answers.</p>
+                    <p className="text-gray-400 font-medium">{t('chowkGroundTruth')}</p>
                 </div>
                 <button 
                     onClick={() => setShowNewPost(true)}
                     className="px-6 py-3 bg-mint text-forest font-bold rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(32,255,189,0.3)] uppercase tracking-widest text-xs"
                 >
-                    Post Question
+                    {t('postQuestion')}
                 </button>
             </div>
 
@@ -196,7 +196,7 @@ export default function CommunityPage() {
                         <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                         </div>
-                        <p className="text-sm font-bold text-orange-400 uppercase tracking-widest">You have {drafts.length} offline drafts waiting to be synced.</p>
+                        <p className="text-sm font-bold text-orange-400 uppercase tracking-widest">{t('offlineDraftsSync', { count: n(drafts.length) })}</p>
                     </div>
                 </div>
             )}
@@ -207,7 +207,7 @@ export default function CommunityPage() {
             {/* Main Forum Feed */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                    <h2 className="text-xl font-black italic uppercase tracking-tighter text-white/80">Active Discussions</h2>
+                    <h2 className="text-xl font-black italic uppercase tracking-tighter text-white/80">{t('activeDiscussions')}</h2>
                     {posts.map((post, idx) => (
                         <motion.div
                             key={post.id}
@@ -225,7 +225,7 @@ export default function CommunityPage() {
                                                 ))}
                                             </div>
                                             <h3 className="text-xl font-extrabold text-white group-hover:text-mint transition-colors tracking-tight">{post.title}</h3>
-                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Asked by {post.author_name} • {post.location_cluster}</p>
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{t('askedBy', { author: post.author_name, location: post.location_cluster })}</p>
                                         </div>
                                         <button className="text-gray-500 hover:text-white transition-colors">
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" /></svg>
@@ -240,10 +240,10 @@ export default function CommunityPage() {
                                                     {i}
                                                 </div>
                                             ))}
-                                            <div className="w-8 h-8 rounded-full border-2 border-forest bg-white/10 flex items-center justify-center text-[8px] font-bold text-gray-400">+{post.answers.length}</div>
+                                            <div className="w-8 h-8 rounded-full border-2 border-forest bg-white/10 flex items-center justify-center text-[8px] font-bold text-gray-400">+{n(post.answers.length)}</div>
                                         </div>
                                         <button className="text-xs font-black text-mint uppercase tracking-widest flex items-center space-x-2 group/btn">
-                                            <span>Join Conversation</span>
+                                            <span>{t('joinConversation')}</span>
                                             <svg className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                                         </button>
                                     </div>
@@ -255,7 +255,7 @@ export default function CommunityPage() {
 
                 {/* Sidebar Stats */}
                 <div className="space-y-6">
-                    <h2 className="text-xl font-black italic uppercase tracking-tighter text-white/80">Trending Topics</h2>
+                    <h2 className="text-xl font-black italic uppercase tracking-tighter text-white/80">{t('trendingTopics')}</h2>
                     <GlassCard className="p-6 border-white/5">
                         <div className="space-y-4">
                             {[
@@ -266,7 +266,7 @@ export default function CommunityPage() {
                             ].map(topic => (
                                 <div key={topic.tag} className="flex justify-between items-center group cursor-pointer">
                                     <span className={`text-sm font-bold ${topic.color} group-hover:underline`}>{topic.tag}</span>
-                                    <span className="text-[10px] text-gray-600 font-black">{topic.count} Posts</span>
+                                    <span className="text-[10px] text-gray-600 font-black">{n(topic.count)} {t('posts')}</span>
                                 </div>
                             ))}
                         </div>
@@ -291,21 +291,21 @@ export default function CommunityPage() {
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         >
                             <GlassCard className="w-full max-w-lg p-8 space-y-6 border-white/20 relative">
-                                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Ask the Community</h3>
+                                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">{t('askCommunity')}</h3>
                                 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1 block">Title / Main Question</label>
+                                        <label className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1 block">{t('titleMainQuestion')}</label>
                                         <input 
                                             value={newPostTitle}
                                             onChange={(e) => setNewPostTitle(e.target.value)}
-                                            placeholder="What's your harvest update?"
+                                            placeholder={t('placeholderHarvestUpdate')}
                                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:border-mint/50 focus:ring-1 focus:ring-mint/50 outline-none transition-all"
                                         />
                                     </div>
                                     
                                     <div>
-                                        <label className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1 block">Voice Context (Optional)</label>
+                                        <label className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1 block">{t('voiceContextOptional')}</label>
                                         <div className="flex items-center space-x-3">
                                             <button 
                                                 onClick={isRecording ? stopRecording : startRecording}
@@ -314,12 +314,12 @@ export default function CommunityPage() {
                                                 {isRecording ? (
                                                     <>
                                                         <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                                                        <span className="text-xs font-black uppercase tracking-widest">Recording... (Click to Stop)</span>
+                                                        <span className="text-xs font-black uppercase tracking-widest">{t('recordingClickToStop')}</span>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
-                                                        <span className="text-xs font-black uppercase tracking-widest">Add Voice Explanation</span>
+                                                        <span className="text-xs font-black uppercase tracking-widest">{t('addVoiceExplanation')}</span>
                                                     </>
                                                 )}
                                             </button>
@@ -332,12 +332,12 @@ export default function CommunityPage() {
                                     </div>
 
                                     <div>
-                                        <label className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1 block">Full Description</label>
+                                        <label className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-1 block">{t('fullDescription')}</label>
                                         <textarea 
                                             value={newPostContent}
                                             onChange={(e) => handleContentChange(e.target.value)}
                                             rows={4}
-                                            placeholder="Tell us what's happening on the ground..."
+                                            placeholder={t('placeholderGroundTruth')}
                                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:border-mint/50 focus:ring-1 focus:ring-mint/50 outline-none transition-all resize-none"
                                         />
                                     </div>
@@ -356,13 +356,13 @@ export default function CommunityPage() {
                                         onClick={() => setShowNewPost(false)}
                                         className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-400 font-bold rounded-xl transition-all uppercase tracking-widest text-[10px]"
                                     >
-                                        Cancel
+                                        {t('cancel')}
                                     </button>
                                     <button 
                                         onClick={submitPost}
                                         className="flex-1 py-3 bg-mint text-forest font-black rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(32,255,189,0.3)] uppercase tracking-widest text-[10px]"
                                     >
-                                        Post Now
+                                        {t('postNow')}
                                     </button>
                                 </div>
                             </GlassCard>
