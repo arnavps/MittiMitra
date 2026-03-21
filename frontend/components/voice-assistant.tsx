@@ -299,6 +299,9 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
                 const url = URL.createObjectURL(blob);
                 const audio = new Audio(url);
                 audio.onended = () => URL.revokeObjectURL(url);
+                
+                // Speed up voice playback
+                audio.playbackRate = 1.15;
 
                 audioRef.current = audio;
                 await audio.play();
@@ -308,13 +311,15 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
                 const streamUrl = `/api/chat/tts?text=${encodeURIComponent(text)}&language=${encodeURIComponent(language)}`;
                 const audio = new Audio(streamUrl);
 
+                // Speed up voice playback
+                audio.playbackRate = 1.15;
+
                 audio.onerror = () => {
                     const error = audio.error;
                     console.error("Audio streaming error:", { code: error?.code, message: error?.message });
                     setLastVoiceName(`Error: Stream failed (Code ${error?.code || '?'})`);
                 };
 
-                if (language === "Marathi") audio.playbackRate = 1.35;
 
                 audioRef.current = audio;
                 await audio.play();

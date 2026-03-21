@@ -46,7 +46,8 @@ export const speak = async (text: string, language: string = "Hindi") => {
         const streamUrl = `/api/chat/tts?text=${encodeURIComponent(text)}&language=${encodeURIComponent(langName)}`;
         const audio = new Audio(streamUrl);
         
-        if (langName === "Marathi") audio.playbackRate = 1.35;
+        // Speed up voice playback
+        audio.playbackRate = 1.15;
         
         currentAudio = audio;
         await audio.play();

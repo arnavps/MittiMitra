@@ -72,7 +72,7 @@ export function NavigationMode({ targetMandi, startLoc, endLoc, distanceLeft: to
         if (!window.speechSynthesis) return;
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-IN'; 
-        utterance.rate = 0.9;
+        utterance.rate = 1.15;
         window.speechSynthesis.speak(utterance);
     };
 
