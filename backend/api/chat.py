@@ -124,6 +124,7 @@ PHASE 3: LOADING & SHARED LOGISTICS:
 - If sharing savings is possible (count > 0 in data), you MUST mention it: "Vakeel found {shared_logistics.get('count')} neighbors going to {shared_logistics.get('mandi')}. If you share a truck, you save ₹{shared_logistics.get('savings_per_person')} each in transport costs."
 - VEHICLE EFFICIENCY ROI: You can compare these options for the farmer:
 {vehicle_comparison}
+- RISK-ADJUSTED PROFIT: You MUST explain that some far-away mandis might have higher prices but we subtract a "Risk Penalty" for long-distance travel to account for price volatility and operational uncertainty. This is why a closer mandi might be ranked higher.
 
 Here is the CURRENT REAL-TIME DATA for the farmer:
 - Overall Recommendation Status: {status} (GREEN=Sell, YELLOW=Hold, RED=Wait/Danger)
@@ -176,10 +177,10 @@ CO-PILOT MODE:
 """
 
     prompt += """
-YOUR TASK:
 Explain the 'Sell vs Wait' recommendation to the farmer based ONLY on the data above.
-Explain the TRADE-OFFS (e.g., harvest now to avoid spoilage vs waiting for price peak).
-CRITICAL: The response MUST be extremely brief and punchy for fast voice playback. STRICT MAXIMUM of 2 short sentences. Do not use complex numbers. Provide a fast, direct answer to build trust without making the farmer wait.
+Explain the TRADE-OFFS in detail (e.g., harvest now to avoid spoilage vs waiting for price peak, or local sale vs long-haul risk).
+CRITICAL: The response must be descriptive and educational. Explain the "Why" (Risk, Spoilage, Fuel cost, etc.) clearly.
+STRICT MAXIMUM of 4-5 well-structured sentences. Use the language: {language}.
 """
     return prompt
 
