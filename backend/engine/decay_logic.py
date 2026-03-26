@@ -15,16 +15,31 @@ def calculate_quality_loss(crop_type: str, temp: float, humidity: float, hours_p
     # Crop-specific baseline decay rates (loss per hour at 20C)
     # Perishables lose quality fast; non-perishables are durable.
     DECAY_RATES = {
+        # High Perishables (Fruit & Veg)
         "Tomato": 0.005,      # 0.5% per hour
+        "Grapes": 0.006,      # Very high
+        "Strawberries": 0.008,
+        
+        # Medium Perishables (Roots & Bulbs)
         "Onion": 0.001,       # 0.1% per hour
-        "Cotton": 0.00001,    # Virtually zero loss over days
-        "Wheat": 0.00002,     # Virtually zero loss over days
-        "Rice": 0.00002,
         "Potato": 0.0005,
+        "Garlic": 0.0004,
+        
+        # Durables (Grains, Pulses, Fibers)
+        "Cotton": 0.00001,    # Virtually zero loss over days
+        "Wheat": 0.00002,     
+        "Rice": 0.00002,
+        "Soybean": 0.00003,
+        "Maize": 0.00003,
+        "Mustard": 0.00002,
     }
     
-    # Default to Tomato (conservative) if unknown
-    base_rate = DECAY_RATES.get(crop_type.capitalize(), 0.005)
+    # Standardize input for lookup
+    lookup_crop = crop_type.title().strip()
+    
+    # Default to 0.0001 (Safe Durable) if unknown, to prevent panic for grains
+    # But if user says "Tomato" or similar, it uses the high rate
+    base_rate = DECAY_RATES.get(lookup_crop, 0.0001)
     
     # Standard Q10 exponential decay
     relative_rate = math.pow(Q10, (temp - T_BASE) / 10.0)

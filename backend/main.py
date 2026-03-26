@@ -387,7 +387,8 @@ async def get_harvest_recommendation(data: HarvestRequest):
             ),
             "shared_logistics": identify_clusters(
                 user_location=data.location,
-                target_mandi=best_mandi_name
+                target_mandi=best_mandi_name,
+                crop=data.crop
             ),
             "oracle": {
                 "maturity": oracle_window,

@@ -1,0 +1,18 @@
+
+>>>> TESTING CROP: Wheat <<<<
+Decay Loss (36C/48h): 0.29%
+Loading Advice: For Wheat, moisture-wicking bags (jute) are best. If using an Open Trolley, cover with a waterproof tarp to prevent moisture absorption while maintaining side-ventilation for heat escape.
+Neighbor Crop: Wheat
+Prompt Analogy: PASS (Dynamic)
+
+>>>> TESTING CROP: Grapes <<<<
+Decay Loss (36C/48h): 100.0%
+Loading Advice: Grapes must be in plastic crates with ventilation. Stack crates with interlocking lids. Ensure the highest point of the stack does not exceed the vehicle sideboards to prevent sun-scald.
+Neighbor Crop: Grapes
+Prompt Analogy: PASS (Dynamic)
+
+>>>> TESTING CROP: Tomato <<<<
+Decay Loss (36C/48h): 100.0%
+Loading Advice: Tomato must be in plastic crates with ventilation. Stack crates with interlocking lids. Ensure the highest point of the stack does not exceed the vehicle sideboards to prevent sun-scald.
+Neighbor Crop: Tomato
+Prompt Analogy: PASS (Dynamic)

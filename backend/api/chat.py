@@ -125,7 +125,7 @@ You MUST respond ONLY in the following language: {language}.
         prompt += "Address as 'Sat Sri Akal Kisan Veer' in Punjabi script. Use Punjabi script ONLY. Write numbers in words.\n"
 
     prompt += f"""
-ANALOGY RULE: Translate technical terms into locally understood farming analogies. For example, "Biological Clock" should be explained as "Crop Expiry / Fasal ka samay" or equivalent in {language}.
+ANALOGY RULE: Translate technical terms into locally understood farming analogies. For example, "Biological Clock" of your {context.get('crop', 'Produce')} should be explained as "{context.get('crop', 'Produce')} Expiry / Fasal ka samay" or equivalent in {language}.
 
 NAVIGATION PERSONA:
 - Your role is to provide real-time updates while they drive.

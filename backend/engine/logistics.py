@@ -79,15 +79,15 @@ def recommend_vehicle(calibrated_yield: float, transit_temp_forecast: float, dis
     # Sort by total net profit descending
     return sorted(recommendations, key=lambda x: x["total_net_profit"], reverse=True)
 
-def identify_clusters(user_location: Dict[str, float], target_mandi: str) -> List[Dict[str, Any]]:
+def identify_clusters(user_location: Dict[str, float], target_mandi: str, crop: str = "Produce") -> Dict[str, Any]:
     """
     Mock clustering logic for Phase 3 shared logistics.
-    In a real app, this would query Supabase for other users with similar routes and timing.
+    Dynamically uses the onboarding crop to ensure consistency.
     """
-    # Mock data for demonstration
+    # Mock data that reflects the user's current context
     mock_neighbors = [
-        {"name": "Ramesh K.", "distance_km": 1.2, "crop": "Tomato", "yield": 45},
-        {"name": "Suresh M.", "distance_km": 3.5, "crop": "Onion", "yield": 30},
+        {"name": "Ramesh K.", "distance_km": 1.2, "crop": crop, "yield": 45},
+        {"name": "Suresh M.", "distance_km": 3.5, "crop": crop, "yield": 30},
     ]
     
     savings_per_person = 1500 # Estimated saving if sharing a truck
@@ -106,13 +106,16 @@ def get_loading_instructions(crop: str, vehicle: str, yield_qtl: float) -> str:
     """
     crop_lower = crop.lower()
     
-    if "potato" in crop_lower or "onion" in crop_lower:
+    if "potato" in crop_lower or "onion" in crop_lower or "garlic" in crop_lower:
         if "Trolley" in vehicle:
             return f'For your {yield_qtl} Qtl of {crop} in an Open Trolley, stack them in a "Chimney Pattern" with 6-inch gaps to allow the wind to cool the center.'
         else:
             return f'For your {yield_qtl} Qtl of {crop}, ensure bottom layers have straw padding and do not stack more than 4 layers high to prevent bruising.'
             
-    if "tomato" in crop_lower:
-        return f'Tomatoes must be in plastic crates. Stack crates with interlocking lids. Ensure the highest point of the stack does not exceed the vehicle sideboards to prevent sun-scald.'
+    if "tomato" in crop_lower or "berry" in crop_lower or "strawberry" in crop_lower or "grape" in crop_lower:
+        return f'{crop} must be in plastic crates with ventilation. Stack crates with interlocking lids. Ensure the highest point of the stack does not exceed the vehicle sideboards to prevent sun-scald.'
         
-    return f'Ensure your {crop} is evenely distributed in the {vehicle} to maintain balance and airflow during transit.'
+    if "wheat" in crop_lower or "rice" in crop_lower or "maize" in crop_lower or "soy" in crop_lower or "mustard" in crop_lower:
+        return f'For {crop}, moisture-wicking bags (jute) are best. If using an {vehicle}, cover with a waterproof tarp to prevent moisture absorption while maintaining side-ventilation for heat escape.'
+
+    return f'Ensure your {crop} is evenly distributed in the {vehicle} to maintain balance and airflow during transit. For this yield ({yield_qtl} Qtl), prioritize securing the load with high-tension ropes.'
