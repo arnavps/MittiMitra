@@ -67,17 +67,32 @@ def recommend_vehicle(calibrated_yield: float, transit_temp_forecast: float, dis
         recommendations.append({
             "id": key,
             "name": v_class.name,
-            "total_cost": round(total_cost, 2),
-            "cost_per_q": round(cost_per_qtl, 2),
-            "spoilage_risk_pct": round(spoilage_pct * 100, 2),
-            "net_realization_per_q": round(net_realization, 2),
-            "total_net_profit": round(net_realization * calibrated_yield, 2),
+            "total_cost": round(float(total_cost), 2),
+            "cost_per_q": round(float(cost_per_qtl), 2),
+            "spoilage_risk_pct": round(float(spoilage_pct * 100), 2),
+            "net_realization_per_q": round(float(net_realization), 2),
+            "total_net_profit": round(float(net_realization * calibrated_yield), 2),
             "description": v_class.description,
             "is_viable": calibrated_yield <= v_class.capacity_qtl * 1.2 # Allow slight overfill
         })
         
     # Sort by total net profit descending
     return sorted(recommendations, key=lambda x: x["total_net_profit"], reverse=True)
+
+def calculate_logistics_cost(yield_qtl: float, distance_km: float, vehicle_type: str = "Open Trolley") -> float:
+    """
+    Calculates the total logistics cost dynamically.
+    """
+    # Find match in VEHICLE_CLASSES or fallback to Open Trolley
+    v_class = VEHICLE_CLASSES.get(vehicle_type, VEHICLE_CLASSES["Open Trolley"])
+    
+    # Calculate total trips needed (rounded up)
+    num_trips = math.ceil(yield_qtl / v_class.capacity_qtl)
+    
+    # Total cost = base_cost + (per_km_cost * distance) per trip
+    one_trip_cost = v_class.base_cost + (v_class.per_km_cost * distance_km)
+    
+    return one_trip_cost * num_trips
 
 def identify_clusters(user_location: Dict[str, float], target_mandi: str, crop: str = "Produce") -> Dict[str, Any]:
     """
