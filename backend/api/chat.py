@@ -16,6 +16,7 @@ router = APIRouter()
 
 ONBOARDING_STRINGS_BACKEND = {
     "English": {
+        "ask_consent": "I'm glad you're here! To get started, please confirm you are okay with me helping you. Shall we proceed?",
         "ask_crop": "What crop are you growing today?",
         "ask_yield": "What is your estimated yield for this crop in quintals?",
         "ask_location": "To find local markets and maximize profit, I need your GPS location. Is that okay?",
@@ -27,6 +28,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "all_done": "Congratulations! We have collected all details. Let's head to the dashboard."
     },
     "Hindi": {
+        "ask_consent": "मुझे खुशी है कि आप यहाँ हैं! शुरू करने के लिए, कृपया पुष्टि करें कि आप अपनी जानकारी साझा करने के लिए तैयार हैं। क्या हम आगे बढ़ें?",
         "ask_crop": "आप आज कौन सी फसल उगा रहे हैं?",
         "ask_yield": "इस फसल के लिए आपका अनुमानित उत्पादन क्विंटल में कितना है?",
         "ask_location": "मुनाफा बढ़ाने के लिए स्थानीय मंडियों को खोजने हेतु मुझे आपके जीपीएस स्थान की आवश्यकता है। क्या यह ठीक है?",
@@ -38,6 +40,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "all_done": "बधाई हो! हमने सभी विवरण एकत्र कर लिए हैं। चलिए अब डैशबोर्ड पर चलते हैं।"
     },
     "Marathi": {
+        "ask_consent": "तुम्ही येथे आलात याचा मला आनंद आहे! सुरू करण्यासाठी, कृपया पुष्टी करा की तुम्ही तुमची माहिती माझ्यासोबत शेअर करण्यास तयार आहात. आपण पुढे जायचे का?",
         "ask_crop": "तुम्ही आज कोणते पीक घेत आहात?",
         "ask_yield": "या पिकासाठी तुमचे अंदाजे उत्पन्न क्विंटलमध्ये किती आहे?",
         "ask_location": "तुमचा नफा वाढवण्यासाठी जवळच्या बाजारपेठा शोधण्यासाठी मला तुमचे जीपीएस लोकेशन हवे आहे. चालेल का?",
@@ -49,6 +52,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "all_done": "अभिनंदन! आम्ही सर्व माहिती गोळा केली आहे. आता डॅशबोर्डवर जाऊया."
     },
     "Telugu": {
+        "ask_consent": "మీరు ఇక్కడికి వచ్చినందుకు నాకు చాలా సంతోషంగా ఉంది! ప్రారంభించడానికి, దయచేసి మీరు మీ సమాచారాన్ని నాతో పంచుకోవడానికి సిద్ధంగా ఉన్నారని నిర్ధారించండి. మనం ముందుకు వెళ్దామా?",
         "ask_crop": "మీరు ఈ రోజు ఏ పంటను పండిస్తున్నారు?",
         "ask_yield": "ఈ పంటకు మీ అంచనా దిగుబడి క్వింటాళ్లలో ఎంత?",
         "ask_location": "స్థానిక మార్కెట్లను కనుగొనడానికి మరియు లాభాన్ని పెంచడానికి, నాకు మీ GPS స్థానం అవసరం. అది సరేనా?",
@@ -60,6 +64,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "all_done": "అభినందనలు! మేము అన్ని వివరాలను సేకరించాము. ఇక డ్యాష్‌బోర్డ్‌కు వెళ్దాం."
     },
     "Tamil": {
+        "ask_consent": "நீங்கள் இங்கே வந்ததில் எனக்கு மிக்க மகிழ்ச்சி! தொடங்குவதற்கு, உங்கள் தகவலை என்னுடன் பகிர்ந்து கொள்ள நீங்கள் தயார் என்பதை உறுதிப்படுத்தவும். நாம் தொடரலாமா?",
         "ask_crop": "இன்று நீங்கள் என்ன பயிர் செய்கிறீர்கள்?",
         "ask_yield": "இந்தப் பயிரின் மதிப்பிடப்பட்ட விளைச்சல் எத்தனை குவிண்டால்?",
         "ask_location": "உள்ளூர் சந்தைகளைக் கண்டறியவும் லாபத்தை அதிகரிக்கவும், உங்கள் ஜிபிஎஸ் இருப்பிடம் எனக்குத் தேவை. ஓகேவா?",
@@ -71,6 +76,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "all_done": "வாழ்த்துக்கள்! அனைத்து விவரங்களையும் சேகரித்துவிட்டோம். இப்போது டேஷ்போர்டுக்கு செல்வோம்."
     },
     "Gujarati": {
+        "ask_consent": "તમે અહીં આવ્યા તે બદલ મને આનંદ છે! શરૂ કરવા માટે, કૃપા કરીને પુષ્ટિ કરો કે તમે તમારી માહિતી મારી સાથે શેર કરવા માટે તૈયાર છો. શું આપણે આગળ વધીએ?",
         "ask_crop": "તમે આજે કયો પાક ઉગાડી રહ્યા છો?",
         "ask_yield": "આ પાક માટે તમારી અંદાજિત ઉપજ ક્વિન્ટલમાં કેટલી છે?",
         "ask_location": "સ્થાનિક બજારો શોધવા અને નફો વધારવા માટે, મારે તમારા જીપીએસ લોકેશનની જરૂર છે. શું તે બરાબર છે?",
@@ -82,6 +88,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "all_done": "અભિનંદન! અમે બધી વિગતો એકત્રિત કરી છે. ચાલો હવે ડેશબોર્ડ પર જઈએ."
     },
     "Punjabi": {
+        "ask_consent": "ਮੈਨੂੰ ਖੁਸ਼ੀ ਹੈ ਕਿ ਤੁਸੀਂ ਇੱਥੇ ਆਏ ਹੋ! ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੀ ਜਾਣਕਾਰੀ ਮੇਰੇ ਨਾਲ ਸਾਂਝੀ ਕਰਨ ਲਈ ਤਿਆਰ ਹੋ। ਕੀ ਅਸੀਂ ਅੱਗੇ ਵਧੀਏ?",
         "ask_crop": "ਤੁਸੀਂ ਅੱਜ ਕਿਹੜੀ ਫ਼ਸਲ ਉਗਾ ਰਹੇ ਹੋ?",
         "ask_yield": "ਇਸ ਫ਼ਸਲ ਲਈ ਤੁਹਾਡੀ ਅੰਦਾਜ਼ਨ ਪੈਦਾਵਾਰ ਕੁਇੰਟਲਾਂ ਵਿੱਚ ਕਿੰਨੀ ਹੈ?",
         "ask_location": "ਸਥਾਨਕ ਮੰਡੀਆਂ ਲੱਭਣ ਅਤੇ ਮੁਨਾਫ਼ਾ ਵਧਾਉਣ ਲਈ, ਮੈਨੂੰ ਤੁਹਾਡੀ GPS ਲੋਕੇਸ਼ਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਇਹ ਠੀਕ ਹੈ?",
@@ -258,15 +265,15 @@ def onboarding_extract(req: OnboardingExtractRequest):
 
         # 2. Define the current state for the AI
         state = {
-            "consent_granted": req.consent_granted,
-            "crop": req.current_crop,
-            "yield_quintals": req.current_yield,
-            "harvest_status": req.harvest_status,
-            "storage_type": req.current_storage,
-            "health_issue": req.health_issue,
-            "transport_type": req.current_transport,
-            "sowing_date": req.sowing_date,
-            "land_size": req.current_land_size
+            "consent_granted": "PROVIDED" if req.consent_granted is True else "MISSING",
+            "crop": req.current_crop if req.current_crop else "MISSING",
+            "yield_quintals": f"{req.current_yield} Quintals" if req.current_yield else "MISSING",
+            "harvest_status": req.harvest_status if req.harvest_status else "MISSING",
+            "storage_type": req.current_storage if req.current_storage else "MISSING",
+            "health_issue": "IDENTIFIED" if req.health_issue else "MISSING",
+            "transport_type": req.current_transport if req.current_transport else "MISSING",
+            "sowing_date": req.sowing_date if req.sowing_date else "MISSING",
+            "land_size": req.current_land_size if req.current_land_size else "MISSING"
         }
 
         # Priority and templates for missing info
@@ -285,12 +292,14 @@ TASK:
 1. Extract DATA from the USER INPUT into JSON.
 2. If USER gives multiple facts (e.g. "Yes I agree and I have 50 quintals of cotton"), extract EVERYTHING.
 3. Identify what is STILL MISSING based on the KNOWN STATE below.
-4. Compose an 'ai_reply' STRICTLY in {req.language} script (DO NOT USE ENGLISH UNLESS REQUESTED) that:
+4. CRITICAL: Only extract data if EXPLICITLY mentioned. Do NOT guess or default fields to values like "already_harvested" unless the user says so.
+5. Compose an 'ai_reply' STRICTLY in {req.language} script (DO NOT USE ENGLISH UNLESS REQUESTED) that:
    - Politely acknowledges any NEW info extracted from text_input.
    - ALWAYS appends the NEXT QUESTION for the FIRST missing field in the priority list.
-   - If a field is present, acknowledge it briefly.
+   - CRITICAL: If the user says "proceed", "yes", "okay", or "agree", EXTRACT `consent_granted: true`.
    - You MUST maintain a supportive, expert farmer persona.
 LANGUAGE: {req.language} (Response MUST be in this script).
+USER INPUT: {req.text_input}
 
 KNOWN STATE:
 - Consent: {state['consent_granted']}
@@ -302,7 +311,7 @@ KNOWN STATE:
 - Transport: {state['transport_type']}
 
 PRIORITY & NEXT QUESTIONS:
-1. Consent Missing? -> Extract `consent_granted: true` if user says "yes", "proceed", "agree", "okay", or equivalent in their language. If still missing, ask: "{lang_strings.get('ask_location')}"
+1. Consent Missing? -> If `consent_granted` IS NOT extracted in this turn AND was not PROVIDED in KNOWN STATE, ask: "{lang_strings.get('ask_consent')}"
 2. Crop Missing? -> {templates['crop']}
 3. Yield Missing? -> {templates['yield_quintals']}
 4. Harvest Status Missing? -> {templates['harvest_status']}
@@ -329,14 +338,24 @@ If all required fields (based on harvest status) are filled, set 'ai_reply' to: 
 STRICT: Return ONLY valid JSON. Address the user as 'Farmer'. No English in the reply.
 """
 
+        # DEBUG
+        # print(f"DEBUG PROMPT: {prompt}")
+
         completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
             temperature=0.0
         )
         
-        reply_json = json.loads(completion.choices[0].message.content)
+        raw_content = completion.choices[0].message.content
+        # print(f"DEBUG RAW CONTENT: {raw_content}")
+        reply_json = json.loads(raw_content)
+
+        # FAIL-SAFE: If any info is provided, consent is implicitly granted
+        if reply_json.get("crop") or reply_json.get("yield_quintals") or reply_json.get("harvest_status"):
+            reply_json["consent_granted"] = True
+            
         return reply_json
 
     except Exception as e:

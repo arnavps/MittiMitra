@@ -237,9 +237,9 @@ export default function OnboardingPage() {
                     consent_granted: consentGranted,
                     current_storage: storageType || storageTypeRef.current,
                     current_transport: transportType || transportTypeRef.current,
-                    harvest_status: (harvestStatus || harvestStatusRef.current) === 'Already Harvested' ? 'already_harvested' : 'not_yet_harvested',
+                    harvest_status: (harvestStatus || harvestStatusRef.current) === 'Already Harvested' ? 'already_harvested' : ((harvestStatus || harvestStatusRef.current) === 'Not Yet Harvested' ? 'not_yet_harvested' : null),
                     sowing_date: sowingDate || sowingDateRef.current,
-                    health_issue: (healthStatus || healthStatusRef.current) === "Issue Reported"
+                    health_issue: (healthStatus || healthStatusRef.current) === "Issue Reported" ? true : ((healthStatus || healthStatusRef.current) === "No Issue" ? false : null),
                 })
             });
 
