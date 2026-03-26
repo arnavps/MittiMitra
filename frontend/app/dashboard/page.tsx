@@ -259,6 +259,7 @@ export default function DashboardPage() {
                 }
 
                 // Demo Mode Override logic
+                if (isDemo) {
                     if (json.mandi_stats) {
                         json.mandi_stats.current_price *= 0.6; // 40% drop
                         json.mandi_stats.current_volume_quintals *= 3; // Massive spike
@@ -276,6 +277,7 @@ export default function DashboardPage() {
                         json.shock_alert.pivot_mandi = pivot;
                         json.shock_alert.savings_inr = savings;
                     }
+                }
 
                 setData(json);
                 setLastFetched(new Date());
