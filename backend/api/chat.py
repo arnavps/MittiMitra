@@ -8,6 +8,7 @@ from groq import Groq
 from dotenv import load_dotenv
 from gtts import gTTS
 from engine.logistics import get_loading_instructions
+import json
 
 load_dotenv()
 
@@ -19,8 +20,10 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_yield": "What is your estimated yield for this crop in quintals?",
         "ask_location": "To find local markets and maximize profit, I need your GPS location. Is that okay?",
         "ask_storage": "Where are you keeping your harvest? (Open field, shed, or cold storage)",
-        "ask_health": "Are there any health issues, spots, or problems on your crop?",
+        "ask_health": "To give you the most accurate price, I need to check the quality. Could you please show me a sample of your harvest? I'm opening your camera now.",
         "ask_transport": "How will you be transporting your produce? Two wheeler, tractor, or pickup truck?",
+        "ask_harvest_status": "Has your crop been harvested already, or are you still waiting for it to ripen?",
+        "ask_sowing_date": "When did you sow this crop?",
         "all_done": "Congratulations! We have collected all details. Let's head to the dashboard."
     },
     "Hindi": {
@@ -28,8 +31,10 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_yield": "इस फसल के लिए आपका अनुमानित उत्पादन क्विंटल में कितना है?",
         "ask_location": "मुनाफा बढ़ाने के लिए स्थानीय मंडियों को खोजने हेतु मुझे आपके जीपीएस स्थान की आवश्यकता है। क्या यह ठीक है?",
         "ask_storage": "आप अपनी फसल कहाँ रख रहे हैं? (खुले खेत में, शेड में या कोल्ड स्टोरेज में)",
-        "ask_health": "क्या आपकी फसल में कोई बीमारी, धब्बे या कोई समस्या है?",
+        "ask_health": "आपको सबसे सटीक कीमत देने के लिए, मुझे गुणवत्ता की जांच करनी होगी। क्या आप कृपया मुझे अपनी फसल का नमूना दिखा सकते हैं? मैं अब आपका कैमरा खोल रहा हूँ।",
         "ask_transport": "आप अपना माल कैसे ले जाएंगे? दोपहिया, ट्रैक्टर या पिकअप ट्रक?",
+        "ask_harvest_status": "क्या आपने फसल की कटाई कर ली है या करने वाले हैं?",
+        "ask_sowing_date": "आपने इस फसल की बुवाई कब की थी?",
         "all_done": "बधाई हो! हमने सभी विवरण एकत्र कर लिए हैं। चलिए अब डैशबोर्ड पर चलते हैं।"
     },
     "Marathi": {
@@ -37,8 +42,10 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_yield": "या पिकासाठी तुमचे अंदाजे उत्पन्न क्विंटलमध्ये किती आहे?",
         "ask_location": "तुमचा नफा वाढवण्यासाठी जवळच्या बाजारपेठा शोधण्यासाठी मला तुमचे जीपीएस लोकेशन हवे आहे. चालेल का?",
         "ask_storage": "तुम्ही तुमचा माल कोठे ठेवत आहात? (खुल्या शेतात, शेडमध्ये किंवा कोल्ड स्टोरेजमध्ये)",
-        "ask_health": "तुमच्या पिकावर काही आरोग्याच्या समस्या, डाग किंवा काही प्रश्न आहेत का?",
+        "ask_health": "तुम्हाला सर्वात अचूक किंमत देण्यासाठी, मला गुणवत्ता तपासावी लागेल. कृपया तुम्ही मला तुमच्या पिकाचा नमुना दाखवू शकता का? मी आता तुमचा कॅमेरा उघडत आहे.",
         "ask_transport": "तुम्ही तुमचा माल कसा नेणार आहात? दुचाकी, ट्रॅक्टर किंवा पिकअप ट्रक?",
+        "ask_harvest_status": "तुमच्या पिकाची कापणी झाली आहे का?",
+        "ask_sowing_date": "तुम्ही या पिकाची पेरणी कधी केली होती?",
         "all_done": "अभिनंदन! आम्ही सर्व माहिती गोळा केली आहे. आता डॅशबोर्डवर जाऊया."
     },
     "Telugu": {
@@ -48,6 +55,8 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_storage": "మీరు మీ పంటను ఎక్కడ ఉంచుతున్నారు? (బహిరంగ ప్రదేశంలో, షెడ్డులో లేదా కోల్డ్ స్టోరేజీలో)",
         "ask_health": "మీ పంటలో ఏవైనా ఆరోగ్య సమస్యలు ఉన్నాయా?",
         "ask_transport": "మీరు మీ సరుకును ఎలా రవాణా చేస్తారు? ద్విచక్ర వాహనం, ట్రాక్టర్ లేదా పிக்கప్ ట్రక్?",
+        "ask_harvest_status": "మీ పంట కోతకు సిద్ధంగా ఉందా లేదా ఇప్పటికే కోశారా?",
+        "ask_sowing_date": "మీరు ఈ పంటను ఎప్పుడు వేశారు?",
         "all_done": "అభినందనలు! మేము అన్ని వివరాలను సేకరించాము. ఇక డ్యాష్‌బోర్డ్‌కు వెళ్దాం."
     },
     "Tamil": {
@@ -57,6 +66,8 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_storage": "உங்கள் அறுவடையை எங்கே வைத்திருக்கிறீர்கள்? (திறந்த வெளி, கொட்டகை அல்லது குளிர்பதன கிடங்கு)",
         "ask_health": "உங்கள் பயிரில் ஏதேனும் நோய் பாதிப்புகள் அல்லது பிரச்சனைகள் உள்ளதா?",
         "ask_transport": "உங்கள் விளைபொருட்களை எப்படி கொண்டு செல்வீர்கள்? டூ வீலர், டிராக்டர் அல்லது பிக்கப் டிரக்?",
+        "ask_harvest_status": "பயிர் அறுவடை செய்யப்பட்டுள்ளதா அல்லது இன்னும் காத்திருக்கிறீர்களா?",
+        "ask_sowing_date": "நீங்கள் எப்போது விதைத்தீர்கள்?",
         "all_done": "வாழ்த்துக்கள்! அனைத்து விவரங்களையும் சேகரித்துவிட்டோம். இப்போது டேஷ்போர்டுக்கு செல்வோம்."
     },
     "Gujarati": {
@@ -66,6 +77,8 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_storage": "તમે તમારી લણણી ક્યાં રાખી રહ્યા છો? (ખુલ્લા ખેતરમાં, શેડમાં અથવા કોલ્ડ સ્ટોરેજમાં)",
         "ask_health": "શું તમારા પાકમાં કોઈ રોગ કે સમસ્યા છે?",
         "ask_transport": "તમે તમારો માલ કેવી રીતે લઈ જશો? ટુ વ્હીલર, ટ્રેક્ટર કે પિકઅપ ટ્રક?",
+        "ask_harvest_status": "શું તમારા પાકની લણણી થઈ ગઈ છે કે હજી બાકી છે?",
+        "ask_sowing_date": "તમે આ પાકની વાવણી ક્યારે કરી હતી?",
         "all_done": "અભિનંદન! અમે બધી વિગતો એકત્રિત કરી છે. ચાલો હવે ડેશબોર્ડ પર જઈએ."
     },
     "Punjabi": {
@@ -75,6 +88,8 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_storage": "ਤੁਸੀਂ ਆਪਣੀ ਫ਼ਸਲ ਕਿੱਥੇ ਰੱਖ ਰਹੇ ਹੋ? (ਖੁੱਲ੍ਹੇ ਖੇਤ ਵਿੱਚ, ਸ਼ੈੱਡ ਵਿੱਚ ਜਾਂ ਕੋਲਡ ਸਟੋਰੇਜ ਵਿੱਚ)",
         "ask_health": "ਕੀ ਤੁਹਾਡੀ ਫ਼ਸਲ ਵਿੱਚ ਕੋਈ ਬਿਮਾਰੀ ਜਾਂ ਸਮੱਸਿਆ ਹੈ?",
         "ask_transport": "ਤੁਸੀਂ ਆਪਣਾ ਮਾਲ ਕਿਵੇਂ ਲੈ ਕੇ ਜਾਓਗੇ? ਦੋਪਹੀਆ ਵਾਹਨ, ਟ੍ਰੈਕਟਰ ਜਾਂ ਪਿਕਅੱਪ ਟਰੱਕ?",
+        "ask_harvest_status": "ਕੀ ਤੁਹਾਡੀ ਫ਼ਸਲ ਦੀ ਕਟਾਈ ਹੋ ਚੁੱਕੀ ਹੈ ਜਾਂ ਅਜੇ ਬਾਕੀ ਹੈ?",
+        "ask_sowing_date": "ਤੁਸੀਂ ਇਹ ਫ਼ਸਲ ਕਦੋਂ ਬੀਜੀ ਸੀ?",
         "all_done": "ਵਧਾਈ ਹੋ! ਅਸੀਂ ਸਾਰੇ ਵੇਰਵੇ ਇਕੱਠੇ ਕਰ ਲਏ ਹਨ। ਚਲੋ ਹੁਣ ਡੈਸ਼ਬੋਰਡ 'ਤੇ ਚੱਲਦੇ ਹਾਂ।"
     }
 }
@@ -102,11 +117,13 @@ class OnboardingExtractRequest(BaseModel):
     consent_granted: Any = None
     current_crop: str = ""
     current_yield: Any = None
-    harvest_status: str = ""
+    harvest_status: Optional[str] = None
     current_storage: str = ""
     health_issue: Any = None
     current_transport: str = ""
-    sowing_date: str = ""
+    sowing_date: Optional[str] = None
+    current_name: str = "Farmer"
+    current_land_size: Any = None
 
 def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     """
@@ -248,42 +265,31 @@ def onboarding_extract(req: OnboardingExtractRequest):
             "storage_type": req.current_storage,
             "health_issue": req.health_issue,
             "transport_type": req.current_transport,
-            "sowing_date": req.sowing_date
+            "sowing_date": req.sowing_date,
+            "land_size": req.current_land_size
         }
 
         # Priority and templates for missing info
         templates = {
-            "crop": lang_strings.get("ask_crop", "What crop?"),
-            "yield_quintals": lang_strings.get("ask_yield", "What yield?"),
-            "harvest_status": "What is the harvest status?" if lang == "English" else "पिकाची कापणी झाली आहे का? ( Marathi example link )",
-            "storage_type": lang_strings.get("ask_storage", "Where storage?"),
-            "health_issue": lang_strings.get("ask_health", "Crop health?"),
-            "transport_type": lang_strings.get("ask_transport", "Transport?"),
-            "sowing_date": "पेरणी कधी केली? ( Marathi example link )"
+            "crop": lang_strings.get("ask_crop"),
+            "yield_quintals": lang_strings.get("ask_yield"),
+            "harvest_status": lang_strings.get("ask_harvest_status"),
+            "storage_type": lang_strings.get("ask_storage"),
+            "health_issue": lang_strings.get("ask_health"),
+            "transport_type": lang_strings.get("ask_transport"),
+            "sowing_date": lang_strings.get("ask_sowing_date")
         }
-        
-        # Localize the extra-strings if not in the main dict
-        if lang == "Hindi":
-            templates["harvest_status"] = "क्या आपने फसल की कटाई कर ली है या करने वाले हैं?"
-            templates["sowing_date"] = "आपने इस फसल की बुवाई कब की थी?"
-        elif lang == "Marathi":
-            templates["harvest_status"] = "तुमच्या पिकाची कापणी झाली आहे का?"
-            templates["sowing_date"] = "तुम्ही या पिकाची पेरणी कधी केली होती?"
-        elif lang == "Tamil":
-            templates["harvest_status"] = "பயிர் அறுவடை செய்யப்பட்டுள்ளதா?"
-            templates["sowing_date"] = "நீங்கள் எப்போது விதைத்தீர்கள்?"
-        # ... others use English fallback or can be added to ONBOARDING_STRINGS_BACKEND directly
 
         prompt = f"""You are Agri-Vakeel, an expert farming assistant. 
 TASK: 
 1. Extract DATA from the USER INPUT into JSON.
 2. If USER gives multiple facts (e.g. "Yes I agree and I have 50 quintals of cotton"), extract EVERYTHING.
 3. Identify what is STILL MISSING based on the KNOWN STATE below.
-4. Compose an 'ai_reply' in {req.language} script that:
-   - Politely acknowledges any NEW info extracted.
-   - ALWAYS appends the NEXT QUESTION for the FIRST missing field.
-
-USER INPUT: "{req.text_input}"
+4. Compose an 'ai_reply' STRICTLY in {req.language} script (DO NOT USE ENGLISH UNLESS REQUESTED) that:
+   - Politely acknowledges any NEW info extracted from text_input.
+   - ALWAYS appends the NEXT QUESTION for the FIRST missing field in the priority list.
+   - If a field is present, acknowledge it briefly.
+   - You MUST maintain a supportive, expert farmer persona.
 LANGUAGE: {req.language} (Response MUST be in this script).
 
 KNOWN STATE:
@@ -337,94 +343,6 @@ STRICT: Return ONLY valid JSON. Address the user as 'Farmer'. No English in the 
         import traceback
         print(f"Extraction error: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
-can check maturity.
-- Phrase the question creatively in {req.language} script only."""
-        elif req.step == "StorageAudit":
-             schema_instructions = f"""Return JSON with: {{'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'health_issue': boolean/null, 'ai_reply': 'string'}}.
-- Extract storage_type.
-- DO NOT set health_issue to false unless the user explicitly says "all good" or "no problems".
-- IF `health_issue` is null, YOUR REPLY MUST END BY ASKING in {req.language} script: "Are there any health issues, spots, or problems on your crop?"
-- IF `health_issue` is false, YOUR REPLY MUST END BY ASKING in {req.language} script: "How will you be transporting your produce? Two wheeler, tractor, or pickup truck?"
-- DO NOT proceed to TransitConfig or ask about transport until the farmer confirms if there are problems or not.
-- Use {req.language} script only."""
-        elif req.step == "HealthAudit":
-             schema_instructions = f"""Return JSON with: {{'ai_reply': 'string'}}.
-- Acknowledge in {req.language} script that you are waiting for a photo of the crop issues.
-- Use {req.language} script only."""
-        elif req.step == "MaturityCheck":
-             schema_instructions = f"""Return JSON with: {{'sowing_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}}.
-- If extracted, provide maturity insight in {req.language} script and say you'll notify them when it's harvest time.
-- Moving to Success Dashboard."""
-        elif req.step == "TransitConfig":
-             schema_instructions = f"""Return JSON with: {{'transport_type': 'Two Wheeler'/'Tractor'/'Pickup'/'Covered Van'/null, 'ai_reply': 'string'}}.
-- If extracted, congratulate them in {req.language} script and say you are taking them to the main dashboard.
-- If the user says "no issues" or "ignore health" here, move on.
-- Use {req.language} script only."""
-        elif req.step == "FinalVerdict":
-             schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}. If yield is present, ask the success question."
-        else:
-             schema_instructions = "Return JSON with: {'ai_reply': 'string'}"
-
-        system_prompt = f"""You are the MittiMitra Agri-Vakeel Assistant. Your ONLY goal is to extract farmer data into JSON.
-You MUST communicate with the farmer ONLY in {req.language} script. 
-
-CONTEXT OF ALREADY EXTRACTED DATA:
-- Name: {req.current_name or 'Unknown'}
-- Crop: {req.current_crop or 'Unknown'}
-- Land Size: {req.current_land_size or 'Unknown'} acres
-- Consent: {req.consent_granted}
-- Storage: {req.current_storage or 'Unknown'}
-- Transport: {req.current_transport or 'Unknown'}
-
-Current Step: {req.step}
-Farmer Language: {req.language}
-
-{schema_instructions}
-
-STRICT RULES:
-1. Return ONLY valid JSON.
-2. The 'ai_reply' MUST be in {req.language} script. NEVER use English for the 'ai_reply' if the language is not English.
-3. If a field is NOT 'Unknown' in the CONTEXT above, you MUST NOT ask for it again.
-4. DO NOT use conversational filler unless it's part of a brief acknowledgement in {req.language}.
-"""
-        # Safer logging for Windows terminals
-        try:
-            print(f"DEBUG: Onboarding Extract Step: {req.step}")
-        except:
-            pass
-        
-        completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant", # Faster and more stable for extraction
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": req.text_input}
-            ],
-            temperature=0.0,
-            response_format={"type": "json_object"}
-        )
-        
-        reply = completion.choices[0].message.content
-        import json
-        
-        # Robust parsing to handle markdown blocks if present
-        cleaned_reply = reply.strip()
-        if cleaned_reply.startswith("```json"):
-            cleaned_reply = cleaned_reply.split("```json")[1].split("```")[0].strip()
-        elif cleaned_reply.startswith("```"):
-            cleaned_reply = cleaned_reply.split("```")[1].split("```")[0].strip()
-            
-        try:
-            parsed = json.loads(cleaned_reply)
-            return parsed
-        except json.JSONDecodeError as je:
-            print(f"FAILED TO PARSE JSON: {reply}")
-            raise HTTPException(status_code=500, detail=f"Invalid JSON from AI: {str(je)}")
-        
-    except Exception as e:
-        import traceback
-        error_detail = f"{type(e).__name__}: {str(e)}"
-        print(f"Extraction error: {error_detail}\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=error_detail)
 
 @router.post("/tts")
 def text_to_speech(req: TTSRequest):

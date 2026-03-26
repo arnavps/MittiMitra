@@ -116,7 +116,9 @@ export default function OnboardingPage() {
     const [storageType, setStorageType] = useState("");
     const storageTypeRef = useRef("");
     const [healthStatus, setHealthStatus] = useState("");
+    const healthStatusRef = useRef("");
     const [sowingDate, setSowingDate] = useState("");
+    const sowingDateRef = useRef("");
     const [transportType, setTransportType] = useState("");
     const transportTypeRef = useRef("");
     const [cameraActive, setCameraActive] = useState(false);
@@ -234,7 +236,10 @@ export default function OnboardingPage() {
                     current_yield: yieldAmount || yieldAmountRef.current,
                     consent_granted: consentGranted,
                     current_storage: storageType || storageTypeRef.current,
-                    current_transport: transportType || transportTypeRef.current
+                    current_transport: transportType || transportTypeRef.current,
+                    harvest_status: (harvestStatus || harvestStatusRef.current) === 'Already Harvested' ? 'already_harvested' : 'not_yet_harvested',
+                    sowing_date: sowingDate || sowingDateRef.current,
+                    health_issue: (healthStatus || healthStatusRef.current) === "Issue Reported"
                 })
             });
 
@@ -272,6 +277,7 @@ export default function OnboardingPage() {
             }
             if (data.sowing_date) {
                 setSowingDate(data.sowing_date);
+                sowingDateRef.current = data.sowing_date;
             }
 
             if (data.ai_reply) {
