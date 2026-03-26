@@ -230,8 +230,11 @@ export default function OnboardingPage() {
                     text_input: text,
                     language: langStr,
                     current_name: "Farmer",
-                    current_crop: crop,
-                    consent_granted: consentGranted
+                    current_crop: crop || cropRef.current,
+                    current_yield: yieldAmount || yieldAmountRef.current,
+                    consent_granted: consentGranted,
+                    current_storage: storageType || storageTypeRef.current,
+                    current_transport: transportType || transportTypeRef.current
                 })
             });
 
@@ -239,73 +242,77 @@ export default function OnboardingPage() {
             const data = await res.json();
             setIsThinking(false);
             
+            // 1. UPDATE ALL STATE VARIABLES (Greedy Update)
+            if (data.consent_granted === true && !consentGranted) {
+                setConsentGranted(true);
+            }
+            if (data.crop && !crop) { 
+                setCrop(data.crop); 
+                cropRef.current = data.crop; 
+            }
+            if (data.yield_quintals && !yieldAmount) { 
+                setYieldAmount(data.yield_quintals); 
+                yieldAmountRef.current = data.yield_quintals; 
+            }
+            if (data.storage_type && !storageType) { 
+                setStorageType(data.storage_type); 
+                storageTypeRef.current = data.storage_type; 
+            }
+            if (data.transport_type && !transportType) { 
+                setTransportType(data.transport_type); 
+                transportTypeRef.current = data.transport_type; 
+            }
+            if (data.health_issue !== undefined && data.health_issue !== null) {
+                setHealthStatus(data.health_issue ? "Issue Reported" : "Healthy");
+            }
+            if (data.harvest_status) {
+                const status = data.harvest_status === 'already_harvested' ? 'Already Harvested' : 'Not Yet Harvested';
+                setHarvestStatus(status);
+                harvestStatusRef.current = status;
+            }
+            if (data.sowing_date) {
+                setSowingDate(data.sowing_date);
+            }
+
             if (data.ai_reply) {
                 setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: data.ai_reply }]);
             }
 
-            // Logic for state transitions based on onboarding.md
-            if (currentStepRef.current === 'Consent') {
-                if (data.consent_granted) {
-                    setConsentGranted(true);
-                    setCurrentStep('CropName');
+            // 2. INTELLIGENT STEP TRANSITION
+            const updateStep = () => {
+                if (!consentGranted && !data.consent_granted) return 'Consent';
+                if (!(crop || data.crop)) return 'CropName';
+                if (!(yieldAmount || data.yield_quintals)) return 'YieldVolume';
+                if (!location && !gpsError) return 'LocationPermission';
+                
+                if (!harvestStatus && !data.harvest_status) return 'HarvestStatus';
+                
+                const effectiveHarvestStatus = data.harvest_status === 'already_harvested' ? 'Already Harvested' : (data.harvest_status === 'not_yet_harvested' ? 'Not Yet Harvested' : harvestStatus);
+                
+                if (effectiveHarvestStatus === 'Already Harvested') {
+                    if (!(storageType || data.storage_type)) return 'StorageAudit';
+                    if (data.health_issue === true) return 'HealthAudit';
+                    if (!(transportType || data.transport_type)) return 'TransitConfig';
+                    return 'Success';
+                } else if (effectiveHarvestStatus === 'Not Yet Harvested') {
+                    if (!(sowingDate || data.sowing_date)) return 'MaturityCheck';
+                    return 'Success';
                 }
-            } else if (currentStepRef.current === 'CropName') {
-                if (data.crop) {
-                    setCrop(data.crop);
-                    cropRef.current = data.crop;
-                    setCurrentStep('YieldVolume');
-                }
-            } else if (currentStepRef.current === 'YieldVolume') {
-                if (data.yield_quintals) {
-                    setYieldAmount(data.yield_quintals);
-                    yieldAmountRef.current = data.yield_quintals;
-                    setCurrentStep('LocationPermission');
-                }
-            } else if (currentStepRef.current === 'LocationPermission') {
+                return currentStepRef.current;
+            };
+
+            const nextStep = updateStep();
+            if (nextStep !== currentStepRef.current) {
+                setCurrentStep(nextStep);
+            }
+
+            // Acknowledge Location Permission specially
+            if (nextStep === 'LocationPermission') {
                 requestLocation();
-            } else if (currentStepRef.current === 'HarvestStatus') {
-                if (data.harvest_status === 'already_harvested') {
-                    setHarvestStatus('Already Harvested');
-                    harvestStatusRef.current = 'Already Harvested';
-                    setCurrentStep('StorageAudit');
-                } else if (data.harvest_status === 'not_yet_harvested') {
-                    setHarvestStatus('Not Yet Harvested');
-                    harvestStatusRef.current = 'Not Yet Harvested';
-                    setCurrentStep('MaturityCheck');
-                }
-            } else if (currentStepRef.current === 'StorageAudit') {
-                if (data.storage_type) {
-                    setStorageType(data.storage_type);
-                    storageTypeRef.current = data.storage_type;
-                }
-                if (data.health_issue === true) {
-                    setHealthStatus("Issue Reported");
-                    setCurrentStep('HealthAudit');
-                } else if (data.health_issue === false) {
-                    setHealthStatus("Healthy");
-                    setCurrentStep('TransitConfig');
-                }
-            } else if (currentStepRef.current === 'HealthAudit') {
-                if (data.health_issue === false || (data.ai_reply && (data.ai_reply.toLowerCase().includes("transport") || data.ai_reply.toLowerCase().includes("transit")))) {
-                    setHealthStatus("Visual Data Captured");
-                    setCurrentStep('TransitConfig');
-                }
-            } else if (currentStepRef.current === 'MaturityCheck') {
-                if (data.sowing_date) {
-                    setSowingDate(data.sowing_date);
-                    setCurrentStep('Success');
-                }
-            } else if (currentStepRef.current === 'TransitConfig') {
-                if (data.transport_type) {
-                    setTransportType(data.transport_type);
-                    transportTypeRef.current = data.transport_type;
-                    setCurrentStep('Success');
-                }
             }
 
             if (data.ai_reply) {
                 speakResponse(data.ai_reply, langStr, async () => {
-                    const nextStep = currentStepRef.current;
                     if (nextStep === 'Success') {
                         await saveOnboardingData();
                         fetchFinalRecommendation();

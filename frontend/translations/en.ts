@@ -603,4 +603,11 @@ export const en = {
     dpdpDesc: "Your yield data is only shared with government portals after your explicit voice confirmation.",
     consentStatus: "Consent Status",
     activeEncrypted: "ACTIVE_ENCRYPTED",
+
+    // Onboarding
+    onboardingGreeting: "Namaste! I am MittiMitra. To find you the best profit windows, I need to use your GPS and crop data. Do I have your permission to proceed?",
+    onboardingLocationSuccess: "Location secured. Is your crop already harvested, or are you still waiting for it to ripen?",
+    onboardingLocationError: "Got it. We can proceed anyway. Is your crop already harvested, or are you still waiting?",
+    onboardingErrorParsing: "Sorry, I had trouble processing that. Could you please say it again?",
+    onboardingCameraSuccess: "Quality data analyzed. How will you be transporting your produce? Two wheeler, tractor, or pickup truck?",
 };
