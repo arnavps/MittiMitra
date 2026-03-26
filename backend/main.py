@@ -351,6 +351,8 @@ async def get_harvest_recommendation(data: HarvestRequest):
             "net_realization_inr_per_quintal": round(profit_today, 2),
             "total_net_profit": round(total_profit_today, 2),
             "yield_quintals": data.yield_est_quintals,
+            "transport_type": data.transport_type,
+            "storage_type": data.storage_type,
             "breakdown": {
                 "gross_revenue": round(gross_rev, 2),
                 "logistics_cost": round(logistics_cost, 2),

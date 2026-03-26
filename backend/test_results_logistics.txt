@@ -1,0 +1,3 @@
+
+--- TESTING LOGISTICS CONTEXT ---
+PASS: Correctly used 'Pickup Truck' in principles.
