@@ -251,25 +251,31 @@ export default function DashboardPage() {
 
             if (res.ok) {
                 const json = await res.json();
+                
+                if (json.error_mode) {
+                    setData(json);
+                    setLoading(false);
+                    return;
+                }
 
                 // Demo Mode Override logic
-                if (isDemo) {
-                    json.mandi_stats.current_price *= 0.6; // 40% drop
-                    json.mandi_stats.current_volume_quintals *= 3; // Massive spike
+                    if (json.mandi_stats) {
+                        json.mandi_stats.current_price *= 0.6; // 40% drop
+                        json.mandi_stats.current_volume_quintals *= 3; // Massive spike
+                    }
                     json.status = "RED";
                     json.shock_alert = {
                         is_shock: true,
                         message: "CRITICAL: Price crashed by 3.5σ below the 7-day average. Massive volume spike detected!",
                         pivot_advice: "EMERGENCY: Sudden price crash detected. Redirecting you to the nearest cold storage to save your asset."
                     };
-                    if (json.regional_options && json.regional_options.length > 1) {
+                    if (json.regional_options && json.regional_options.length > 1 && json.mandi_stats) {
                         const pivot = json.regional_options[1];
                         const savings = Math.max(3000, pivot.total_net_profit - (json.mandi_stats.current_price * (yieldEst || 50)));
                         json.shock_alert.pivot_advice = `Warning: Prices at ${json.mandi_stats.name} just fell. Rerouting to ${pivot.mandi_name} to save ₹${Math.floor(savings)}.`;
                         json.shock_alert.pivot_mandi = pivot;
                         json.shock_alert.savings_inr = savings;
                     }
-                }
 
                 setData(json);
                 setLastFetched(new Date());
@@ -309,10 +315,10 @@ export default function DashboardPage() {
                             body: JSON.stringify({
                                 lat: payload.location.lat,
                                 lon: payload.location.lng,
-                                target_mandi: json.mandi_stats.name,
+                                target_mandi: json.mandi_stats?.name || "Local Mandi",
                                 harvest_date: new Date().toISOString().split('T')[0],
                                 user_yield_qtl: yieldEst || 50,
-                                market_price: json.mandi_stats.current_price
+                                market_price: json.mandi_stats?.current_price || 0
                             })
                         }).then(res => res.ok ? res.json() : null)
                     );

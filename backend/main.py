@@ -170,7 +170,8 @@ async def get_harvest_recommendation(data: HarvestRequest):
         logistics_cost = calculate_logistics_cost(data.yield_est_quintals, dist_best, data.transport_type)
         spoilage_penalty = (dynamic_spoilage_pct / 100.0) * gross_rev
         total_profit_today = gross_rev - logistics_cost - spoilage_penalty
-        profit_today = total_profit_today / data.yield_est_quintals
+        safe_yield = max(data.yield_est_quintals, 0.001)
+        profit_today = total_profit_today / safe_yield
         
         # Forecast 48h (Mocked based on trend)
         profit_48h = profit_today * 0.95 # Usually wait is worse due to decay
