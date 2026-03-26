@@ -1,0 +1,6 @@
+
+--- TESTING LANGUAGE: English ---
+FAIL: Found Hindi greeting in English prompt!
+
+--- TESTING LANGUAGE: Hindi ---
+PASS: Hindi prompt looks clean.

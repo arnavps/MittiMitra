@@ -1,0 +1,6 @@
+
+--- TESTING LANGUAGE: English ---
+PASS: English prompt looks clean.
+
+--- TESTING LANGUAGE: Hindi ---
+PASS: Hindi prompt looks clean.

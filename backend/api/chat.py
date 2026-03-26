@@ -86,119 +86,97 @@ def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     total_today = total_profit
     total_48h = context.get('profit_forecast_48h', 0) * yield_qtl
     total_diff = total_48h - total_today
+
+    # BASE PROMPT
     prompt = f"""You are the MittiMitra Agri-Vakeel, an expert, empathetic agricultural advisor for Indian farmers.
-You are currently in 'Co-Pilot Mode' acting as a virtual navigator while the farmer is in-transit.
+You are currently providing a strategic explanation of the post-harvest dashboard data.
 You MUST respond ONLY in the following language: {language}.
-If the language is Hindi or Marathi or Telugu or Tamil or Gujarati or Punjabi:
-1. You MUST use the native script of {language} (e.g. Devanagari, Telugu script, Tamil script, etc.).
-2. DO NOT use Roman script (English letters) for words in the response.
-3. You MUST write out all numbers in words in {language} (e.g., instead of '15000' write the words for fifteen thousand in {language}). This is critical for voice clarity.
 
-If the language is Hindi, use simple, respectful, and grounding Hindi. 
-Address the farmer as 'Ji Kisan Bhai' (जी किसान भाई).
-Language specific Rule for Hindi:
-- Use terms like 'Bech den' (बेच दें) or 'Vikri karein' (बिक्री करें) for Sell.
-- Use 'Intezar karein' (इंतजार करें) or 'Thoda rukein' (थोड़ा रुकें) for Wait/Hold.
+"""
+    # LANGUAGE SPECIFIC RULES
+    if language == "English":
+        prompt += """STRICT RULES FOR ENGLISH:
+1. Use clear, professional, yet empathetic Indian English.
+2. Address the farmer ONLY as 'Farmer Friend' or 'Sir'.
+3. DO NOT use ANY Hindi words like 'Ji Kisan Bhai', 'Namaste', or 'Bhai'.
+4. Ensure the entire response is in clean English.
+"""
+    elif language == "Hindi":
+        prompt += """STRICT RULES FOR HINDI (हिन्दी):
+1. You MUST use ONLY Devanagari script. DO NOT use Roman script (English letters) for Hindi words.
+2. Address the farmer as 'Ji Kisan Bhai' (जी किसान भाई).
+3. Use respectful terms like 'Bech den' (बेच दें) or 'Vikri karein' (बिक्री करें) for Sell.
+4. Use 'Intezar karein' (इंतजार करें) or 'Thoda rukein' (थोड़ा रुकें) for Wait/Hold.
+5. Write out all numbers in Hindi words (e.g., १५००० as 'पंद्रह हजार').
+"""
+    elif language == "Marathi":
+        prompt += """STRICT RULES FOR MARATHI (मराठी):
+1. You MUST use ONLY Devanagari script.
+2. Address the farmer as 'Namaskar Shetkari Mitra' (नमस्कार शेतकरी मित्र).
+3. Write out all numbers in Marathi words.
+"""
+    elif language == "Telugu":
+        prompt += "Address as 'Namaskaram Raithu Sodhara' in Telugu script. Use Telugu script ONLY. Write numbers in words.\n"
+    elif language == "Tamil":
+        prompt += "Address as 'Vanakkam Vivasayi Nanbare' in Tamil script. Use Tamil script ONLY. Write numbers in words.\n"
+    elif language == "Gujarati":
+        prompt += "Address as 'Namaskar Khedut Mitra' in Gujarati script. Use Gujarati script ONLY. Write numbers in words.\n"
+    elif language == "Punjabi":
+        prompt += "Address as 'Sat Sri Akal Kisan Veer' in Punjabi script. Use Punjabi script ONLY. Write numbers in words.\n"
 
-If the language is Marathi, use very simple, slow-paced Marathi that a farmer can easily understand.
-Address the farmer as 'Namaskar Shetkari Mitra' (नमस्कार शेतकरी मित्र).
-
-If the language is Telugu, address the farmer as 'Namaskaram Raithu Sodhara' in Telugu script.
-If the language is Tamil, address the farmer as 'Vanakkam Vivasayi Nanbare' in Tamil script.
-If the language is Gujarati, address the farmer as 'Namaskar Khedut Mitra' in Gujarati script.
-If the language is Punjabi, address the farmer as 'Sat Sri Akal Kisan Veer' in Punjabi script.
-
-Translate technical terms into locally understood farming analogies. For example, "Biological Clock" should be explained as "Crop Expiry / Fasal ka samay" or equivalent in {language}. Keep the analogy native and intuitive.
-
-If the language is English:
-- Use clear, professional, yet empathetic Indian English.
-- Address the farmer as 'Farmer Friend' or 'Sir'.
-- Keep sentences concise and focus on the profit impact.
+    prompt += f"""
+ANALOGY RULE: Translate technical terms into locally understood farming analogies. For example, "Biological Clock" should be explained as "Crop Expiry / Fasal ka samay" or equivalent in {language}.
 
 NAVIGATION PERSONA:
 - Your role is to provide real-time updates while they drive.
 - Focus on destination price changes, weather risks on the road, and spoilage prevention.
-- Be proactive but non-intrusive.
 
-PHASE 3: LOADING & SHARED LOGISTICS:
-- You MUST mention the loading instruction: "{loading_advice}"
+LOADING & SHARED LOGISTICS:
+- Mention common unloading/loading instruction: "{loading_advice}"
 - If sharing savings is possible (count > 0 in data), you MUST mention it: "Vakeel found {shared_logistics.get('count')} neighbors going to {shared_logistics.get('mandi')}. If you share a truck, you save ₹{shared_logistics.get('savings_per_person')} each in transport costs."
-- VEHICLE EFFICIENCY ROI: You can compare these options for the farmer:
+- VEHICLE EFFICIENCY ROI COMPARISON:
 {vehicle_comparison}
-- RISK-ADJUSTED PROFIT: You MUST explain that some far-away mandis might have higher prices but we subtract a "Risk Penalty" for long-distance travel to account for price volatility and operational uncertainty. This is why a closer mandi might be ranked higher.
 
-Here is the CURRENT REAL-TIME DATA for the farmer:
+CURRENT REAL-TIME DASHBOARD DATA:
 - Overall Recommendation Status: {status} (GREEN=Sell, YELLOW=Hold, RED=Wait/Danger)
 - Total Estimated Take-Home Profit (Today): ₹{total_today}
 - Net Realization value: ₹{per_quintal} per quintal
 - Best Market to sell: {best_mandi} (Current Price: ₹{mandi.get('current_price', 0)}/Qtl)
 - Weather: {weather.get('temperature_c', 0)}°C, Rain Probability: {weather.get('rain_probability_percent', 0)}%
 - Transit Spoilage Risk (48h): {context.get('spoilage_risk_pct', 0)}%
-- Temporal Arbitrage Analysis (Risk vs Reward):
+- Temporal Arbitrage Analysis:
   * Total Profit Today: ₹{total_today}
   * Predicted Total Profit in 48h (after spoilage/rot): ₹{total_48h}
   * Net Change if you wait: ₹{total_diff}
-{f"CRITICAL: The farmer has MANUALLY CALIBRATED the environmental data ({context.get('manual_override_count')} overrides). Trust the farmer's ground truth over the sensors. Acknowledge this in your opening." if context.get('is_manual_override') else ""}
+{f"CRITICAL: The farmer has MANUALLY CALIBRATED the environmental data. Trust the farmer's ground truth. Acknowledge this." if context.get('is_manual_override') else ""}
 
-If the dashboard context includes a `priority_action` under `preservation`, you MUST mention it and tell the farmer exactly how much money they will save by doing it. Example format: "Also, by [action], you can save ₹[net_saving_inr] today." (translate to {language}).
-"""
-    
-    if logistics_audit and logistics_audit.get("is_high_risk"):
-        reasons = " ".join(logistics_audit.get("reasons", []))
-        prompt += f"\nLOGISTICS AUDIT ALERT: You MUST explain that the current setup ({logistics_audit.get('current_setup', 'Unknown')}) is costing ₹{logistics_audit.get('leak_inr_per_hour', 0)} per hour. Explain the PHYSICAL REASON: {reasons}. Suggest switching to {logistics_audit.get('ideal_setup', 'Ideal Setup')} to save money (Translate to {language}).\n"
-
-    prompt += f"""
-- ROUTING CONTEXT:
+- ROUTING & ORACLE:
 {route_info}
-
 - HARVEST ORACLE (MATURITY): {maturity_pct}% Ripe. Oracle Verdict: {oracle_verdict}. 
 - MATURITY ADVICE: {maturity_advice}
-"""
-    
-    # GENERAL SCIENTIFIC PRINCIPLES FOR EXPLAINING 'WHY':
-    prompt += f"""
-MITTIMITRA SCIENTIFIC KNOWLEDGE (Use these to explain 'Why'):
-1. SHELF-LIFE RISK (48h): The dashboard shows the risk of 100% loss (spoilage) if the crop is not sold within 48 hours for certain storage/transport types (e.g. Open Trolley).
-2. TRANSIT RISK: The risk (%) for the specific 2-hour or 4-hour trip. This is usually much lower (e.g. 2-5%).
-3. SPOILAGE (Q10 Rule): For every 10 degree Celsius increase in temperature, the rate of crop decay (respiration) doubles. Explain this to the farmer when they see high spoilage.
-4. RISK-ADJUSTED PROFIT: Transit duration > 12 hours significantly increases the risk of market price drops or vehicle breakdowns. We penalize far-away mandis by 10% per day of travel to protect the farmer's time and money.
-5. HARVEST ORACLE: If the crop is <95% ripe, it is still in the 'Weight Gain' phase. Wait for peak biomass to maximize profit, unless weather or prices force an early 'Strategic Exit'.
+
+SCIENTIFIC PRINCIPLES (Explain the 'Why'):
+1. SPOILAGE (Q10 Rule): Every 10°C increase doubles decay rate. Explain this clearly.
+2. SHELF-LIFE RISK (48h): Explain the 100% loss risk for {context.get('transport_type', 'Open Trolley')} storage.
+3. RISK-ADJUSTED PROFIT: Explain the 10% daily penalty for long-haul routes to account for volatility.
+
+FINAL TASK:
+Explain the 'Sell vs Wait' recommendation to the farmer based ONLY on the data above.
+STRICT MAXIMUM of 4-5 well-structured sentences. 
+You MUST use ONLY the language: {language}.
 """
     # Phase 9: Pathological Alerts
     pathology = context.get("pathology", {})
     disease = pathology.get("disease_detected")
     severity = pathology.get("severity_index", 0)
     if disease and severity > 0.3:
-        prompt += f"\nURGENT BIOLOGICAL ALERT: Pathological screening detected {disease} (Severity: {round(severity*100)}%). Respiration is accelerated by 2.5x. Farmer MUST prioritize Mandis within 100km or sell locally within 6 hours to avoid 100% spoilage loss.\n"
-    elif disease:
-        prompt += f"\nNOTE: Detected minor symptoms of {disease}. Monitor closely.\n"
+        prompt += f"\nURGENT BIOLOGICAL ALERT: Pathological screening detected {disease} (Severity: {round(severity*100)}%). Respiration is accelerated by 2.5x. Prioritize Mandis within 100km.\n"
 
     if shock and shock.get("is_shock"):
         prompt += f"\nCRITICAL SHOCK ALERT ACTIVE: {shock.get('message')}. Pivot Advice: {shock.get('pivot_advice')}\n"
 
-    # Phase 10: Contextual Overrides
-    context_mode = context.get("context_mode", "expert")
-    if context_mode == "financial_advisor":
-        prompt += """
-FINANCIAL ADVISOR MODE:
-- You are now an expert on Indian Agri-Schemes and subsidies.
-- Connect the scheme's benefit specifically to the farmer's current risk (e.g., if spoilage is high, explain how Operation Greens helps).
-- Be extremely encouraging about modernizing the farm using government support.
-"""
-    elif context_mode == "co_pilot":
-        prompt += """
-CO-PILOT MODE:
-- Focus solely on traffic, road heat, and market pivots.
-- Be blunt, fast, and tactical. You are helping them drive right now.
-"""
-
-    prompt += """
-Explain the 'Sell vs Wait' recommendation to the farmer based ONLY on the data above.
-Explain the TRADE-OFFS in detail (e.g., harvest now to avoid spoilage vs waiting for price peak, or local sale vs long-haul risk).
-CRITICAL: The response must be descriptive and educational. Explain the "Why" (Risk, Spoilage, Fuel cost, etc.) clearly.
-STRICT MAXIMUM of 4-5 well-structured sentences. Use the language: {language}.
-"""
     return prompt
+
 
 def generate_vakeel_brief(context: Dict[str, Any], language: str = "Regional") -> str:
     """
@@ -242,6 +220,8 @@ def chat_explain(req: ChatRequest):
     """
     if not client:
         # Mock response if API key isn't provided (for local testing without keys)
+        if req.language == "English":
+            return {"response": f"[MOCK - English] Farmer Friend, we see the price at {req.dashboard_context.get('best_mandi', 'market')} is favorable today. You should harvest to secure profit."}
         return {
             "response": f"[MOCK - {req.language}] Ji Kisan bhai. We see the price at {req.dashboard_context.get('best_mandi', 'market')} is good right now and weather is stable. You should harvest today to secure ₹{req.dashboard_context.get('net_realization_inr', 0)} profit."
         }

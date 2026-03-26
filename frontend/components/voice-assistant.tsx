@@ -50,6 +50,7 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const lastShockRef = useRef<string | null>(null);
+    const lastInterventionTimeRef = useRef<number>(0);
 
     useEffect(() => {
         if (initialQuery && !isThinking) {
@@ -186,28 +187,33 @@ export function VoiceAssistant({ dashboardData, isEmbedded = false, initialQuery
             const pivotMsg = dashboardData.shock_alert.pivot_advice || "";
             const fullAlert = `${shockMsg} ${pivotMsg}`;
             
-            if (lastShockRef.current !== fullAlert) {
+            // GATE: Don't interrupt if already thinking or just spoke
+            const now = Date.now();
+            if (lastShockRef.current !== fullAlert && !isThinking && (now - lastInterventionTimeRef.current > 3000)) {
                 lastShockRef.current = fullAlert;
+                lastInterventionTimeRef.current = now;
                 triggerVoiceIntervention(fullAlert);
             }
         } else {
             lastShockRef.current = null;
         }
-    }, [dashboardData?.shock_alert]);
+    }, [dashboardData?.shock_alert, isThinking]);
 
     // 2. Harvest Oracle Strategic Intervention
     const lastHarvestAlertRef = useRef<string | null>(null);
     useEffect(() => {
         const oracleVerdict = dashboardData?.oracle_verdict;
-        if (oracleVerdict?.action_priority === "STRATEGIC") {
+        if (oracleVerdict?.action_priority === "STRATEGIC" && !isThinking) {
             const harvestMsg = `Namaste! Based on your crop maturity and the high supply expected at the Mandi next week, I recommend harvesting 2 days early. You might lose 2kg of weight, but you will gain ₹5/kg in price.`;
             
-            if (lastHarvestAlertRef.current !== harvestMsg) {
+            const now = Date.now();
+            if (lastHarvestAlertRef.current !== harvestMsg && (now - lastInterventionTimeRef.current > 3000)) {
                 lastHarvestAlertRef.current = harvestMsg;
+                lastInterventionTimeRef.current = now;
                 triggerVoiceIntervention(harvestMsg);
             }
         }
-    }, [dashboardData?.oracle_verdict]);
+    }, [dashboardData?.oracle_verdict, isThinking]);
 
     const triggerVoiceIntervention = (message: string) => {
         // FORCE INTERRUPT!
