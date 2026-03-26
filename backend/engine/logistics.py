@@ -37,7 +37,7 @@ VEHICLE_CLASSES = {
     )
 }
 
-def recommend_vehicle(calibrated_yield: float, transit_temp_forecast: float, distance_km: float, market_price: float) -> List[Dict[str, Any]]:
+def recommend_vehicle(calibrated_yield: float, transit_temp_forecast: Any, distance_km: float, market_price: float) -> List[Dict[str, Any]]:
     """
     Logic: Compare three classes:
     1. Two-Wheeler/Small Pickup (Low cost, high heat exposure).
@@ -56,8 +56,12 @@ def recommend_vehicle(calibrated_yield: float, transit_temp_forecast: float, dis
         # 2. Spoilage Impact (Simplified multiplier approach)
         # Base spoilage constant for this logic
         base_spoilage_rate = 0.02 
+        
+        # If forecast is a list, take the max (worst case risk assessment)
+        effective_temp = max(transit_temp_forecast) if isinstance(transit_temp_forecast, list) else transit_temp_forecast
+        
         # Temp factor: every 5 degrees above 25 adds 1% base spoilage
-        temp_factor = max(1.0, 1.0 + (transit_temp_forecast - 25) / 5.0 * 0.1)
+        temp_factor = max(1.0, 1.0 + (effective_temp - 25) / 5.0 * 0.1)
         
         spoilage_pct = base_spoilage_rate * v_class.heat_multiplier * temp_factor
         spoilage_loss_inr = spoilage_pct * market_price
