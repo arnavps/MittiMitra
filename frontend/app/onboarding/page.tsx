@@ -127,6 +127,7 @@ export default function OnboardingPage() {
         const streamUrl = `/api/chat/tts?text=${encodeURIComponent(text)}&language=${encodeURIComponent(lang)}`;
         audioRef.current.src = streamUrl;
         audioRef.current.onended = onDone || null;
+        audioRef.current.playbackRate = 1.15;
         try {
             await audioRef.current.play();
         } catch (e) {

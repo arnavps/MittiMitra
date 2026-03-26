@@ -81,6 +81,7 @@ export default function SchemesPage() {
             // TTS handling
             const ttsUrl = `/api/chat/tts?text=${encodeURIComponent(data.response)}&language=${language}`;
             const audio = new Audio(ttsUrl);
+            audio.playbackRate = 1.15;
             audio.onended = () => setVakeelExplaining(null);
             audio.play();
 
