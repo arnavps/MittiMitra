@@ -65,7 +65,7 @@ const ONBOARDING_STRINGS: Record<string, any> = {
         greeting: "வணக்கம்! நான் மிட்டிமித்ரா. உங்களுக்குச் சிறந்த லாபச் சந்தைகளைக் கண்டறிய, உங்கள் ஜிபிஎஸ் மற்றும் பயிர் தரவைப் பயன்படுத்த எனக்கு அனுமதி தேவை. நான் தொடரலாமா?",
         location_success: "இருப்பிடம் உறுதி செய்யப்பட்டது. உங்கள் பயிர் ஏற்கனவே அறுவடை செய்யப்பட்டுவிட்டதா, அல்லது அது முதிர்ச்சியடையும் வரை காத்திருக்கிறீர்களா?",
         location_error: "இருப்பிடத்தைப் பெறுவதில் சிக்கல் உள்ளது, ஆனால் நாம் தொடரலாம். உங்கள் பயிர் ஏற்கனவே அறுவடை செய்யப்பட்டுவிட்டதா?",
-        error_parsing: "மன்னிக்கவும், அதைப் புரிந்துகொள்வதில் எனக்குச் சிரமம் இருந்தது. தயவுசெய்து மீண்டும் சொல்ல முடியுமா?",
+        error_parsing: "மன்னிக்கவும், அதைப் புரிந்துகொள்வதில் எனக்குச் சிரமம் இருந்தது. தயవుசெய்து மீண்டும் சொல்ல முடியுமா?",
         camera_success: "தரத் தரவு பகுப்பாய்வு செய்யப்பட்டது. உங்கள் விளைபொருட்களை எப்படி கொண்டு செல்வீர்கள்? இருசக்கர வாகனம், டிராக்டர் அல்லது பிக்கப் டிரக்?"
     },
     "Telugu": {
@@ -232,14 +232,15 @@ export default function OnboardingPage() {
                     text_input: text,
                     language: langStr,
                     current_name: "Farmer",
-                    current_crop: crop || cropRef.current,
-                    current_yield: yieldAmount || yieldAmountRef.current,
+                    current_crop: cropRef.current || crop,
+                    current_yield: yieldAmountRef.current || yieldAmount,
                     consent_granted: consentGranted,
-                    current_storage: storageType || storageTypeRef.current,
-                    current_transport: transportType || transportTypeRef.current,
-                    harvest_status: (harvestStatus || harvestStatusRef.current) === 'Already Harvested' ? 'already_harvested' : ((harvestStatus || harvestStatusRef.current) === 'Not Yet Harvested' ? 'not_yet_harvested' : null),
-                    sowing_date: sowingDate || sowingDateRef.current,
-                    health_issue: (healthStatus || healthStatusRef.current) === "Issue Reported" ? true : ((healthStatus || healthStatusRef.current) === "No Issue" ? false : null),
+                    current_storage: storageTypeRef.current || storageType,
+                    current_transport: transportTypeRef.current || transportType,
+                    harvest_status: (harvestStatusRef.current || harvestStatus) === 'Already Harvested' ? 'already_harvested' : ((harvestStatusRef.current || harvestStatus) === 'Not Yet Harvested' ? 'not_yet_harvested' : null),
+                    location_provided: !!location,
+                    sowing_date: sowingDateRef.current || sowingDate,
+                    health_issue: (healthStatusRef.current || healthStatus) === "Issue Reported" ? true : ((healthStatusRef.current || healthStatus) === "No Issue" ? false : null),
                 })
             });
 
@@ -247,7 +248,7 @@ export default function OnboardingPage() {
             const data = await res.json();
             setIsThinking(false);
             
-            // 1. UPDATE ALL STATE VARIABLES (Greedy Update)
+            // 1. UPDATE ALL STATE VARIABLES
             if (data.consent_granted === true && !consentGranted) {
                 setConsentGranted(true);
             }
@@ -269,6 +270,7 @@ export default function OnboardingPage() {
             }
             if (data.health_issue !== undefined && data.health_issue !== null) {
                 setHealthStatus(data.health_issue ? "Issue Reported" : "Healthy");
+                healthStatusRef.current = data.health_issue ? "Issue Reported" : "Healthy";
             }
             if (data.harvest_status) {
                 const status = data.harvest_status === 'already_harvested' ? 'Already Harvested' : 'Not Yet Harvested';
@@ -284,23 +286,64 @@ export default function OnboardingPage() {
                 setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: data.ai_reply }]);
             }
 
+            // 1. UPDATE ALL STATE VARIABLES (Concurrent with local variables for next step)
+            let updatedConsent = consentGranted || data.consent_granted;
+            let updatedCrop = crop || data.crop;
+            let updatedYield = yieldAmount || data.yield_quintals;
+            let updatedHarvest = harvestStatus;
+
+            if (data.consent_granted === true && !consentGranted) {
+                setConsentGranted(true);
+                updatedConsent = true;
+            }
+            if (data.crop && !crop) { 
+                setCrop(data.crop); 
+                cropRef.current = data.crop; 
+                updatedCrop = data.crop;
+            }
+            if (data.yield_quintals && !yieldAmount) { 
+                setYieldAmount(data.yield_quintals); 
+                yieldAmountRef.current = data.yield_quintals; 
+                updatedYield = data.yield_quintals;
+            }
+            if (data.harvest_status) {
+                const status = data.harvest_status === 'already_harvested' ? 'Already Harvested' : 'Not Yet Harvested';
+                setHarvestStatus(status);
+                harvestStatusRef.current = status;
+                updatedHarvest = status;
+            }
+            if (data.storage_type && !storageType) { 
+                setStorageType(data.storage_type); 
+                storageTypeRef.current = data.storage_type; 
+            }
+            if (data.transport_type && !transportType) { 
+                setTransportType(data.transport_type); 
+                transportTypeRef.current = data.transport_type; 
+            }
+            if (data.health_issue !== undefined && data.health_issue !== null) {
+                const status = data.health_issue ? "Issue Reported" : "Healthy";
+                setHealthStatus(status);
+                healthStatusRef.current = status;
+            }
+            if (data.sowing_date) {
+                setSowingDate(data.sowing_date);
+                sowingDateRef.current = data.sowing_date;
+            }
+
             // 2. INTELLIGENT STEP TRANSITION
             const updateStep = () => {
-                if (!consentGranted && !data.consent_granted) return 'Consent';
-                if (!(crop || data.crop)) return 'CropName';
-                if (!(yieldAmount || data.yield_quintals)) return 'YieldVolume';
+                if (!updatedConsent) return 'Consent';
+                if (!updatedCrop) return 'CropName';
+                if (!updatedYield) return 'YieldVolume';
                 if (!location && !gpsError) return 'LocationPermission';
+                if (!updatedHarvest) return 'HarvestStatus';
                 
-                if (!harvestStatus && !data.harvest_status) return 'HarvestStatus';
-                
-                const effectiveHarvestStatus = data.harvest_status === 'already_harvested' ? 'Already Harvested' : (data.harvest_status === 'not_yet_harvested' ? 'Not Yet Harvested' : harvestStatus);
-                
-                if (effectiveHarvestStatus === 'Already Harvested') {
+                if (updatedHarvest === 'Already Harvested') {
                     if (!(storageType || data.storage_type)) return 'StorageAudit';
-                    if (data.health_issue === true) return 'HealthAudit';
+                    if (data.health_issue === true || healthStatusRef.current === "Issue Reported") return 'HealthAudit';
                     if (!(transportType || data.transport_type)) return 'TransitConfig';
                     return 'Success';
-                } else if (effectiveHarvestStatus === 'Not Yet Harvested') {
+                } else if (updatedHarvest === 'Not Yet Harvested') {
                     if (!(sowingDate || data.sowing_date)) return 'MaturityCheck';
                     return 'Success';
                 }
@@ -310,11 +353,9 @@ export default function OnboardingPage() {
             const nextStep = updateStep();
             if (nextStep !== currentStepRef.current) {
                 setCurrentStep(nextStep);
-            }
-
-            // Acknowledge Location Permission specially
-            if (nextStep === 'LocationPermission') {
-                requestLocation();
+                if (nextStep === 'LocationPermission') {
+                    requestLocation();
+                }
             }
 
             if (data.ai_reply) {
@@ -322,7 +363,7 @@ export default function OnboardingPage() {
                     if (nextStep === 'Success') {
                         await saveOnboardingData();
                         fetchFinalRecommendation();
-                    } else if (nextStep !== 'HealthAudit') {
+                    } else if (nextStep !== 'HealthAudit' && nextStep !== 'LocationPermission') {
                         startListening();
                     }
                 });

@@ -131,6 +131,7 @@ class OnboardingExtractRequest(BaseModel):
     sowing_date: Optional[str] = None
     current_name: str = "Farmer"
     current_land_size: Any = None
+    location_provided: Optional[bool] = None
 
 def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     """
@@ -293,10 +294,10 @@ TASK:
 2. If USER gives multiple facts (e.g. "Yes I agree and I have 50 quintals of cotton"), extract EVERYTHING.
 3. Identify what is STILL MISSING based on the KNOWN STATE below.
 4. CRITICAL: Only extract data if EXPLICITLY mentioned. Do NOT guess or default fields to values like "already_harvested" unless the user says so.
-5. Compose an 'ai_reply' STRICTLY in {req.language} script (DO NOT USE ENGLISH UNLESS REQUESTED) that:
-   - Politely acknowledges any NEW info extracted from text_input.
+5.    - Compose an 'ai_reply' STRICTLY in {req.language} script (If {req.language} is NOT English, DO NOT USE ENGLISH at all) that:
+   - Politely acknowledges any NEW info extracted from text_input (e.g., "I've recorded 50 quintals...").
+   - NEVER ask "Shall we proceed?" or "Can I use your data?" if the user has already provided ANY information (crop, yield, or location).
    - ALWAYS appends the NEXT QUESTION for the FIRST missing field in the priority list.
-    - CRITICAL: If the user provides ANY data (like a crop name or yield amount) or says "proceed", "yes", "okay", or "agree", EXTRACT `consent_granted: true`.
    - You MUST maintain a supportive, expert farmer persona.
 LANGUAGE: {req.language} (Response MUST be in this script).
 USER INPUT: {req.text_input}
@@ -309,6 +310,8 @@ KNOWN STATE:
 - Storage: {state['storage_type']}
 - Health: {state['health_issue']}
 - Transport: {state['transport_type']}
+- Sowing Date: {state['sowing_date']}
+- Location Shared: {state['location_provided']}
 
 
 JSON SCHEMA:
@@ -316,8 +319,9 @@ JSON SCHEMA:
   "consent_granted": boolean | null,  // Set TRUE if user agrees/proceeds
   "crop": string | null,
   "yield_quintals": number | null,
-  "harvest_status": "already_harvested" | "not_yet_harvested" | null,
-  "storage_type": string | null,
+    "harvest_status": "already_harvested" | "not_yet_harvested" | null,
+    "location_provided": boolean | null,
+    "storage_type": string | null,
   "health_issue": boolean | null,
   "transport_type": string | null,
   "sowing_date": "YYYY-MM-DD" | null,
@@ -342,29 +346,45 @@ STRICT: Return ONLY valid JSON. Address the user as 'Farmer'. No English in the 
         raw_content = completion.choices[0].message.content
         reply_json = json.loads(raw_content)
 
+        # Helper to strip any ? from AI acknowledgement to prevent loop
+        import re
+        def clean_ack(text: str) -> str:
+            # Remove any sentence ending in ? (common AI loop behavior)
+            return re.sub(r'[^.!?]+\?', '', text).strip()
+
         # 1. FAIL-SAFE: If any info is provided, consent is implicitly granted
-        if reply_json.get("crop") or reply_json.get("yield_quintals") or reply_json.get("harvest_status"):
+        if reply_json.get("crop") or reply_json.get("yield_quintals") or reply_json.get("location_provided") or reply_json.get("harvest_status"):
             reply_json["consent_granted"] = True
         
         # 2. PYTHON-DRIVEN PROGRESSION (Guaranteed)
         # Identify the REAL next question based on the UPDATED fields
-        updated_consent = reply_json.get("consent_granted") or req.consent_granted
-        updated_crop = reply_json.get("crop") or req.current_crop
-        updated_harvest_status = reply_json.get("harvest_status") or req.harvest_status
+        # Note: We prioritize the flags from the Request if the LLM didn't see anything new
+        updated_consent = reply_json.get("consent_granted") if reply_json.get("consent_granted") is not None else req.consent_granted
+        updated_crop = reply_json.get("crop") if reply_json.get("crop") else req.current_crop
+        updated_yield = reply_json.get("yield_quintals") if reply_json.get("yield_quintals") else req.current_yield
+        updated_location = reply_json.get("location_provided") if reply_json.get("location_provided") is not None else req.location_provided
+        updated_harvest_status = reply_json.get("harvest_status") if reply_json.get("harvest_status") else req.harvest_status
+
+        # If data is present but consent is not explicitly set, force it (Fail-safe)
+        if (updated_crop or updated_yield or updated_location) and not updated_consent:
+            updated_consent = True
+            reply_json["consent_granted"] = True
 
         next_q = ""
         if not updated_consent:
             next_q = lang_strings.get("ask_consent")
         elif not updated_crop:
             next_q = lang_strings.get("ask_crop")
-        elif not (reply_json.get("yield_quintals") or req.current_yield):
+        elif not updated_yield:
             next_q = lang_strings.get("ask_yield")
+        elif not updated_location:
+            next_q = lang_strings.get("ask_location")
         elif not updated_harvest_status:
             next_q = lang_strings.get("ask_harvest_status")
         elif updated_harvest_status == 'already_harvested':
             if not (reply_json.get("storage_type") or req.current_storage):
                 next_q = lang_strings.get("ask_storage")
-            elif not (reply_json.get("health_issue") or req.health_issue):
+            elif not (reply_json.get("health_issue") is not None or req.health_issue is not None):
                 next_q = lang_strings.get("ask_health")
             elif not (reply_json.get("transport_type") or req.current_transport):
                 next_q = lang_strings.get("ask_transport")
@@ -374,7 +394,7 @@ STRICT: Return ONLY valid JSON. Address the user as 'Farmer'. No English in the 
 
         # 3. Concatenate Acknowledgement (AI) + Question (Python)
         if next_q:
-            ack = reply_json.get("ai_reply", "")
+            ack = clean_ack(reply_json.get("ai_reply", ""))
             # If ack already asks a question or is empty, we just append or use next_q
             reply_json["ai_reply"] = f"{ack} {next_q}".strip()
             
