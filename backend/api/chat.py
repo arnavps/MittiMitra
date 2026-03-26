@@ -296,7 +296,7 @@ TASK:
 5. Compose an 'ai_reply' STRICTLY in {req.language} script (DO NOT USE ENGLISH UNLESS REQUESTED) that:
    - Politely acknowledges any NEW info extracted from text_input.
    - ALWAYS appends the NEXT QUESTION for the FIRST missing field in the priority list.
-   - CRITICAL: If the user says "proceed", "yes", "okay", or "agree", EXTRACT `consent_granted: true`.
+    - CRITICAL: If the user provides ANY data (like a crop name or yield amount) or says "proceed", "yes", "okay", or "agree", EXTRACT `consent_granted: true`.
    - You MUST maintain a supportive, expert farmer persona.
 LANGUAGE: {req.language} (Response MUST be in this script).
 USER INPUT: {req.text_input}
@@ -311,7 +311,7 @@ KNOWN STATE:
 - Transport: {state['transport_type']}
 
 PRIORITY & NEXT QUESTIONS:
-1. Consent Missing? -> If `consent_granted` IS NOT extracted in this turn AND was not PROVIDED in KNOWN STATE, ask: "{lang_strings.get('ask_consent')}"
+1. Consent Missing? -> If `consent_granted` is NOT extracted from the user's input AND was NOT already PROVIDED in the state, ask: "{lang_strings.get('ask_consent')}"
 2. Crop Missing? -> {templates['crop']}
 3. Yield Missing? -> {templates['yield_quintals']}
 4. Harvest Status Missing? -> {templates['harvest_status']}
