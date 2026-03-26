@@ -43,7 +43,7 @@ def get_preservation_actions(crop_value: float, current_spoilage_pct: float, tem
             "spoilage_reduction_pct": 2.5,
             "condition": storage_type == "Open Field",
             "description": f"Moving {crop_type} from direct sunlight to a shaded area reduces internal heat buildup.",
-            "ai_advice": f"Namaste! Since your {crop_type} is currently in the open field at {temp_c}°C, moving it to shade is a zero-cost way to save ₹{{saving}} today. The sun is your biggest enemy right now."
+            "ai_advice": "Namaste! Since your {crop_type} is currently in the open field at {temp_c}C, moving it to shade is a zero-cost way to save INR {saving} today. The sun is your biggest enemy right now.".format(crop_type=crop_type, temp_c=temp_c, saving="{saving}")
         },
         {
             "id": "wet_the_bags",
@@ -99,4 +99,23 @@ def get_preservation_actions(crop_value: float, current_spoilage_pct: float, tem
     return {
         "priority_action": best_action,
         "all_actions": action_details
+    }
+
+def predict_post_harvest_spoilage(crop: str, temp: float, humidity: float, hours_to_market: float) -> Dict[str, Any]:
+    """
+    High-level API for main.py to get integrated spoilage results.
+    """
+    from engine.decay_logic import calculate_quality_loss
+    
+    # 1. Calculate biological decay
+    loss_pct = calculate_quality_loss(crop, temp, humidity, hours_to_market)
+    
+    # 2. Get preservation ROI (Assume yield=50 and price=2000 for relative ROI)
+    # This matches the 'MittiMitra' design where we always prioritize high-confidence recommendations
+    mock_crop_value = 50 * 2000 
+    preservation = get_preservation_actions(mock_crop_value, loss_pct, temp, "Open Field", crop)
+    
+    return {
+        "loss_percentage": round(loss_pct, 2),
+        "preservation": preservation
     }
