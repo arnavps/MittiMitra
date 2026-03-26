@@ -262,61 +262,61 @@ def onboarding_extract(req: OnboardingExtractRequest):
 
     try:
         if req.step == "Consent":
-            schema_instructions = """Return JSON with: {'consent_granted': true/false/null, 'ai_reply': 'string'}.
+            schema_instructions = f"""Return JSON with: {{'consent_granted': true/false/null, 'ai_reply': 'string'}}.
 - Set consent_granted to true if they say ANY affirmative.
-- If consent_granted is true, acknowledge and ask ONLY: "What crop are you growing today?"
-- Grok MUST NOT ask about yield yet.
-- Grok is free to phrase this creatively in """ + req.language + " script."
+- If consent_granted is true, acknowledge and ask in {req.language} script: "What crop are you growing today?"
+- You MUST NOT ask about yield yet.
+- Acknowledge their consent politely in {req.language} script."""
         elif req.step == "CropName":
-            schema_instructions = """Return JSON with: {'crop': string/null, 'ai_reply': 'string'}.
+            schema_instructions = f"""Return JSON with: {{'crop': string/null, 'ai_reply': 'string'}}.
 - Extract the crop name.
-- If crop is present, acknowledge it and ask ONLY: "What is your estimated yield for this crop in quintals?"
-- Grok is free to phrase this creatively in """ + req.language + " script."
+- If crop is present, acknowledge it and ask in {req.language} script: "What is your estimated yield for this crop in quintals?"
+- Phrase the question creatively in {req.language} script."""
         elif req.step == "YieldVolume":
-            schema_instructions = """Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}.
+            schema_instructions = f"""Return JSON with: {{'yield_quintals': number/null, 'ai_reply': 'string'}}.
 - Extract the yield volume (number only).
-- If yield is present, acknowledge and ask if they are okay with sharing their GPS location to find local mandis.
-- Grok is free to phrase this creatively in """ + req.language + " script."
+- If yield is present, acknowledge and ask in {req.language} script if they are okay with sharing their GPS location to find local mandis.
+- Phrase the question creatively in {req.language} script."""
         elif req.step == "LocationPermission":
-            schema_instructions = """Return JSON with: {'ai_reply': 'string'}.
-- Acknowledge their consent to use GPS securely.
-- Ask them to please click "Allow" on the location prompt that appears on their screen.
-- DO NOT ask any further questions yet.
-- Grok is free to phrase this creatively in """ + req.language + " script."
+            schema_instructions = f"""Return JSON with: {{'ai_reply': 'string'}}.
+- Acknowledge their consent to use GPS securely in {req.language} script.
+- Ask them in {req.language} script to click "Allow" on the location prompt that appears on their screen.
+- DO NOT ask any further questions yet."""
         elif req.step == "HarvestStatus":
-            schema_instructions = """Return JSON with: {'harvest_status': 'already_harvested'/'not_yet_harvested'/null, 'ai_reply': 'string'}.
+            schema_instructions = f"""Return JSON with: {{'harvest_status': 'already_harvested'/'not_yet_harvested'/null, 'ai_reply': 'string'}}.
 - Set 'harvest_status' to 'already_harvested' if user says they are done, yes, completed, ho gaya, already harvested, etc.
 - Set 'harvest_status' to 'not_yet_harvested' if user says they are waiting, no, still growing, nahi, etc.
-- If 'already_harvested', ask where they are keeping the harvest (Open field, shed, or cold storage).
-- If 'not_yet_harvested', ask when they sowed the seeds so we can check maturity.
-- Grok is free to phrase this creatively in """ + req.language + " script only."
+- If 'already_harvested', ask in {req.language} script where they are keeping the harvest (Open field, shed, or cold storage).
+- If 'not_yet_harvested', ask in {req.language} script when they sowed the seeds so we can check maturity.
+- Phrase the question creatively in {req.language} script only."""
         elif req.step == "StorageAudit":
-             schema_instructions = """Return JSON with: {'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'health_issue': boolean/null, 'ai_reply': 'string'}.
+             schema_instructions = f"""Return JSON with: {{'storage_type': 'Open Field'/'Shaded'/'Cold Storage'/null, 'health_issue': boolean/null, 'ai_reply': 'string'}}.
 - Extract storage_type.
 - DO NOT set health_issue to false unless the user explicitly says "all good" or "no problems".
-- IF `health_issue` is null (the default, implying they haven't explicitly mentioned health yet), YOUR REPLY MUST END BY ASKING: "Are there any health issues, spots, or problems on your crop?"
-- IF `health_issue` is false, YOUR REPLY MUST END BY ASKING: "How will you be transporting your produce? Two wheeler, tractor, or pickup truck?"
+- IF `health_issue` is null, YOUR REPLY MUST END BY ASKING in {req.language} script: "Are there any health issues, spots, or problems on your crop?"
+- IF `health_issue` is false, YOUR REPLY MUST END BY ASKING in {req.language} script: "How will you be transporting your produce? Two wheeler, tractor, or pickup truck?"
 - DO NOT proceed to TransitConfig or ask about transport until the farmer confirms if there are problems or not.
-- Grok is free to phrase the question creatively in """ + req.language + " script only."
+- Use {req.language} script only."""
         elif req.step == "HealthAudit":
-             schema_instructions = """Return JSON with: {'ai_reply': 'string'}.
-- Acknowledge that you are waiting for a photo of the crop issues.
-- Grok is free to phrase this creatively in """ + req.language + " script only."
+             schema_instructions = f"""Return JSON with: {{'ai_reply': 'string'}}.
+- Acknowledge in {req.language} script that you are waiting for a photo of the crop issues.
+- Use {req.language} script only."""
         elif req.step == "MaturityCheck":
-             schema_instructions = """Return JSON with: {'sowing_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}.
-- If extracted, Provide maturity insight and say you'll notify them when it's harvest time.
+             schema_instructions = f"""Return JSON with: {{'sowing_date': 'YYYY-MM-DD'/null, 'ai_reply': 'string'}}.
+- If extracted, provide maturity insight in {req.language} script and say you'll notify them when it's harvest time.
 - Moving to Success Dashboard."""
         elif req.step == "TransitConfig":
-             schema_instructions = """Return JSON with: {'transport_type': 'Two Wheeler'/'Tractor'/'Pickup'/'Covered Van'/null, 'ai_reply': 'string'}.
-- If extracted, congratulate them and say you are taking them to the main dashboard.
+             schema_instructions = f"""Return JSON with: {{'transport_type': 'Two Wheeler'/'Tractor'/'Pickup'/'Covered Van'/null, 'ai_reply': 'string'}}.
+- If extracted, congratulate them in {req.language} script and say you are taking them to the main dashboard.
 - If the user says "no issues" or "ignore health" here, move on.
-- Grok is free to phrase this creatively in """ + req.language + " script only."
+- Use {req.language} script only."""
         elif req.step == "FinalVerdict":
              schema_instructions = "Return JSON with: {'yield_quintals': number/null, 'ai_reply': 'string'}. If yield is present, ask the success question."
         else:
              schema_instructions = "Return JSON with: {'ai_reply': 'string'}"
 
         system_prompt = f"""You are the MittiMitra Agri-Vakeel Assistant. Your ONLY goal is to extract farmer data into JSON.
+You MUST communicate with the farmer ONLY in {req.language} script. 
 
 CONTEXT OF ALREADY EXTRACTED DATA:
 - Name: {req.current_name or 'Unknown'}
@@ -333,9 +333,9 @@ Farmer Language: {req.language}
 
 STRICT RULES:
 1. Return ONLY valid JSON.
-2. The 'ai_reply' MUST be in {req.language} script.
+2. The 'ai_reply' MUST be in {req.language} script. NEVER use English for the 'ai_reply' if the language is not English.
 3. If a field is NOT 'Unknown' in the CONTEXT above, you MUST NOT ask for it again.
-4. do NOT use conversational filler like "Ji Kisan bhai" unless it's part of a brief acknowledgement.
+4. DO NOT use conversational filler unless it's part of a brief acknowledgement in {req.language}.
 """
         # Safer logging for Windows terminals
         try:
