@@ -16,50 +16,122 @@ router = APIRouter()
 
 ONBOARDING_STRINGS_BACKEND = {
     "English": {
-        "ask_consent": "I'm glad you're here! To get started, please confirm you are okay with me helping you. Shall we proceed?",
-        "ask_crop": "What crop are you growing today?",
-        "ask_yield": "What is your estimated yield for this crop in quintals?",
-        "ask_location": "To find local markets and maximize profit, I need your GPS location. Is that okay?",
+        "ask_consent": "Namaste! I am MittiMitra. To find you the best profit windows, I need your permission under the DPDP Act 2023 to use your GPS and crop data. Do I have your permission to proceed?",
+        "ask_crop": "What crop are we working with today?",
+        "ask_yield": "What is your estimated yield for this crop (in quintals or crates)?",
+        "ask_location": "To map your field and find local mandis, I need your GPS location. Is that okay?",
         "ask_storage": "Where are you keeping your harvest? (Open field, shed, or cold storage)",
-        "ask_health": "To give you the most accurate price, I need to check the quality. Could you please show me a sample of your harvest? I'm opening your camera now.",
-        "ask_transport": "How will you be transporting your produce? Two wheeler, tractor, or pickup truck?",
-        "ask_harvest_status": "Has your crop been harvested already, or are you still waiting for it to ripen?",
-        "ask_sowing_date": "When did you sow this crop?",
-        "all_done": "Congratulations! We have collected all details. Let's head to the dashboard."
+        "ask_health": "Do they look healthy, or have you noticed any spots or irregularities? (Yes/No)",
+        "ask_visual_audit": "I see. Please show me a close-up sample via the camera so I can check for pathological risks.",
+        "ask_transport": "How will you be transporting your produce? Two wheeler, tractor trolley, or pickup truck?",
+        "ask_harvest_status": "Are these crops already harvested, or are you still deciding when to start cutting them?",
+        "ask_sowing_date": "When did you sow the seeds?",
+        "all_done": "Calibration complete. Your profit optimization dashboard is now ready."
     },
     "Hindi": {
-        "ask_consent": "मुझे खुशी है कि आप यहाँ हैं! शुरू करने के लिए, कृपया पुष्टि करें कि आप अपनी जानकारी साझा करने के लिए तैयार हैं। क्या हम आगे बढ़ें?",
-        "ask_crop": "आप आज कौन सी फसल उगा रहे हैं?",
-        "ask_yield": "इस फसल के लिए आपका अनुमानित उत्पादन क्विंटल में कितना है?",
-        "ask_location": "मुनाफा बढ़ाने के लिए स्थानीय मंडियों को खोजने हेतु मुझे आपके जीपीएस स्थान की आवश्यकता है। क्या यह ठीक है?",
+        "ask_consent": "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खोजने के लिए, मुझे DPDP अधिनियम 2023 के तहत आपके जीपीएस और फसल डेटा का उपयोग करने की अनुमति चाहिए। क्या मैं आगे बढ़ सकता हूँ?",
+        "ask_crop": "आज हम कौन सी फसल पर काम कर रहे हैं?",
+        "ask_yield": "इस फसल के लिए आपका अनुमानित उत्पादन कितना है (क्विंटल या क्रेट में)?",
+        "ask_location": "आपके खेत का नक्शा बनाने और स्थानीय मंडियों को खोजने के लिए, मुझे आपके जीपीएस स्थान की आवश्यकता है। क्या यह ठीक है?",
         "ask_storage": "आप अपनी फसल कहाँ रख रहे हैं? (खुले खेत में, शेड में या कोल्ड स्टोरेज में)",
-        "ask_health": "आपको सबसे सटीक कीमत देने के लिए, मुझे गुणवत्ता की जांच करनी होगी। क्या आप कृपया मुझे अपनी फसल का नमूना दिखा सकते हैं? मैं अब आपका कैमरा खोल रहा हूँ।",
-        "ask_transport": "आप अपना माल कैसे ले जाएंगे? दोपहिया, ट्रैक्टर या पिकअप ट्रक?",
-        "ask_harvest_status": "क्या आपने फसल की कटाई कर ली है या करने वाले हैं?",
-        "ask_sowing_date": "आपने इस फसल की बुवाई कब की थी?",
-        "all_done": "बधाई हो! हमने सभी विवरण एकत्र कर लिए हैं। चलिए अब डैशबोर्ड पर चलते हैं।"
+        "ask_health": "क्या वे स्वस्थ दिखते हैं, या आपने कोई धब्बे या अनियमितताएं देखी हैं? (हाँ/नहीं)",
+        "ask_visual_audit": "समझ गया। कृपया मुझे कैमरे के माध्यम से एक नज़दीकी नमूना दिखाएं ताकि मैं जोखिमों की जांच कर सकूं।",
+        "ask_transport": "आप अपनी उपज का परिवहन कैसे करेंगे? दोपहिया, ट्रैक्टर ट्रॉली, या पिकअप ट्रक?",
+        "ask_harvest_status": "क्या ये फसलें पहले ही काटी जा चुकी हैं, या आप अभी भी उन्हें काटना शुरू करने का निर्णय ले रहे हैं?",
+        "ask_sowing_date": "आपने बीज कब बोया था?",
+        "all_done": "कैलिब्रेशन पूरा हुआ। आपका लाभ अनुकूलन डैशबोर्ड अब तैयार है।"
     },
     "Marathi": {
-        "ask_consent": "तुम्ही येथे आलात याचा मला आनंद आहे! सुरू करण्यासाठी, कृपया पुष्टी करा की तुम्ही तुमची माहिती माझ्यासोबत शेअर करण्यास तयार आहात. आपण पुढे जायचे का?",
-        "ask_crop": "तुम्ही आज कोणते पीक घेत आहात?",
-        "ask_yield": "या पिकासाठी तुमचे अंदाजे उत्पन्न क्विंटलमध्ये किती आहे?",
-        "ask_location": "तुमचा नफा वाढवण्यासाठी जवळच्या बाजारपेठा शोधण्यासाठी मला तुमचे जीपीएस लोकेशन हवे आहे. चालेल का?",
+        "ask_consent": "नमस्कार! मी मिट्टीमित्र आहे. तुमच्यासाठी सर्वोत्तम नफा शोधण्यासाठी, मला DPDP कायदा 2023 अंतर्गत तुमचा जीपीएस आणि पिकाचा डेटा वापरण्याची परवानगी हवी आहे. मी पुढे जाऊ शकतो का?",
+        "ask_crop": "आज आपण कोणत्या पिकावर काम करत आहोत?",
+        "ask_yield": "या पिकासाठी तुमचे अंदाजे उत्पन्न किती आहे (क्विंटल किंवा क्रेटमध्ये)?",
+        "ask_location": "तुमच्या शेताचा नकाशा तयार करण्यासाठी आणि स्थानिक मंड्या शोधण्यासाठी, मला तुमचे जीपीएस लोकेशन हवे आहे. चालेल का?",
         "ask_storage": "तुम्ही तुमचा माल कोठे ठेवत आहात? (खुल्या शेतात, शेडमध्ये किंवा कोल्ड स्टोरेजमध्ये)",
-        "ask_health": "तुम्हाला सर्वात अचूक किंमत देण्यासाठी, मला गुणवत्ता तपासावी लागेल. कृपया तुम्ही मला तुमच्या पिकाचा नमुना दाखवू शकता का? मी आता तुमचा कॅमेरा उघडत आहे.",
-        "ask_transport": "तुम्ही तुमचा माल कसा नेणार आहात? दुचाकी, ट्रॅक्टर किंवा पिकअप ट्रक?",
-        "ask_harvest_status": "तुमच्या पिकाची कापणी झाली आहे का?",
-        "ask_sowing_date": "तुम्ही या पिकाची पेरणी कधी केली होती?",
-        "all_done": "अभिनंदन! आम्ही सर्व माहिती गोळा केली आहे. आता डॅशबोर्डवर जाऊया."
+        "ask_health": "ते निरोगी दिसतात की तुम्हाला काही डाग किंवा अनियमितता दिसली आहे? (हो/नाही)",
+        "ask_visual_audit": "समजले. कृपया मला कॅमेऱ्याद्वारे एक जवळचा नमुना दाखवा जेणेكرून मी जोखमींची तपासणी करू शकेन.",
+        "ask_transport": "तुम्ही तुमचा माल कसा नेणार आहात? दुचाकी, ट्रॅक्टर ट्रॉली किंवा पिकअप ट्रक?",
+        "ask_harvest_status": "या पिकांची कापणी आधीच झाली आहे, की तुम्ही अजून ती सुरू करण्याचा विचार करत आहात?",
+        "ask_sowing_date": "तुम्ही बियाणे कधी पेरले होते?",
+        "all_done": "कॅलिब्रेशन पूर्ण झाले. तुमचे नफा ऑप्टिमायझेशन डॅशबोर्ड आता तयार आहे."
     },
     "Telugu": {
-        "ask_consent": "మీరు ఇక్కడికి వచ్చినందుకు నాకు చాలా సంతోషంగా ఉంది! ప్రారంభించడానికి, దయచేసి మీరు మీ సమాచారాన్ని నాతో పంచుకోవడానికి సిద్ధంగా ఉన్నారని నిర్ధారించండి. మనం ముందుకు వెళ్దామా?",
-        "ask_crop": "మీరు ఈ రోజు ఏ పంటను పండిస్తున్నారు?",
-        "ask_yield": "ఈ పంటకు మీ అంచనా దిగుబడి క్వింటాళ్లలో ఎంత?",
-        "ask_location": "స్థానిక మార్కెట్లను కనుగొనడానికి మరియు లాభాన్ని పెంచడానికి, నాకు మీ GPS స్థానం అవసరం. అది సరేనా?",
+        "ask_consent": "నమస్కారం! నేను మిట్టిమిత్ర. మీకు ఉత్తమ లాభాలను కనుగొనడానికి, DPDP చట్టం 2023 ప్రకారం మీ GPS మరియు పంట డేటాను ఉపయోగించడానికి నాకు మీ అనుమతి అవసరం. నేను కొనసాగించవచ్చా?",
+        "ask_crop": "ఈ రోజు మనం ఏ పంటపై పని చేస్తున్నాము?",
+        "ask_yield": "ఈ పంటకు మీ అంచనా దిగుబడి ఎంత (క్వింటాళ్ళు లేదా క్రేట్లలో)?",
+        "ask_location": "మీ పొలాన్ని మ్యాప్ చేయడానికి మరియు స్థానిక మండీలను కనుగొనడానికి, నాకు మీ GPS స్థానం అవసరం. అది సరేనా?",
         "ask_storage": "మీరు మీ పంటను ఎక్కడ ఉంచుతున్నారు? (బహిరంగ ప్రదేశంలో, షెడ్డులో లేదా కోల్డ్ స్టోరేజీలో)",
-        "ask_health": "మీ పంటలో ఏవైనా ఆరోగ్య సమస్యలు ఉన్నాయా?",
-        "ask_transport": "మీరు మీ సరుకును ఎలా రవాణా చేస్తారు? ద్విచక్ర వాహనం, ట్రాక్టర్ లేదా పிக்கప్ ట్రక్?",
-        "ask_harvest_status": "మీ పంట కోతకు సిద్ధంగా ఉందా లేదా ఇప్పటికే కోశారా?",
+        "ask_health": "అవి ఆరోగ్యంగా కనిపిస్తున్నాయా, లేదా మీరు ఏవైనా మచ్చలు లేదా అక్రమాలను గమనించారా? (అవును/కాదు)",
+        "ask_visual_audit": "అర్థమైంది. దయచేసి కెమెరా ద్వారా నాకు దగ్గరి నమూనాను చూపండి, తద్వారా నేను నష్టాలను తనిఖీ చేయగలను.",
+        "ask_transport": "మీరు మీ సరుకును రవాణా చేస్తారు? ద్విచక్ర వాహనం, ట్రాక్టర్ ట్రాలీ లేదా పికప్ ట్రక్?",
+        "ask_harvest_status": "ఈ పంటలు ఇప్పటికే కోయబడ్డాయా, లేదా మీరు ఇంకా కోత ప్రారంభించాలని నిర్ణయిస్తున్నారా?",
+        "ask_sowing_date": "మీరు విత్తనాలు ఎప్పుడు వేశారు?",
+        "all_done": "అంకగణితం పూర్తయింది. మీ లాభాల ఆప్టిమైజేషన్ డ్యాష్‌బోర్డ్ ఇప్పుడు సిద్ధంగా ఉంది."
+    },
+    "Tamil": {
+        "ask_consent": "வணக்கம்! நான் மிட்டிமித்ரா. உங்களுக்குச் சிறந்த லாபத்தைக் கண்டறிய, DPDP சட்டம் 2023 இன் படி உங்கள் ஜிபிஎஸ் மற்றும் பயிர் தரவைப் பயன்படுத்த எனக்கு அனுமதி தேவை. நான் தொடரலாமா?",
+        "ask_crop": "இன்று நாம் என்ன பயிர் செய்கிறோம்?",
+        "ask_yield": "இந்தப் பயிரின் மதிப்பிடப்பட்ட விளைச்சல் எவ்வளவு (குவிண்டால் அல்லது பெட்டிகளில்)?",
+        "ask_location": "உங்கள் வயலை வரைபடமாக்கி உள்ளூர் மண்டிகளைக் கண்டறிய, உங்கள் ஜிபிஎஸ் இருப்பிடம் எனக்குத் தேவை. ஓகேவா?",
+        "ask_storage": "உங்கள் அறுவடையை எங்கே வைத்திருக்கிறீர்கள்? (திறந்த வெளி, கொட்டகை அல்லது குளிர்பதன கிடங்கு)",
+        "ask_health": "அவை ஆரோக்கியமாகத் தெரிகிறதா, அல்லது ஏதேனும் புள்ளிகள் அல்லது மாற்றங்களைக் கவனித்தீர்களா? (ஆம்/இல்லை)",
+        "ask_visual_audit": "புரிந்தது. தயவுசெய்து கேமரா மூலம் நெருக்கமான மாதிரியைக் காட்டுங்கள், இதனால் நான் அபாயங்களைச் சரிபார்க்க முடியும்.",
+        "ask_transport": "உங்கள் விளைபொருட்களை எப்படி கொண்டு செல்வீர்கள்? டூ வீலர், டிராக்டர் டிராலி அல்லது பிக்கப் டிரக்?",
+        "ask_harvest_status": "இந்தப் பயிர்கள் ஏற்கனவே அறுவடை செய்யப்பட்டுவிட்டதா, அல்லது எப்போது அறுவடை செய்ய வேண்டும் என்று முடிவு செய்கிறீர்களா?",
+        "ask_sowing_date": "நீங்கள் எப்போது விதைத்தீர்கள்?",
+        "all_done": "அளவுத்திருத்தம் முடிந்தது. உங்கள் லாப மேம்பாட்டு டேஷ்போர்டு இப்போது தயாராக உள்ளது."
+    },
+    "Gujarati": {
+        "ask_consent": "નમસ્તે! હું મિત્તીમિત્ર છું. તમારા માટે શ્રેષ્ઠ નફો શોધવા માટે, મારે DPDP એક્ટ 2023 હેઠળ તમારા જીપીએસ અને પાકના ડેટાનો ઉપયોગ કરવાની મંજૂરી જોઈએ છે. શું હું આગળ વધી શકું?",
+        "ask_crop": "આજે આપણે કયા પાક પર કામ કરી રહ્યા છીએ?",
+        "ask_yield": "આ પાક માટે તમારી અંદાજિત ઉપજ કેટલી છે (ક્વિન્ટલ અથવા ક્રેટમાં)?",
+        "ask_location": "તમારા ખેતરનો નકશો બનાવવા અને સ્થાનિક મંડીઓ શોધવા માટે, મારે તમારા જીપીએસ સ્થાનની જરૂર છે. શું તે બરાબર છે?",
+        "ask_storage": "તમે તમારી લણણી ક્યાં રાખી રહ્યા છો? (ખુલ્લા ખેતરમાં, શેડમાં અથવા કોલ્ડ સ્ટોરેજમાં)",
+        "ask_health": "શું તેઓ સ્વસ્થ દેખાય છે, અથવા તમે કોઈ ડાઘ કે અસમાનતા જોઈ છે? (હા/ના)",
+        "ask_visual_audit": "સમજી ગયો. કૃપા કરીને મને કેમેરા દ્વારા નજીકનો નમૂનો બતાવો જેથી હું જોખમો તપાસી શકું.",
+        "ask_transport": "તમે તમારો માલ કેવી રીતે લઈ જશો? ટુ વ્હીલર, ટ્રેક્ટર ટ્રોલી કે પિકઅપ ટ્રક?",
+        "ask_harvest_status": "શું આ પાકની લણણી થઈ ગઈ છે, અથવા તમે હજુ પણ લણણી શરૂ કરવાનું વિચારી રહ્યા છો?",
+        "ask_sowing_date": "તમે બીજ ક્યારે વાવ્યા હતા?",
+        "all_done": "કેલિબ્રેશન પૂર્ણ થયું. તમારું પ્રોફિટ ઓપ્ટિમાઇઝેશન ડેશબોર્ડ હવે તૈયાર છે."
+    },
+    "Punjabi": {
+        "ask_consent": "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਮਿੱਟੀਮਿੱਤਰ ਹਾਂ। ਤੁਹਾਡੇ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਮੁਨਾਫ਼ਾ ਲੱਭਣ ਲਈ, ਮੈਨੂੰ DPDP ਐਕਟ 2023 ਦੇ ਤਹਿਤ ਤੁਹਾਡੇ ਜੀਪੀਐਸ ਅਤੇ ਫ਼ਸਲ ਦੇ ਡੇਟਾ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਕੀ ਮੈਂ ਅੱਗੇ ਵਧ ਸਕਦਾ ਹਾਂ?",
+        "ask_crop": "ਅੱਜ ਅਸੀਂ ਕਿਹੜੀ ਫ਼ਸਲ 'ਤੇ ਕੰਮ ਕਰ ਰਹੇ ਹਾਂ?",
+        "ask_yield": "ਇਸ ਫ਼ਸਲ ਲਈ ਤੁਹਾਡੀ ਅੰਦਾਜ਼ਨ ਪੈਦਾਵਾਰ ਕਿੰਨੀ ਹੈ (ਕੁਇੰਟਲ ਜਾਂ ਕਰੇਟ ਵਿੱਚ)?",
+        "ask_location": "ਤੁਹਾਡੇ ਖेਤ ਦਾ ਨਕਸ਼ਾ ਬਣਾਉਣ ਅਤੇ ਸਥਾਨਕ ਮੰਡੀਆਂ ਲੱਭਣ ਲਈ, ਮੈਨੂੰ ਤੁਹਾਡੀ GPS ਲੋਕੇਸ਼ਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਇਹ ਠੀਕ ਹੈ?",
+        "ask_storage": "ਤੁਸੀਂ ਆਪਣੀ ਫ਼ਸਲ ਕਿੱਥੇ ਰੱਖ ਰਹੇ ਹੋ? (ਖੁੱਲ੍ਹੇ ਖੇਤ ਵਿੱਚ, ਸ਼ੈੱਡ ਵਿੱਚ ਜਾਂ ਕੋਲਡ ਸਟੋਰੇਜ ਵਿੱਚ)",
+        "ask_health": "ਕੀ ਉਹ ਤੰਦਰੁਸਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ, ਜਾਂ ਕੀ ਤੁਸੀਂ ਕੋਈ ਧੱਬੇ ਜਾਂ ਅਨਿਯਮਿਤਤਾਵਾਂ ਦੇਖੀਆਂ ਹਨ? (ਹਾਂ/ਨਹੀਂ)",
+        "ask_visual_audit": "ਸਮਝ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਕੈਮਰੇ ਰਾਹੀਂ ਇੱਕ ਨਜ਼ਦੀਕੀ ਨਮੂਨਾ ਦਿਖਾਓ ਤਾਂ ਜੋ ਮੈਂ ਜੋਖਮਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਾਂ।",
+        "ask_transport": "ਤੁਸੀਂ ਆਪਣੀ ਉਪਜ ਦੀ ਢੋਆ-ਢੁਆਈ ਕਿਵੇਂ ਕਰੋਗੇ? ਦੋ ਪਹੀਆ ਵਾਹਨ, ਟ੍ਰੈਕਟਰ ਟ੍ਰਾਲੀ, ਜਾਂ ਪਿਕਅੱਪ ਟਰੱਕ?",
+        "ask_harvest_status": "ਕੀ ਇਹ ਫ਼ਸਲਾਂ ਪਹਿਲਾਂ ਹੀ ਕੱਟੀਆਂ ਜਾ ਚੁੱਕੀਆਂ ਹਨ, ਜਾਂ ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਟਾਈ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਫੈਸਲਾ ਕਰ ਰਹੇ ਹੋ?",
+        "ask_sowing_date": "ਤੁਸੀਂ ਬੀਜ ਕਦੋਂ ਬੀਜੇ ਸਨ?",
+        "all_done": "ਕੈਲੀਬ੍ਰੇਸ਼ਨ ਪੂਰੀ ਹੋ ਗਈ ਹੈ। ਤੁਹਾਡਾ ਮੁਨਾਫ਼ਾ ਅਨੁਕੂਲਨ ਡੈਸ਼ਬੋਰਡ ਹੁਣ ਤਿਆਰ ਹੈ।"
+    }
+}
+�� DPDP એક્ટ 2023 હેઠળ તમારા જીપીએસ અને પાકના ડેટાનો ઉપયોગ કરવાની મંજૂરી જોઈએ છે. શું હું આગળ વધી શકું?",
+        "ask_crop": "આજે આપણે કયા પાક પર કામ કરી રહ્યા છીએ?",
+        "ask_yield": "આ પાક માટે તમારી અંદાજિત ઉપજ કેટલી છે (ક્વિન્ટલ અથવા ક્રેટમાં)?",
+        "ask_location": "તમારા ખેતરનો નકશો બનાવવા અને સ્થાનિક મંડીઓ શોધવા માટે, મારે તમારા જીપીએસ સ્થાનની જરૂર છે. શું તે બરાબર છે?",
+        "ask_storage": "તમે તમારી લણણી ક્યાં રાખી રહ્યા છો? (ખુલ્લા ખેતરમાં, શેડમાં અથવા કોલ્ડ સ્ટોરેજમાં)",
+        "ask_health": "શું તેઓ સ્વસ્થ દેખાય છે, અથવા તમે કોઈ ડાઘ કે અસમાનતા જોઈ છે? (હા/ના)",
+        "ask_visual_audit": "સમજી ગયો. કૃપા કરીને મને કેમેરા દ્વારા નજીકનો નમૂનો બતાવો જેથી હું જોખમો તપાસી શકું.",
+        "ask_transport": "તમે તમારો માલ કેવી રીતે લઈ જશો? ટુ વ્હીલર, ટ્રેક્ટર ટ્રોલી કે પિકઅપ ટ્રક?",
+        "ask_harvest_status": "શું આ પાકની લણણી થઈ ગઈ છે, અથવા તમે હજુ પણ લણણી શરૂ કરવાનું વિચારી રહ્યા છો?",
+        "ask_sowing_date": "તમે બીજ ક્યારે વાવ્યા હતા?",
+        "all_done": "કેલિબ્રેશન પૂર્ણ થયું. તમારું પ્રોફિટ ઓપ્ટિમાઇઝેશન ડેશબોર્ડ હવે તૈયાર છે."
+    },
+    "Punjabi": {
+        "ask_consent": "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਮਿੱਟੀਮਿੱਤਰ ਹਾਂ। ਤੁਹਾਡੇ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਮੁਨਾਫ਼ਾ ਲੱਭਣ ਲਈ, ਮੈਨੂੰ DPDP ਐਕਟ 2023 ਦੇ ਤਹਿਤ ਤੁਹਾਡੇ ਜੀਪੀਐਸ ਅਤੇ ਫ਼ਸਲ ਦੇ ਡੇਟਾ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਕੀ ਮੈਂ ਅੱਗੇ ਵਧ ਸਕਦਾ ਹਾਂ?",
+        "ask_crop": "ਅੱਜ ਅਸੀਂ ਕਿਹੜੀ ਫ਼ਸਲ 'ਤੇ ਕੰਮ ਕਰ ਰਹੇ ਹਾਂ?",
+        "ask_yield": "ਇਸ ਫ਼ਸਲ ਲਈ ਤੁਹਾਡੀ ਅੰਦਾਜ਼ਨ ਪੈਦਾਵਾਰ ਕਿੰਨੀ ਹੈ (ਕੁਇੰਟਲ ਜਾਂ ਕਰੇਟ ਵਿੱਚ)?",
+        "ask_location": "ਤੁਹਾਡੇ ਖੇਤ ਦਾ ਨਕਸ਼ਾ ਬਣਾਉਣ ਅਤੇ ਸਥਾਨਕ ਮੰਡੀਆਂ ਲੱਭਣ ਲਈ, ਮੈਨੂੰ ਤੁਹਾਡੀ GPS ਲੋਕੇਸ਼ਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਇਹ ਠੀਕ ਹੈ?",
+        "ask_storage": "ਤੁਸੀਂ ਆਪਣੀ ਫ਼ਸਲ ਕਿੱਥੇ ਰੱਖ ਰਹੇ ਹੋ? (ਖੁੱਲ੍ਹੇ ਖੇਤ ਵਿੱਚ, ਸ਼ੈੱਡ ਵਿੱਚ ਜਾਂ ਕੋਲਡ ਸਟੋਰੇਜ ਵਿੱਚ)",
+        "ask_health": "ਕੀ ਉਹ ਤੰਦਰੁਸਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ, ਜਾਂ ਕੀ ਤੁਸੀਂ ਕੋਈ ਧੱਬੇ ਜਾਂ ਅਨਿਯਮਿਤਤਾਵਾਂ ਦੇਖੀਆਂ ਹਨ? (ਹਾਂ/ਨਹੀਂ)",
+        "ask_visual_audit": "ਸਮਝ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਕੈਮਰੇ ਰਾਹੀਂ ਇੱਕ ਨਜ਼ਦੀਕੀ ਨਮੂਨਾ ਦਿਖਾਓ ਤਾਂ ਜੋ ਮੈਂ ਜੋਖਮਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਾਂ।",
+        "ask_transport": "ਤੁਸੀਂ ਆਪਣੀ ਉਪਜ ਦੀ ਢੋਆ-ਢੁਆਈ ਕਿਵੇਂ ਕਰੋਗੇ? ਦੋ ਪਹੀਆ ਵਾਹਨ, ਟ੍ਰੈਕਟਰ ਟ੍ਰਾਲੀ, ਜਾਂ ਪਿਕਅੱਪ ਟਰੱਕ?",
+        "ask_harvest_status": "ਕੀ ਇਹ ਫ਼ਸਲਾਂ ਪਹਿਲਾਂ ਹੀ ਕੱਟੀਆਂ ਜਾ ਚੁੱਕੀਆਂ ਹਨ, ਜਾਂ ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਟਾਈ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਫੈਸਲਾ ਕਰ ਰਹੇ ਹੋ?",
+        "ask_sowing_date": "ਤੁਸੀਂ ਬੀਜ ਕਦੋਂ ਬੀਜੇ ਸਨ?",
+        "all_done": "ਕੈਲੀਬ੍ਰੇਸ਼ਨ ਪੂਰੀ ਹੋ ਗਈ ਹੈ। ਤੁਹਾਡਾ ਮੁਨਾਫ਼ਾ ਅਨੁਕੂਲਨ ਡੈਸ਼ਬੋਰਡ ਹੁਣ ਤਿਆਰ ਹੈ।"
+    }కోశారా?",
         "ask_sowing_date": "మీరు ఈ పంటను ఎప్పుడు వేశారు?",
         "all_done": "అభినందనలు! మేము అన్ని వివరాలను సేకరించాము. ఇక డ్యాష్‌బోర్డ్‌కు వెళ్దాం."
     },
@@ -69,7 +141,8 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_yield": "இந்தப் பயிரின் மதிப்பிடப்பட்ட விளைச்சல் எத்தனை குவிண்டால்?",
         "ask_location": "உள்ளூர் சந்தைகளைக் கண்டறியவும் லாபத்தை அதிகரிக்கவும், உங்கள் ஜிபிஎஸ் இருப்பிடம் எனக்குத் தேவை. ஓகேவா?",
         "ask_storage": "உங்கள் அறுவடையை எங்கே வைத்திருக்கிறீர்கள்? (திறந்த வெளி, கொட்டகை அல்லது குளிர்பதன கிடங்கு)",
-        "ask_health": "உங்கள் பயிரில் ஏதேனும் நோய் பாதிப்புகள் அல்லது பிரச்சனைகள் உள்ளதா?",
+        "ask_health": "உங்கள் பயிரில் ஏதேனும் நோய் பாதிப்புகள் அல்லது பிரச்சனைகள் உள்ளதா? ஆம் அல்லது இல்லை?",
+        "ask_visual_audit": "அப்படியானால், நான் தரத்தைச் சரிபார்க்க வேண்டும். தயவுசெய்து உங்கள் அறுவடையின் மாதிரியை எனக்குக் காட்ட முடியுமா? நான் இப்போது உங்கள் கேமராவைத் திறக்கிறேன்.",
         "ask_transport": "உங்கள் விளைபொருட்களை எப்படி கொண்டு செல்வீர்கள்? டூ வீலர், டிராக்டர் அல்லது பிக்கப் டிரக்?",
         "ask_harvest_status": "பயிர் அறுவடை செய்யப்பட்டுள்ளதா அல்லது இன்னும் காத்திருக்கிறீர்களா?",
         "ask_sowing_date": "நீங்கள் எப்போது விதைத்தீர்கள்?",
@@ -81,7 +154,8 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_yield": "આ પાક માટે તમારી અંદાજિત ઉપજ ક્વિન્ટલમાં કેટલી છે?",
         "ask_location": "સ્થાનિક બજારો શોધવા અને નફો વધારવા માટે, મારે તમારા જીપીએસ લોકેશનની જરૂર છે. શું તે બરાબર છે?",
         "ask_storage": "તમે તમારી લણણી ક્યાં રાખી રહ્યા છો? (ખુલ્લા ખેતરમાં, શેડમાં અથવા કોલ્ડ સ્ટોરેજમાં)",
-        "ask_health": "શું તમારા પાકમાં કોઈ રોગ કે સમસ્યા છે?",
+        "ask_health": "શું તમારા પાકમાં કોઈ રોગ કે સમસ્યા છે? હા કે ના?",
+        "ask_visual_audit": "તે કિસ્સામાં, મારે ગુણવત્તા તપાસવાની જરૂર છે. શું તમે કૃપા કરીને મને તમારા પાકનો નમૂનો બતાવી શકશો? હું અત્યારે તમારો કેમેરો ખોલી રહ્યો છું.",
         "ask_transport": "તમે તમારો માલ કેવી રીતે લઈ જશો? ટુ વ્હીલર, ટ્રેક્ટર કે પિકઅપ ટ્રક?",
         "ask_harvest_status": "શું તમારા પાકની લણણી થઈ ગઈ છે કે હજી બાકી છે?",
         "ask_sowing_date": "તમે આ પાકની વાવણી ક્યારે કરી હતી?",
@@ -93,7 +167,8 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_yield": "ਇਸ ਫ਼ਸਲ ਲਈ ਤੁਹਾਡੀ ਅੰਦਾਜ਼ਨ ਪੈਦਾਵਾਰ ਕੁਇੰਟਲਾਂ ਵਿੱਚ ਕਿੰਨੀ ਹੈ?",
         "ask_location": "ਸਥਾਨਕ ਮੰਡੀਆਂ ਲੱਭਣ ਅਤੇ ਮੁਨਾਫ਼ਾ ਵਧਾਉਣ ਲਈ, ਮੈਨੂੰ ਤੁਹਾਡੀ GPS ਲੋਕੇਸ਼ਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਇਹ ਠੀਕ ਹੈ?",
         "ask_storage": "ਤੁਸੀਂ ਆਪਣੀ ਫ਼ਸਲ ਕਿੱਥੇ ਰੱਖ ਰਹੇ ਹੋ? (ਖੁੱਲ੍ਹੇ ਖੇਤ ਵਿੱਚ, ਸ਼ੈੱਡ ਵਿੱਚ ਜਾਂ ਕੋਲਡ ਸਟੋਰੇਜ ਵਿੱਚ)",
-        "ask_health": "ਕੀ ਤੁਹਾਡੀ ਫ਼ਸਲ ਵਿੱਚ ਕੋਈ ਬਿਮਾਰੀ ਜਾਂ ਸਮੱਸਿਆ ਹੈ?",
+        "ask_health": "ਕੀ ਤੁਹਾਡੀ ਫ਼ਸਲ ਵਿੱਚ ਕੋਈ ਬਿਮਾਰੀ ਜਾਂ ਸਮੱਸਿਆ ਹੈ? ਹਾਂ ਜਾਂ ਨਾਂ?",
+        "ask_visual_audit": "ਉਸ ਸਥਿਤੀ ਵਿੱਚ, ਮੈਨੂੰ ਗੁਣਵੱਤਾ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਤੁਸੀਂ ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਆਪਣੀ ਫਸਲ ਦਾ ਨਮੂਨਾ ਦਿਖਾ ਸਕਦੇ ਹੋ? ਮੈਂ ਹੁਣ ਤੁਹਾਡਾ ਕੈਮਰਾ ਖੋਲ੍ਹ ਰਿਹਾ ਹਾਂ।",
         "ask_transport": "ਤੁਸੀਂ ਆਪਣਾ ਮਾਲ ਕਿਵੇਂ ਲੈ ਕੇ ਜਾਓਗੇ? ਦੋਪਹੀਆ ਵਾਹਨ, ਟ੍ਰੈਕਟਰ ਜਾਂ ਪਿਕਅੱਪ ਟਰੱਕ?",
         "ask_harvest_status": "ਕੀ ਤੁਹਾਡੀ ਫ਼ਸਲ ਦੀ ਕਟਾਈ ਹੋ ਚੁੱਕੀ ਹੈ ਜਾਂ ਅਜੇ ਬਾਕੀ ਹੈ?",
         "ask_sowing_date": "ਤੁਸੀਂ ਇਹ ਫ਼ਸਲ ਕਦੋਂ ਬੀਜੀ ਸੀ?",
@@ -132,6 +207,7 @@ class OnboardingExtractRequest(BaseModel):
     current_name: str = "Farmer"
     current_land_size: Any = None
     location_provided: Optional[bool] = None
+    visual_audit_required: Optional[bool] = None
 
 def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     """
@@ -274,7 +350,8 @@ def onboarding_extract(req: OnboardingExtractRequest):
             "health_issue": "IDENTIFIED" if req.health_issue else "MISSING",
             "transport_type": req.current_transport if req.current_transport else "MISSING",
             "sowing_date": req.sowing_date if req.sowing_date else "MISSING",
-            "land_size": req.current_land_size if req.current_land_size else "MISSING"
+            "land_size": req.current_land_size if req.current_land_size else "MISSING",
+            "location_provided": "YES" if req.location_provided else "NO"
         }
 
         # Priority and templates for missing info
@@ -291,14 +368,26 @@ def onboarding_extract(req: OnboardingExtractRequest):
         prompt = f"""You are Agri-Vakeel, an expert farming assistant. 
 TASK: 
 1. Extract DATA from the USER INPUT into JSON.
-2. If USER gives multiple facts (e.g. "Yes I agree and I have 50 quintals of cotton"), extract EVERYTHING.
+2. If USER gives multiple facts (e.g. "Yes I agree and I have 50 crates of cotton"), extract EVERYTHING.
 3. Identify what is STILL MISSING based on the KNOWN STATE below.
-4. CRITICAL: Only extract data if EXPLICITLY mentioned. Do NOT guess or default fields to values like "already_harvested" unless the user says so.
-5.    - Compose an 'ai_reply' STRICTLY in {req.language} script (If {req.language} is NOT English, DO NOT USE ENGLISH at all) that:
+4. CRITICAL: Only extract data if EXPLICITLY mentioned. Do NOT guess or default fields to values like "already_harvested".
+   - If user mentions "crates", convert to quintals (1 quintal ~ 2 crates for tomatoes/onions, else 1:1 estimate).
+5. Compose an 'ai_reply' STRICTLY in {req.language} script (If {req.language} is NOT English, DO NOT USE ENGLISH at all) that:
    - Politely acknowledges any NEW info extracted from text_input (e.g., "I've recorded 50 quintals...").
    - NEVER ask "Shall we proceed?" or "Can I use your data?" if the user has already provided ANY information (crop, yield, or location).
+   - If consent is not explicitly granted but user continues with crop/yield info, consider 'consent_granted' as true and continue to next missing field.
    - ALWAYS appends the NEXT QUESTION for the FIRST missing field in the priority list.
    - You MUST maintain a supportive, expert farmer persona.
+   - ADDRESS THE USER AS 'Farmer'.
+
+PRIORITY LIST:
+1. Consent (Skip if crop/yield/location already provided)
+2. Crop Name
+3. Yield Volume
+4. Location (Skip if location_provided is YES)
+5. Harvest Status
+6. Branching (Storage/Health/Transport if Harvested, Sowing Date if Not Harvested)
+
 LANGUAGE: {req.language} (Response MUST be in this script).
 USER INPUT: {req.text_input}
 
@@ -313,21 +402,19 @@ KNOWN STATE:
 - Sowing Date: {state['sowing_date']}
 - Location Shared: {state['location_provided']}
 
-
 JSON SCHEMA:
 {{
-  "consent_granted": boolean | null,  // Set TRUE if user agrees/proceeds
+  "consent_granted": boolean | null,  # Set TRUE if user agrees or proceeds to provide data
   "crop": string | null,
   "yield_quintals": number | null,
-    "harvest_status": "already_harvested" | "not_yet_harvested" | null,
-    "location_provided": boolean | null,
-    "storage_type": string | null,
-  "health_issue": boolean | null,
+  "harvest_status": "already_harvested" | "not_yet_harvested" | null,
+  "location_provided": boolean | null,
+  "storage_type": string | null,
+  "health_issue": boolean | null,  # Set TRUE if user reports illness/fungus/issue
+  "visual_audit_required": boolean | null, # Set TRUE ONLY IF user says YES to issues
   "transport_type": string | null,
   "sowing_date": "YYYY-MM-DD" | null,
   "ai_reply": "string (Acknowledge findings + Ask for NEXT missing field in {req.language})"
-}}
-
 If all required fields (based on harvest status) are filled, set 'ai_reply' to: {lang_strings.get('all_done')}
 
 STRICT: Return ONLY valid JSON. Address the user as 'Farmer'. No English in the reply.
@@ -384,10 +471,16 @@ STRICT: Return ONLY valid JSON. Address the user as 'Farmer'. No English in the 
         elif updated_harvest_status == 'already_harvested':
             if not (reply_json.get("storage_type") or req.current_storage):
                 next_q = lang_strings.get("ask_storage")
-            elif not (reply_json.get("health_issue") is not None or req.health_issue is not None):
+            elif (reply_json.get("health_issue") is None and req.health_issue is None):
                 next_q = lang_strings.get("ask_health")
-            elif not (reply_json.get("transport_type") or req.current_transport):
-                next_q = lang_strings.get("ask_transport")
+            elif (reply_json.get("health_issue") is True or req.health_issue is True) and not (reply_json.get("visual_audit_required") or req.visual_audit_required):
+                # User reported issue, now ask to show camera
+                next_q = lang_strings.get("ask_visual_audit")
+            
+            # If health is resolved or skipped, move to transport
+            if not next_q:
+                if not (reply_json.get("transport_type") or req.current_transport):
+                    next_q = lang_strings.get("ask_transport")
         elif updated_harvest_status == 'not_yet_harvested':
             if not (reply_json.get("sowing_date") or req.sowing_date):
                 next_q = lang_strings.get("ask_sowing_date")

@@ -41,18 +41,18 @@ type Step =
 
 const ONBOARDING_STRINGS: Record<string, any> = {
     "English": {
-        greeting: "Namaste! I am MittiMitra. To find you the best profit windows, I need to use your GPS and crop data. Do I have your permission to proceed?",
-        location_success: "Location secured. Is your crop already harvested, or are you still waiting for it to ripen?",
-        location_error: "Got it. We can proceed anyway. Is your crop already harvested, or are you still waiting?",
+        greeting: "Namaste! I am MittiMitra. To help you find the best profit markets, I need your permission to use your GPS and crop data. Do I have your permission to proceed?",
+        location_success: "Location secured. Now, is your crop already harvested, or are you still waiting for it to ripen?",
+        location_error: "Got it. We can proceed by using a representative location. Is your crop already harvested, or are you still waiting?",
         error_parsing: "Sorry, I had trouble processing that. Could you please say it again?",
-        camera_success: "Quality data analyzed. How will you be transporting your produce? Two wheeler, tractor, or pickup truck?"
+        camera_success: "Quality data analyzed. How will you be transporting your produce? Two-wheeler, tractor trolley, or pickup truck?"
     },
     "Hindi": {
         greeting: "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खिड़कियां खोजने के लिए, मुझे आपके जीपीएस और फसल डेटा का उपयोग करने की आवश्यकता है। क्या मुझे आगे बढ़ने के लिए आपकी अनुमति है?",
         location_success: "स्थान प्राप्त हुआ। क्या आपकी फसल पहले ही कट चुकी है, या आप अभी इसके पकने का इंतजार कर रहे हैं?",
         location_error: "स्थान प्राप्त करने में समस्या हुई, लेकिन हम आगे बढ़ सकते हैं। क्या आपकी फसल पहले ही कट चुकी है?",
         error_parsing: "क्षमा करें, मुझे समझने में दिक्कत हुई। कृपया फिर से कहें।",
-        camera_success: "गुणवत्ता डेटा का विश्लेषण किया गया। आप अपनी उपज का परिवहन कैसे करेंगे? दोपहिया, ट्रैक्टर, या पिकअप ट्रक?"
+        camera_success: "गुणवत्ता डेटा का विश्लेषण किया गया। आप अपनी उपज का परिवहन कैसे करेंगे? दोपहिया, ट्रैक्टर ट्रॉली, या पिकअप ट्रक?"
     },
     "Marathi": {
         greeting: "नमस्कार! मी मिट्टीमित्र आहे. तुमच्यासाठी सर्वोत्तम नफा शोधण्यासाठी, मला तुमचा जीपीएस आणि पिकाचा डेटा वापरण्याची परवानगी हवी आहे. मी पुढे जाऊ शकतो का?",
@@ -65,7 +65,15 @@ const ONBOARDING_STRINGS: Record<string, any> = {
         greeting: "வணக்கம்! நான் மிட்டிமித்ரா. உங்களுக்குச் சிறந்த லாபச் சந்தைகளைக் கண்டறிய, உங்கள் ஜிபிஎஸ் மற்றும் பயிர் தரவைப் பயன்படுத்த எனக்கு அனுமதி தேவை. நான் தொடரலாமா?",
         location_success: "இருப்பிடம் உறுதி செய்யப்பட்டது. உங்கள் பயிர் ஏற்கனவே அறுவடை செய்யப்பட்டுவிட்டதா, அல்லது அது முதிர்ச்சியடையும் வரை காத்திருக்கிறீர்களா?",
         location_error: "இருப்பிடத்தைப் பெறுவதில் சிக்கல் உள்ளது, ஆனால் நாம் தொடரலாம். உங்கள் பயிர் ஏற்கனவே அறுவடை செய்யப்பட்டுவிட்டதா?",
-        error_parsing: "மன்னிக்கவும், அதைப் புரிந்துகொள்வதில் எனக்குச் சிரமம் இருந்தது. தயవుசெய்து மீண்டும் சொல்ல முடியுமா?",
+    "Punjabi": {
+        greeting: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਮਿੱਟੀਮਿੱਤਰ ਹਾਂ। ਤੁਹਾਡੇ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਮੁਨਾਫ਼ਾ ਵਾਲੀਆਂ ਮੰਡੀਆਂ ਲੱਭਣ ਲਈ, ਮੈਨੂੰ ਤੁਹਾਡੇ ਜੀਪੀਐਸ ਅਤੇ ਫ਼ਸਲ ਦੇ ਡੇਟਾ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਕੀ ਮੈਂ ਅੱਗੇ ਵਧ ਸਕਦਾ ਹਾਂ?",
+        location_success: "ਲੋਕੇਸ਼ਨ ਮਿਲ ਗਈ ਹੈ। ਕੀ ਤੁਹਾਡੀ ਫ਼ਸਲ ਦੀ ਕਟਾਈ ਹੋ ਚੁੱਕੀ ਹੈ, ਜਾਂ ਤੁਸੀਂ ਅਜੇ ਵੀ ਇਸ ਦੇ ਪੱਕਣ ਦੀ ਉਡੀਕ ਕਰ ਰਹੇ ਹੋ?",
+        location_error: "ਲੋਕੇਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਮੁਸ਼ਕਲ ਆਈ ਹੈ, ਪਰ ਅਸੀਂ ਅੱਗੇ ਵਧ ਸਕਦੇ ਹਾਂ। ਕੀ ਤੁਹਾਡੀ ਫ਼ਸਲ ਦੀ ਕਟਾਈ ਪਹਿਲਾਂ ਹੀ ਹੋ ਚੁੱਕੀ ਹੈ?",
+        error_parsing: "ਮਾਫ਼ ਕਰਨਾ, ਮੈਨੂੰ ਇਸ ਨੂੰ ਸਮਝਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਆਈ ਹੈ। ਕੀ ਤੁਸੀਂ ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕਹਿ ਸਕਦੇ ਹੋ?",
+        camera_success: "ਗੁਣਵੱਤਾ ਦੇ ਡੇਟਾ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਆਪਣੀ ਉਪਜ ਦੀ ਢੋਆ-ਢੁਆਈ ਕਿਵੇਂ ਕਰਗੇ? ਦੋ ਪਹੀਆ ਵਾਹਨ, ਟ੍ਰੈਕਟਰ, ਜਾਂ ਪਿਕਅੱਪ ਟਰੱਕ?"
+    }
+};
+மம் இருந்தது. தயవుசெய்து மீண்டும் சொல்ல முடியுமா?",
         camera_success: "தரத் தரவு பகுப்பாய்வு செய்யப்பட்டது. உங்கள் விளைபொருட்களை எப்படி கொண்டு செல்வீர்கள்? இருசக்கர வாகனம், டிராக்டர் அல்லது பிக்கப் டிரக்?"
     },
     "Telugu": {
@@ -240,7 +248,8 @@ export default function OnboardingPage() {
                     harvest_status: (harvestStatusRef.current || harvestStatus) === 'Already Harvested' ? 'already_harvested' : ((harvestStatusRef.current || harvestStatus) === 'Not Yet Harvested' ? 'not_yet_harvested' : null),
                     location_provided: !!location,
                     sowing_date: sowingDateRef.current || sowingDate,
-                    health_issue: (healthStatusRef.current || healthStatus) === "Issue Reported" ? true : ((healthStatusRef.current || healthStatus) === "No Issue" ? false : null),
+                    health_issue: (healthStatusRef.current || healthStatus) === "Issue Reported" ? true : ((healthStatusRef.current || healthStatus) === "Healthy" ? false : null),
+                    visual_audit_required: currentStepRef.current === 'HealthAudit' && cameraActive
                 })
             });
 
@@ -330,7 +339,7 @@ export default function OnboardingPage() {
                 sowingDateRef.current = data.sowing_date;
             }
 
-            // 2. INTELLIGENT STEP TRANSITION
+            // 2. INTELLIGENT STEP TRANSITION (Synchronized with Backend Priority)
             const updateStep = () => {
                 if (!updatedConsent) return 'Consent';
                 if (!updatedCrop) return 'CropName';
@@ -339,23 +348,31 @@ export default function OnboardingPage() {
                 if (!updatedHarvest) return 'HarvestStatus';
                 
                 if (updatedHarvest === 'Already Harvested') {
+                    // Branch A: Post-Harvest
                     if (!(storageType || data.storage_type)) return 'StorageAudit';
-                    if (data.health_issue === true || healthStatusRef.current === "Issue Reported") return 'HealthAudit';
+                    
+                    // Trigger Health Audit (Camera) ONLY if AI has identified a potential pathology/issue
+                    if (data.health_issue === true || healthStatusRef.current === "Issue Reported") {
+                        if (!cameraActive && currentStepRef.current !== 'HealthAudit') {
+                            return 'HealthAudit';
+                        }
+                        // If camera was already completed, stay in Transit
+                    }
+                    
                     if (!(transportType || data.transport_type)) return 'TransitConfig';
                     return 'Success';
                 } else if (updatedHarvest === 'Not Yet Harvested') {
+                    // Branch B: Pre-Harvest
                     if (!(sowingDate || data.sowing_date)) return 'MaturityCheck';
                     return 'Success';
                 }
                 return currentStepRef.current;
             };
 
+
             const nextStep = updateStep();
             if (nextStep !== currentStepRef.current) {
                 setCurrentStep(nextStep);
-                if (nextStep === 'LocationPermission') {
-                    requestLocation();
-                }
             }
 
             if (data.ai_reply) {
@@ -363,6 +380,9 @@ export default function OnboardingPage() {
                     if (nextStep === 'Success') {
                         await saveOnboardingData();
                         fetchFinalRecommendation();
+                    } else if (nextStep === 'LocationPermission' && !location) {
+                        // AI has finished asking "Is that okay?", now trigger the popup
+                        requestLocation();
                     } else if (nextStep !== 'HealthAudit' && nextStep !== 'LocationPermission') {
                         startListening();
                     }
