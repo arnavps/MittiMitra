@@ -310,15 +310,6 @@ KNOWN STATE:
 - Health: {state['health_issue']}
 - Transport: {state['transport_type']}
 
-PRIORITY & NEXT QUESTIONS:
-1. Consent Missing? -> If `consent_granted` is NOT extracted from the user's input AND was NOT already PROVIDED in the state, ask: "{lang_strings.get('ask_consent')}"
-2. Crop Missing? -> {templates['crop']}
-3. Yield Missing? -> {templates['yield_quintals']}
-4. Harvest Status Missing? -> {templates['harvest_status']}
-5. (If Already Harvested) Storage Missing? -> {templates['storage_type']}
-6. (If Already Harvested) Health Missing? -> {templates['health_issue']}
-7. (If Already Harvested) Transport Missing? -> {templates['transport_type']}
-8. (If Not Yet Harvested) Sowing Date Missing? -> {templates['sowing_date']}
 
 JSON SCHEMA:
 {{
@@ -349,12 +340,43 @@ STRICT: Return ONLY valid JSON. Address the user as 'Farmer'. No English in the 
         )
         
         raw_content = completion.choices[0].message.content
-        # print(f"DEBUG RAW CONTENT: {raw_content}")
         reply_json = json.loads(raw_content)
 
-        # FAIL-SAFE: If any info is provided, consent is implicitly granted
+        # 1. FAIL-SAFE: If any info is provided, consent is implicitly granted
         if reply_json.get("crop") or reply_json.get("yield_quintals") or reply_json.get("harvest_status"):
             reply_json["consent_granted"] = True
+        
+        # 2. PYTHON-DRIVEN PROGRESSION (Guaranteed)
+        # Identify the REAL next question based on the UPDATED fields
+        updated_consent = reply_json.get("consent_granted") or req.consent_granted
+        updated_crop = reply_json.get("crop") or req.current_crop
+        updated_harvest_status = reply_json.get("harvest_status") or req.harvest_status
+
+        next_q = ""
+        if not updated_consent:
+            next_q = lang_strings.get("ask_consent")
+        elif not updated_crop:
+            next_q = lang_strings.get("ask_crop")
+        elif not (reply_json.get("yield_quintals") or req.current_yield):
+            next_q = lang_strings.get("ask_yield")
+        elif not updated_harvest_status:
+            next_q = lang_strings.get("ask_harvest_status")
+        elif updated_harvest_status == 'already_harvested':
+            if not (reply_json.get("storage_type") or req.current_storage):
+                next_q = lang_strings.get("ask_storage")
+            elif not (reply_json.get("health_issue") or req.health_issue):
+                next_q = lang_strings.get("ask_health")
+            elif not (reply_json.get("transport_type") or req.current_transport):
+                next_q = lang_strings.get("ask_transport")
+        elif updated_harvest_status == 'not_yet_harvested':
+            if not (reply_json.get("sowing_date") or req.sowing_date):
+                next_q = lang_strings.get("ask_sowing_date")
+
+        # 3. Concatenate Acknowledgement (AI) + Question (Python)
+        if next_q:
+            ack = reply_json.get("ai_reply", "")
+            # If ack already asks a question or is empty, we just append or use next_q
+            reply_json["ai_reply"] = f"{ack} {next_q}".strip()
             
         return reply_json
 
