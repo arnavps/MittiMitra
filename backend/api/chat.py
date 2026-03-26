@@ -302,7 +302,7 @@ KNOWN STATE:
 - Transport: {state['transport_type']}
 
 PRIORITY & NEXT QUESTIONS:
-1. Consent Missing? -> Ask for consent.
+1. Consent Missing? -> Extract `consent_granted: true` if user says "yes", "proceed", "agree", "okay", or equivalent in their language. If still missing, ask: "{lang_strings.get('ask_location')}"
 2. Crop Missing? -> {templates['crop']}
 3. Yield Missing? -> {templates['yield_quintals']}
 4. Harvest Status Missing? -> {templates['harvest_status']}
@@ -313,7 +313,7 @@ PRIORITY & NEXT QUESTIONS:
 
 JSON SCHEMA:
 {{
-  "consent_granted": boolean | null,
+  "consent_granted": boolean | null,  // Set TRUE if user agrees/proceeds
   "crop": string | null,
   "yield_quintals": number | null,
   "harvest_status": "already_harvested" | "not_yet_harvested" | null,
@@ -321,7 +321,7 @@ JSON SCHEMA:
   "health_issue": boolean | null,
   "transport_type": string | null,
   "sowing_date": "YYYY-MM-DD" | null,
-  "ai_reply": "string (Acknowledge + Next Question in {req.language})"
+  "ai_reply": "string (Acknowledge findings + Ask for NEXT missing field in {req.language})"
 }}
 
 If all required fields (based on harvest status) are filled, set 'ai_reply' to: {lang_strings.get('all_done')}
