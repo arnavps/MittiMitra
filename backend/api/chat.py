@@ -3,7 +3,7 @@ import io
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from groq import Groq
 from dotenv import load_dotenv
 from gtts import gTTS
@@ -422,3 +422,34 @@ def text_to_speech_stream(text: str = Query(...), language: str = Query("English
         error_trace = traceback.format_exc()
         print(f"CRITICAL TTS FAILURE: {e}\n{error_trace}")
         raise HTTPException(status_code=500, detail=str(e))
+
+def generate_vakeel_brief(context: Dict[str, Any], language: str) -> str:
+    """
+    Generates a concise, high-impact summary of the harvest recommendation.
+    """
+    try:
+        status = context.get("status", "UNKNOWN")
+        best_mandi = context.get("best_mandi", "Unknown")
+        total_profit = context.get("profit_forecast_48h", 0)
+        
+        ripeness_data = context.get("oracle", {}).get("maturity", {})
+        ripeness = ripeness_data.get("current_maturity_pct", "unknown") if isinstance(ripeness_data, dict) else "unknown"
+        
+        prompt = f"""You are Agri-Vakeel, the expert farming advisor. 
+        TASK: Summarize why the farmer should {status} based on {best_mandi}, profit of ₹{total_profit}, and maturity of {ripeness}% ripeness.
+        LANGUAGE: {language} (Response MUST be in this script).
+        STYLE: Encouraging, concise, high-impact. Max 2 sentences.
+        """
+        
+        if not client:
+            return f"Agri-Vakeel: {status} at {best_mandi} for ₹{total_profit}."
+
+        response = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama-3.3-70b-versatile",
+            max_tokens=100
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"Error in generate_vakeel_brief: {e}")
+        return f"Agri-Vakeel: Recommendation successfully processed for {best_mandi}."
