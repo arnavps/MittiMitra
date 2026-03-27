@@ -270,6 +270,10 @@ RESPONSE JSON SCHEMA:
         updated_location = reply_json.get("location_provided") if reply_json.get("location_provided") is not None else req.location_provided
         updated_harvest = reply_json.get("harvest_status") or req.harvest_status
 
+        # FAIL-SAFE: If user provides crop/yield/location, they have implicitly consented or are already past that step.
+        if updated_crop or updated_yield or updated_location:
+            updated_consent = True
+
         if not updated_consent:
             next_q = lang_strings["ask_consent"]
         elif not updated_crop:
