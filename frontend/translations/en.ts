@@ -509,7 +509,7 @@ export const en = {
     actionDetails: "Action Details",
     move_to_shade: "Move to Shade",
     move_to_shade_desc: "Moving {crop} from direct sunlight to a shaded area reduces internal heat buildup.",
-    move_to_shade_advice: "Namaste! Since your {crop} is currently in the open field at {temp}°C, moving it to shade is a zero-cost way to save ₹{saving} today. The sun is your biggest enemy right now.",
+    move_to_shade_advice: "Namaste! Since your {crop} is currently in {storage} at {temp}°C, moving it to shade is a zero-cost way to save ₹{saving} today. The sun is your biggest enemy right now.",
     wet_the_bags: "Wet the Bags",
     wet_the_bags_desc: "Evaporative cooling through wet jute bags can lower the crop temperature by 3-5 degrees.",
     wet_the_bags_advice: "I recommend wetting the gunny bags. As the water evaporates, it pulls heat away from the {crop}, acting like a natural refrigerator. This is very effective for {crop} in this heat.",
@@ -610,4 +610,5 @@ export const en = {
     onboardingLocationError: "Got it. We can proceed anyway. Is your crop already harvested, or are you still waiting?",
     onboardingErrorParsing: "Sorry, I had trouble processing that. Could you please say it again?",
     onboardingCameraSuccess: "Quality data analyzed. How will you be transporting your produce? Two wheeler, tractor, or pickup truck?",
+    openField: "Open Field"
 };

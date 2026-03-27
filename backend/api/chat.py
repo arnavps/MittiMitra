@@ -203,8 +203,7 @@ LANGUAGE: {req.language}
 
 STRICT INSTRUCTIONS:
 1. IDENTIFY: Consent, Crop, Yield, Location, Harvest Status, Storage, Health, and Transport.
-2. DPDP: If user agrees OR provides data (yield/crop), 'consent_granted' = true AND 'location_provided' = true.
-3. PRORITY: Ask for Crop first, then Yield. Do NOT ask for Location if 'consent_granted' is true (the frontend triggers the actual GPS popup in the background later).
+3. PRIORITY: Ask for Crop first, then Yield. Only set 'location_provided' if the user provides coordinates or a specific location mention. Verbal consent alone DOES NOT trigger 'location_provided'.
 4. HEALTH: If user says 'no issues/healthy', 'health_issue' = false.
 5. RESILIENCY: If user is unsure about Yield, Storage, or Transit, assign any sensible default and MOVE ON.
 6. NO ENGLISH: The 'ai_reply' must be entirely in {req.language}.
@@ -265,8 +264,9 @@ RESPONSE JSON SCHEMA:
         import re
         ack = re.sub(r'[^.!?]+\?', '', reply_json.get("ai_reply", "")).strip()
         
-        # Immediate Location Acknowledgment logic
-        just_received_location = updated_location and (req.location_provided is False or req.location_provided is None)
+        # Immediate Location Acknowledgment logic (Only if coordinates are present)
+        coords = req.dashboard_context.get("location")
+        just_received_location = updated_location and (req.location_provided is False or req.location_provided is None) and coords
         prefix = f"{lang_strings.get('location_received', 'Location received!')} " if just_received_location else ""
 
         if not next_q:
@@ -301,6 +301,12 @@ def text_to_speech_stream(text: str = Query(...), language: str = Query("English
         mp3_fp = io.BytesIO()
         tts.write_to_fp(mp3_fp)
         mp3_fp.seek(0)
-        return StreamingResponse(mp3_fp, media_type="audio/mpeg")
+        return StreamingResponse(io.BytesIO(mp3_fp.getvalue()), media_type="audio/mpeg")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def generate_vakeel_brief(context: Dict[str, Any], language: str) -> str:
+    """
+    Placeholder for vakeel brief generator, required for dashboard initialization.
+    """
+    return "Recommendation successfully processed."
