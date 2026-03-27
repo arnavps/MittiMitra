@@ -195,27 +195,19 @@ def onboarding_extract(req: OnboardingExtractRequest):
         }
 
         prompt = f"""You are Agri-Vakeel, an expert farming assistant. 
-TASK: 
-1. Extract DATA from USER INPUT into JSON. 
-2. Identify STILL MISSING fields using the KNOWN STATE.
-3. CRITICAL: Address 'Farmer'. No English in 'ai_reply'.
-4. DPDP CONSENT: Set 'consent_granted': true if user agrees OR provides data.
-5. LOCATION CONSENT: Set 'location_provided': true if user says 'yes', 'ok', 'theek hai', etc. to the location request.
-6. EXTRACTION: If user mentions a storage type (shed, cold storage, field), set 'storage_type' accordingly.
-7. HEALTH STATUS: Set 'health_issue': false if user says 'no issues', 'healthy', 'theek hai', 'sab sahi hai'. Set 'health_issue': true if user says 'spots', 'bugs', 'bimaari', 'bad'.
-8. RESILIENCY: If user says 'don't know', 'not sure', or gives ambiguous answers for non-critical fields (yield, storage, transit, sowing date), assign a sensible default (e.g., 50 quintals, 'Field', 'Today') and MOVE ON to the next question. DO NOT LOOP.
+TASK: Extract DATA from USER INPUT into JSON. 
 
-PRIORITY LIST:
-1. Consent (Skip if crop/yield already known)
-2. Crop Name
-3. Yield Volume
-4. Location (Skip if location_provided is YES)
-5. Harvest Status
-6. Branching (Storage/Health/Transport if Harvested, Sowing Date if Not)
-
-LANGUAGE: {req.language}
-USER INPUT: {req.text_input}
 KNOWN STATE: {state}
+USER INPUT: {req.text_input}
+LANGUAGE: {req.language}
+
+STRICT INSTRUCTIONS:
+1. IDENTIFY: Consent, Crop, Yield, Location, Harvest Status, Storage, Health, and Transport.
+2. DPDP: If user agrees OR provides data, 'consent_granted' = true.
+3. LOCATION: If user says 'yes/ok' to location, 'location_provided' = true.
+4. HEALTH: If user says 'no issues/healthy', 'health_issue' = false.
+5. RESILIENCY: If user is unsure about Yield, Storage, or Transit, assign any sensible default and MOVE ON.
+6. NO ENGLISH: The 'ai_reply' must be entirely in {req.language}.
 
 RESPONSE JSON SCHEMA:
 {{
@@ -226,10 +218,9 @@ RESPONSE JSON SCHEMA:
   "location_provided": boolean,
   "storage_type": string | null,
   "health_issue": boolean | null,
-  "visual_audit_required": boolean | null,
   "transport_type": string | null,
   "sowing_date": string | null,
-  "ai_reply": "string (Address 'Farmer' and Ask for NEXT missing field in {req.language})"
+  "ai_reply": "string (Address 'Farmer' and Ask for the NEXT missing field in {req.language})"
 }}
 """
 
@@ -261,9 +252,6 @@ RESPONSE JSON SCHEMA:
                 next_q = lang_strings["ask_storage"]
             elif (reply_json.get("health_issue") is None and req.health_issue is None):
                 next_q = lang_strings["ask_health"]
-            elif (reply_json.get("health_issue") is True or req.health_issue is True) and not (reply_json.get("visual_audit_required") or req.visual_audit_required):
-                next_q = lang_strings["ask_visual_audit"]
-                reply_json["visual_audit_required"] = True
             elif not (reply_json.get("transport_type") or req.current_transport):
                 next_q = lang_strings["ask_transport"]
         elif updated_harvest == "not_yet_harvested":

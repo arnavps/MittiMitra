@@ -630,8 +630,8 @@ export default function OnboardingPage() {
                                     />
                                     <LedgerItem 
                                         label="Field Location" 
-                                        value={location ? "Located ✅" : (locationPermissionGranted ? "Acquiring..." : (gpsError ? "Manual 📍" : "Finding..."))} 
-                                        status={location || gpsError ? 'locked' : (locationPermissionGranted ? 'locked' : (currentStepRef.current === 'LocationPermission' ? 'active' : 'pending'))}
+                                        value={location ? "Located ✅" : (gpsError ? "Manual 📍" : "Finding...")} 
+                                        status={location || gpsError ? 'locked' : (currentStepRef.current === 'LocationPermission' ? 'active' : 'pending')}
                                         icon={<MapPin className="w-4 h-4" />}
                                     />
                                     <LedgerItem 
