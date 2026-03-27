@@ -276,15 +276,16 @@ RESPONSE JSON SCHEMA:
         updated_location = reply_json.get("location_provided") if reply_json.get("location_provided") is not None else req.location_provided
         updated_harvest = reply_json.get("harvest_status") or req.harvest_status
 
-        # FAIL-SAFE: If user provides crop/yield/location, they have implicitly consented or are already past that step.
+        # FAIL-SAFE: If crop/yield/location is already provided, they have implicitly consented.
         if updated_crop or updated_yield or updated_location:
             updated_consent = True
 
-        # FAIL-SAFE: If dashboard_context already has a location, skip asking for it.
+        # FAIL-SAFE: If dashboard_context already has a location OR request says it is provided, skip asking for it.
         coords = (req.dashboard_context or {}).get("location")
-        if coords and coords.get("lat") and coords.get("lng"):
+        if (coords and coords.get("lat") and coords.get("lng")) or req.location_provided:
             updated_location = True
-            
+
+        # 1. PRIORITY BRANCH SELECTION
         if not updated_consent:
             next_q = lang_strings["ask_consent"]
         elif not updated_crop:
@@ -292,6 +293,7 @@ RESPONSE JSON SCHEMA:
         elif not updated_yield:
             next_q = lang_strings["ask_yield"]
         elif not updated_location:
+            # ONLY ask for location if it is NOT in dashboard_context
             next_q = lang_strings["ask_location"]
         elif not updated_harvest:
             next_q = lang_strings["ask_harvest_status"]
@@ -309,13 +311,32 @@ RESPONSE JSON SCHEMA:
         import re
         ack = re.sub(r'[^.!?]+\?', '', reply_json.get("ai_reply", "")).strip()
         
-        # Immediate Location Acknowledgment logic
+        # 2. ULTIMATE RE-ASK MUZZLE:
+        # If state is already provided, we MUST NOT append the corresponding question.
+        if updated_consent and next_q == lang_strings.get("ask_consent"):
+            next_q = None
+        if updated_location and next_q == lang_strings.get("ask_location"):
+             next_q = None
+
+        # 3. ACKNOWLEDGMENT LOGIC
         coords = (req.dashboard_context or {}).get("location")
         just_received_location = (reply_json.get("location_provided") is True) and (req.location_provided is not True) and coords
-        
         prefix = f"{lang_strings.get('location_received', 'Location received!')} " if just_received_location else ""
 
-        # Final response construction
+        # Construct final reply
+        final_reply = f"{prefix}{ack} {next_q if next_q else lang_strings['all_done']}".strip()
+
+        # Final string sanitization: Strip AI-generated prompts for ALREADY completed steps
+        if updated_consent:
+            consent_prompt = lang_strings.get("ask_consent", "permission").strip()
+            if consent_prompt in final_reply:
+                final_reply = final_reply.replace(consent_prompt, "").strip()
+        
+        if updated_location:
+            location_prompt = lang_strings.get("ask_location", "GPS location").strip()
+            if location_prompt in final_reply:
+                final_reply = final_reply.replace(location_prompt, "").strip()
+
         status_json = {
             "consent_granted": updated_consent,
             "crop": updated_crop,
@@ -326,8 +347,8 @@ RESPONSE JSON SCHEMA:
             "health_issue": reply_json.get("health_issue") if reply_json.get("health_issue") is not None else req.health_issue,
             "transport_type": reply_json.get("transport_type") or req.current_transport,
             "sowing_date": reply_json.get("sowing_date") or req.sowing_date,
-            "ai_reply": f"{prefix}{ack} {next_q if next_q else lang_strings['all_done']}".strip(),
-            "response": f"{prefix}{ack} {next_q if next_q else lang_strings['all_done']}".strip()
+            "ai_reply": final_reply,
+            "response": final_reply
         }
         
         return status_json

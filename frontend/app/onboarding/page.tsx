@@ -361,7 +361,7 @@ export default function OnboardingPage() {
                 if (!updatedCrop) return 'CropName';
                 if (!updatedYield) return 'YieldVolume';
                 // Skip if location is already provided/consented at start
-                if (!location && !gpsError && !data.location_provided) return 'LocationPermission';
+                if (!location && !gpsError && !data.location_provided && !locationPermissionGranted) return 'LocationPermission';
                 if (!updatedHarvest) return 'HarvestStatus';
                 
                 if (updatedHarvest === 'Already Harvested') {
