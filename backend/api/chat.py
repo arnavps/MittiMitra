@@ -151,21 +151,24 @@ class OnboardingExtractRequest(BaseModel):
 
 def build_system_prompt(context: Dict[str, Any], language: str) -> str:
     """
-    Injects the real-time dashboard data into the AI prompt.
+    Injects the real-time dashboard data into the AI prompt with strict language enforcement.
     """
     status = context.get("status", "UNKNOWN")
     best_mandi = context.get("best_mandi", "Unknown")
     total_profit = context.get("total_net_profit", 0)
-    per_quintal = context.get("net_realization_inr_per_quintal", 0)
-    yield_qtl = context.get("yield_quintals", 1)
-    weather = context.get("weather", {})
-    mandi = context.get("mandi_stats", {})
     
-    prompt = f"""You are the MittiMitra Agri-Vakeel, an expert farming advisor.
-Respond ONLY in {language}. Use Devanagari/Regional script. 
-Dashboad Data: Status {status}, Best Mandi {best_mandi}, Profit ₹{total_profit}.
-Farmer Address: Ji Kisan Bhai (Hindi) / Shetkari Mitra (Marathi) etc.
-"""
+    prompt = f"""You are the MittiMitra Agri-Vakeel, a professional agricultural AI advisor.
+STRICT RULE: You must respond 100% in {language}. 
+If {language} is English: Do NOT use Hindi/Marathi words.
+If {language} is Hindi: Use ONLY Hindi (Devanagari script).
+If {language} is Marathi: Use ONLY Marathi (Devanagari script).
+
+DASHBOARD DATA:
+- Profit Status: {status}
+- Market Match: {best_mandi}
+- Expected Net Profit: ₹{total_profit}
+
+Analyze the data professionally and provide clear, actionable advice to the farmer in {language}."""
     return prompt
 
 @router.post("/explain")
