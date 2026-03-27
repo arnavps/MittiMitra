@@ -610,5 +610,8 @@ export const en = {
     onboardingLocationError: "Got it. We can proceed anyway. Is your crop already harvested, or are you still waiting?",
     onboardingErrorParsing: "Sorry, I had trouble processing that. Could you please say it again?",
     onboardingCameraSuccess: "Quality data analyzed. How will you be transporting your produce? Two wheeler, tractor, or pickup truck?",
-    openField: "Open Field"
+    openField: "Open Field",
+    storage_cold_storage: "Cold Storage",
+    storage_shed: "Shed",
+    storage_open_field: "Open Field"
 };

@@ -604,4 +604,7 @@ export const hi = {
     onboardingLocationError: "स्थान प्राप्त करने में समस्या हुई, लेकिन हम आगे बढ़ सकते हैं। क्या आपकी फसल पहले ही कट चुकी है?",
     onboardingErrorParsing: "क्षमा करें, मुझे समझने में दिक्कत हुई। कृपया फिर से कहें।",
     onboardingCameraSuccess: "गुणवत्ता डेटा का विश्लेषण किया गया। आप अपनी उपज का परिवहन कैसे करेंगे? दोपहिया, ट्रैक्टर, या पिकअप ट्रक?",
+    storage_cold_storage: "कोल्ड स्टोरेज",
+    storage_shed: "शेड",
+    storage_open_field: "खुला खेत"
 };

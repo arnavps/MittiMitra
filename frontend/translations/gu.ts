@@ -592,4 +592,7 @@ export const gu = {
     onboardingLocationError: "સ્થાન મેળવવામાં મુશ્કેલી આવી છે, પણ આપણે આગળ વધી શકીએ છીએ. શું તમારી લણણી થઈ ગઈ છે?",
     onboardingErrorParsing: "ક્ષમા કરશો, મને તે સમજવામાં મુશ્કેલી પડી. શું તમે ફરીથી કહી શકશો?",
     onboardingCameraSuccess: "ગુણવત્તાના ડેટાનું વિશ્લેષણ કરવામાં આવ્યું. તમે તમારો માલ કેવી રીતે લઈ જશો? ટૂ-વ્હીલર, ટ્રેક્ટર કે પિકઅપ ટ્રક?",
+    storage_cold_storage: "કોલ્ડ સ્ટોરેજ",
+    storage_shed: "શેડ",
+    storage_open_field: "ખુલ્લી જગ્યા"
 };

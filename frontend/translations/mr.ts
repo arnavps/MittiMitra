@@ -604,4 +604,7 @@ export const mr = {
     onboardingLocationError: "स्थान मिळवण्यात अडचण आली, पण आपण पुढे जाऊ शकतो. तुमची कापणी आधीच झाली आहे का?",
     onboardingErrorParsing: "क्षमस्व, मला ते समजण्यात अडचण आली. कृपया पुन्हा सांगाल का?",
     onboardingCameraSuccess: "गुणवत्ता डेटाचे विश्लेषण केले. तुम्ही तुमचा माल कसा नेणार आहात? दुचाकी, ट्रॅक्टर किंवा पिकअप ट्रक?",
+    storage_cold_storage: "कोल्ड स्टोरेज",
+    storage_shed: "शेड",
+    storage_open_field: "उघड्यावर"
 };

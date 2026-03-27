@@ -7,7 +7,7 @@ if sys.platform == "win32":
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import logging 
 
 import httpx
@@ -67,13 +67,13 @@ async def startup_event():
 
 class HarvestRequest(BaseModel):
     crop: str = ""
-    location: dict
+    location: Optional[Dict[str, float]] = None
     yield_est_quintals: float = 50.0
     base_spoilage_rate: float = 0.05 
     language: str = "en"
-    planting_date: str = None 
-    storage_type: str = "Open Field"
-    transport_type: str = "Open Trolley"
+    planting_date: Optional[str] = None 
+    storage_type: Optional[str] = "open_field"
+    transport_type: Optional[str] = "open_trolley"
     disease_severity: float = 0.0
     is_harvested: bool = False
 
@@ -160,7 +160,8 @@ async def get_harvest_recommendation(data: HarvestRequest):
             crop=data.crop,
             temp=temp_today,
             humidity=humidity_today,
-            hours_to_market=dist_best / 40.0
+            hours_to_market=dist_best / 40.0,
+            storage_type=data.storage_type
         )
         dynamic_spoilage_pct = spoilage_results["loss_percentage"]
         preservation_data = spoilage_results["preservation"]
@@ -261,4 +262,4 @@ async def get_ranked_schemes(data: dict):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)

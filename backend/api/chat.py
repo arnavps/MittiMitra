@@ -133,6 +133,8 @@ class OnboardingExtractRequest(BaseModel):
     step: str
     text_input: str
     language: str = "English"
+    # Dashboard Context for location detection
+    dashboard_context: Dict[str, Any] = {}
     # Current state fields for greedy extraction
     consent_granted: Any = None
     current_crop: str = ""
@@ -165,6 +167,29 @@ Dashboad Data: Status {status}, Best Mandi {best_mandi}, Profit ₹{total_profit
 Farmer Address: Ji Kisan Bhai (Hindi) / Shetkari Mitra (Marathi) etc.
 """
     return prompt
+
+@router.post("/explain")
+def explain_data(req: ChatRequest):
+    """
+    Deep-dive explanation for dashboard data.
+    """
+    if not client:
+        return {"ai_reply": "Deep analysis requires an active Groq API connection."}
+
+    try:
+        prompt = build_system_prompt(req.dashboard_context, req.language)
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": req.farmer_query}
+            ],
+            temperature=0.7,
+            max_tokens=500
+        )
+        return {"ai_reply": completion.choices[0].message.content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/onboarding_extract")
 def onboarding_extract(req: OnboardingExtractRequest):
@@ -203,10 +228,12 @@ LANGUAGE: {req.language}
 
 STRICT INSTRUCTIONS:
 1. IDENTIFY: Consent, Crop, Yield, Location, Harvest Status, Storage, Health, and Transport.
-3. PRIORITY: Ask for Crop first, then Yield. Only set 'location_provided' if the user provides coordinates or a specific location mention. Verbal consent alone DOES NOT trigger 'location_provided'.
-4. HEALTH: If user says 'no issues/healthy', 'health_issue' = false.
-5. RESILIENCY: If user is unsure about Yield, Storage, or Transit, assign any sensible default and MOVE ON.
-6. NO ENGLISH: The 'ai_reply' must be entirely in {req.language}.
+2. LOCATION INTENT: Only set 'location_provided' if the user explicitly mentions a city, village, coordinates, or says 'Here is my location'. Verbal agreement to share GPS (Step 1 Consent) DOES NOT set 'location_provided'.
+3. NO DEFAULTING: Do NOT assume values for Yield, Storage, or Transit if the user hasn't provided them. Leave as null. 
+4. STORAGE KEYS: Standardize storage_type to one of: 'open_field', 'shed', 'cold_storage' only.
+5. PRIORITY: Ask for Crop first, then Yield.
+6. HEALTH: If user says 'no issues/healthy', 'health_issue' = false.
+7. NO ENGLISH: The 'ai_reply' must be entirely in {req.language}.
 
 RESPONSE JSON SCHEMA:
 {{
@@ -230,14 +257,17 @@ RESPONSE JSON SCHEMA:
             temperature=0,
         )
         
-        reply_json = json.loads(completion.choices[0].message.content)
+        try:
+            reply_json = json.loads(completion.choices[0].message.content)
+        except (json.JSONDecodeError, AttributeError):
+            reply_json = {}
         
         # Priority logic to overwrite the AI if it misses the next field
         next_q = None
-        updated_consent = reply_json.get("consent_granted") or req.consent_granted
+        updated_consent = reply_json.get("consent_granted") if reply_json.get("consent_granted") is not None else req.consent_granted
         updated_crop = reply_json.get("crop") or req.current_crop
         updated_yield = reply_json.get("yield_quintals") or req.current_yield
-        updated_location = reply_json.get("location_provided") or req.location_provided
+        updated_location = reply_json.get("location_provided") if reply_json.get("location_provided") is not None else req.location_provided
         updated_harvest = reply_json.get("harvest_status") or req.harvest_status
 
         if not updated_consent:
@@ -264,22 +294,36 @@ RESPONSE JSON SCHEMA:
         import re
         ack = re.sub(r'[^.!?]+\?', '', reply_json.get("ai_reply", "")).strip()
         
-        # Immediate Location Acknowledgment logic (Only if coordinates are present)
-        coords = req.dashboard_context.get("location")
-        just_received_location = updated_location and (req.location_provided is False or req.location_provided is None) and coords
+        # Immediate Location Acknowledgment logic
+        coords = (req.dashboard_context or {}).get("location")
+        just_received_location = (reply_json.get("location_provided") is True) and (req.location_provided is not True) and coords
+        
         prefix = f"{lang_strings.get('location_received', 'Location received!')} " if just_received_location else ""
 
-        if not next_q:
-            reply_json["ai_reply"] = f"{prefix}{ack} {lang_strings['all_done']}".strip()
-        else:
-            reply_json["ai_reply"] = f"{prefix}{ack} {next_q}".strip()
-            
-        return reply_json
+        # Final response construction
+        status_json = {
+            "consent_granted": updated_consent,
+            "crop": updated_crop,
+            "yield_quintals": updated_yield,
+            "harvest_status": updated_harvest,
+            "location_provided": updated_location,
+            "storage_type": reply_json.get("storage_type") or req.current_storage,
+            "health_issue": reply_json.get("health_issue") if reply_json.get("health_issue") is not None else req.health_issue,
+            "transport_type": reply_json.get("transport_type") or req.current_transport,
+            "sowing_date": reply_json.get("sowing_date") or req.sowing_date,
+            "ai_reply": f"{prefix}{ack} {next_q if next_q else lang_strings['all_done']}".strip()
+        }
+        
+        return status_json
 
     except Exception as e:
         import traceback
         print(f"Extraction error: {str(e)}\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return {
+            "consent_granted": req.consent_granted,
+            "crop": req.current_crop,
+            "ai_reply": "I am having some connection trouble. Please say your crop name again?"
+        }
 
 @router.post("/tts")
 def text_to_speech(req: TTSRequest):

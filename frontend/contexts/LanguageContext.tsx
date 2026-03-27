@@ -53,7 +53,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         
         if (params) {
             Object.entries(params).forEach(([k, v]) => {
-                value = value.replace(`{${k}}`, String(v));
+                value = value.replaceAll(`{${k}}`, String(v));
             });
         }
         

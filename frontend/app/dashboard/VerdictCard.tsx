@@ -276,15 +276,17 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                                 <div className="flex items-start space-x-4 relative z-10">
                                                     <button 
                                                         onClick={() => {
-                                                            const storage = data.storage_type || t('openField');
+                                                            const storageKey = data.storage_type ? `storage_${data.storage_type}` : 'storage_open_field';
+                                                            const localizedStorage = t(storageKey as any);
                                                             const adviceParams = { 
-                                                                crop: t((data.crop || userCrop || 'tomato').toLowerCase() as any), 
-                                                                temp: data.metrics?.temp || 0, 
-                                                                saving: action.net_saving_inr,
-                                                                storage: storage 
-                                                            };
-                                                            const adviceText = action.action_id ? t(`${action.action_id}_advice` as any, adviceParams) : action.ai_advice;
-                                                            speak(adviceText, language);
+                                                                 crop: t((data.crop || userCrop || 'tomato').toLowerCase() as any), 
+                                                                 temp: data.metrics?.temp || 0, 
+                                                                 saving: action.net_saving_inr,
+                                                                 storage: localizedStorage 
+                                                             };
+                                                             const adviceKey = action.action_id ? `${action.action_id}_advice` : null;
+                                                             const adviceText = adviceKey ? t(adviceKey as any, adviceParams) : action.ai_advice;
+                                                             speak(adviceText, language);
                                                         }}
                                                         className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center shrink-0 hover:scale-110 active:scale-95 transition-all shadow-lg"
                                                     >
@@ -294,11 +296,11 @@ export function VerdictCard({ data, userCrop, isHarvested, onExplain, oracleData
                                                         <div className="text-[10px] font-black text-mint uppercase tracking-widest mb-1">{t('aiAdvice')}</div>
                                                          <p className="text-sm text-gray-300 italic font-medium leading-relaxed">
                                                             "{action.action_id ? t(`${action.action_id}_advice` as any, { 
-                                                                crop: t((data.crop || userCrop || 'tomato').toLowerCase() as any), 
-                                                                temp: data.metrics?.temp || 0, 
-                                                                saving: action.net_saving_inr,
-                                                                storage: data.storage_type || t('openField')
-                                                            }) : action.ai_advice}"
+                                                                 crop: t((data.crop || userCrop || 'tomato').toLowerCase() as any), 
+                                                                 temp: data.metrics?.temp || 0, 
+                                                                 saving: action.net_saving_inr,
+                                                                 storage: t((data.storage_type ? `storage_${data.storage_type}` : 'storage_open_field') as any)
+                                                             }) : action.ai_advice}"
                                                         </p>
                                                     </div>
                                                 </div>

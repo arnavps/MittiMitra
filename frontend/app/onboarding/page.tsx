@@ -249,11 +249,18 @@ export default function OnboardingPage() {
                     location_provided: !!location || locationPermissionGranted,
                     sowing_date: sowingDateRef.current || sowingDate,
                     health_issue: (healthStatusRef.current || healthStatus) === "Issue Reported" ? true : ((healthStatusRef.current || healthStatus) === "Healthy" ? false : null),
-                    visual_audit_required: currentStepRef.current === 'HealthAudit' && cameraActive
+                    visual_audit_required: currentStepRef.current === 'HealthAudit' && cameraActive,
+                    dashboard_context: {
+                        location: location ? { lat: location.latitude, lng: location.longitude } : null
+                    }
                 })
             });
 
-            if (!res.ok) throw new Error("API responded with error");
+            if (!res.ok) {
+                const errBody = await res.text();
+                console.error(`API Error (${res.status}):`, errBody);
+                throw new Error(`API responded with error ${res.status}`);
+            }
             const data = await res.json();
             setIsThinking(false);
             
@@ -420,14 +427,21 @@ export default function OnboardingPage() {
                 yield_est_quintals: parseFloat(yieldAmountRef.current || yieldAmount) || 50,
                 base_spoilage_rate: 0.05,
                 language: globalLanguage,
-                planting_date: sowingDate || null,
-                is_harvested: harvestStatusRef.current === 'Already Harvested' || harvestStatus === 'Already Harvested'
+                planting_date: sowingDate || undefined,
+                is_harvested: harvestStatusRef.current === 'Already Harvested' || harvestStatus === 'Already Harvested',
+                storage_type: storageTypeRef.current || storageType || undefined,
+                transport_type: transportTypeRef.current || transportType || undefined
             };
+            
+            // Filter out undefined keys to prevent JSON.stringify sending null or empty keys
+            const cleanPayload = Object.fromEntries(
+                Object.entries(payload).filter(([_, v]) => v !== undefined)
+            );
 
             const res = await fetch('/api/recommendation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(cleanPayload)
             });
 
             if (res.ok) {
