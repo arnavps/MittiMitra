@@ -1,0 +1,200 @@
+﻿def onboarding_extract(req: OnboardingExtractRequest):
+    """
+    Greedy extraction logic for "non-stop" multi-lingual voice onboarding.
+    Extracts all possible fields from raw speech and always appends the NEXT question.
+    """
+    if not client:
+        # Mock logic for testing without keys
+        return {
+            "consent_granted": True if "yes" in req.text_input.lower() else req.consent_granted,
+            "crop": ("Cotton" if "cotton" in req.text_input.lower() else req.current_crop),
+            "ai_reply": "Mock OK. What is your yield?"
+        }
+
+    try:
+        # 1. Determine local strings for the requested language
+        lang = req.language if req.language in ONBOARDING_STRINGS_BACKEND else "English"
+        lang_strings = ONBOARDING_STRINGS_BACKEND[lang]
+
+        # 2. Define the current state for the AI
+        state = {
+            "consent_granted": "PROVIDED" if req.consent_granted is True else "MISSING",
+            "crop": req.current_crop if req.current_crop else "MISSING",
+            "yield_quintals": f"{req.current_yield} Quintals" if req.current_yield else "MISSING",
+            "harvest_status": req.harvest_status if req.harvest_status else "MISSING",
+            "storage_type": req.current_storage if req.current_storage else "MISSING",
+            "health_issue": "IDENTIFIED" if req.health_issue else "MISSING",
+            "transport_type": req.current_transport if req.current_transport else "MISSING",
+            "sowing_date": req.sowing_date if req.sowing_date else "MISSING",
+            "land_size": req.current_land_size if req.current_land_size else "MISSING",
+            "location_provided": "YES" if req.location_provided else "NO"
+        }
+
+        # Priority and templates for missing info
+        templates = {
+            "crop": lang_strings.get("ask_crop"),
+            "yield_quintals": lang_strings.get("ask_yield"),
+            "harvest_status": lang_strings.get("ask_harvest_status"),
+            "storage_type": lang_strings.get("ask_storage"),
+            "health_issue": lang_strings.get("ask_health"),
+            "transport_type": lang_strings.get("ask_transport"),
+            "sowing_date": lang_strings.get("ask_sowing_date")
+        }
+
+        prompt = f"""You are Agri-Vakeel, an expert farming assistant. 
+TASK: 
+1. Extract DATA from the USER INPUT into JSON.
+2. If USER gives multiple facts (e.g. "Yes I agree and I have 50 crates of cotton"), extract EVERYTHING.
+3. Identify what is STILL MISSING based on the KNOWN STATE below.
+4. CRITICAL: Only extract data if EXPLICITLY mentioned. Do NOT guess or default fields to values like "already_harvested".
+   - If user mentions "crates", convert to quintals (1 quintal ~ 2 crates for tomatoes/onions, else 1:1 estimate).
+5. Compose an 'ai_reply' STRICTLY in {req.language} script (If {req.language} is NOT English, DO NOT USE ENGLISH at all) that:
+   - Politely acknowledges any NEW info extracted from text_input (e.g., "I've recorded 50 quintals...").
+   - NEVER ask "Shall we proceed?" or "Can I use your data?" if the user has already provided ANY information (crop, yield, or location).
+   - If consent is not explicitly granted but user continues with crop/yield info, consider 'consent_granted' as true and continue to next missing field.
+   - ALWAYS appends the NEXT QUESTION for the FIRST missing field in the priority list.
+   - You MUST maintain a supportive, expert farmer persona.
+   - ADDRESS THE USER AS 'Farmer'.
+
+PRIORITY LIST:
+1. Consent (Skip if crop/yield/location already provided)
+2. Crop Name
+3. Yield Volume
+4. Location (Skip if location_provided is YES)
+5. Harvest Status
+6. Branching (Storage/Health/Transport if Harvested, Sowing Date if Not Harvested)
+
+LANGUAGE: {req.language} (Response MUST be in this script).
+USER INPUT: {req.text_input}
+
+KNOWN STATE:
+- Consent: {state['consent_granted']}
+- Crop: {state['crop']}
+- Yield: {state['yield_quintals']}
+- Harvest Status: {state['harvest_status']}
+- Storage: {state['storage_type']}
+- Health: {state['health_issue']}
+- Transport: {state['transport_type']}
+- Sowing Date: {state['sowing_date']}
+- Location Shared: {state['location_provided']}
+
+JSON SCHEMA:
+{{
+  "consent_granted": boolean | null,  # Set TRUE if user agrees or proceeds to provide data
+  "crop": string | null,
+  "yield_quintals": number | null,
+  "harvest_status": "already_harvested" | "not_yet_harvested" | null,
+  "location_provided": boolean | null,
+  "storage_type": string | null,
+  "health_issue": boolean | null,  # Set TRUE if user reports illness/fungus/issue
+  "visual_audit_required": boolean | null, # Set TRUE ONLY IF user says YES to issues
+  "transport_type": string | null,
+  "sowing_date": "YYYY-MM-DD" | null,
+  "ai_reply": "string (Acknowledge findings + Ask for NEXT missing field in {req.language})"
+If all required fields (based on harvest status) are filled, set 'ai_reply' to: {lang_strings.get('all_done')}
+
+STRICT: Return ONLY valid JSON. Address the user as 'Farmer'. No English in the reply.
+"""
+
+        # DEBUG
+        # print(f"DEBUG PROMPT: {prompt}")
+
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+            temperature=0.0
+        )
+        
+        raw_content = completion.choices[0].message.content
+        reply_json = json.loads(raw_content)
+
+        # Helper to strip any ? from AI acknowledgement to prevent loop
+        import re
+        def clean_ack(text: str) -> str:
+            # Remove any sentence ending in ? (common AI loop behavior)
+            return re.sub(r'[^.!?]+\?', '', text).strip()
+
+        # 1. FAIL-SAFE: If any info is provided, consent is implicitly granted
+        if reply_json.get("crop") or reply_json.get("yield_quintals") or reply_json.get("location_provided") or reply_json.get("harvest_status"):
+            reply_json["consent_granted"] = True
+        
+        # 2. PYTHON-DRIVEN PROGRESSION (Guaranteed)
+        # Identify the REAL next question based on the UPDATED fields
+        # Note: We prioritize the flags from the Request if the LLM didn't see anything new
+        updated_consent = reply_json.get("consent_granted") if reply_json.get("consent_granted") is not None else req.consent_granted
+        updated_crop = reply_json.get("crop") if reply_json.get("crop") else req.current_crop
+        updated_yield = reply_json.get("yield_quintals") if reply_json.get("yield_quintals") else req.current_yield
+        updated_location = reply_json.get("location_provided") if reply_json.get("location_provided") is not None else req.location_provided
+        updated_harvest_status = reply_json.get("harvest_status") if reply_json.get("harvest_status") else req.harvest_status
+
+        # If data is present but consent is not explicitly set, force it (Fail-safe)
+        if (updated_crop or updated_yield or updated_location) and not updated_consent:
+            updated_consent = True
+            reply_json["consent_granted"] = True
+
+        next_q = ""
+        if not updated_consent:
+            next_q = lang_strings.get("ask_consent")
+        elif not updated_crop:
+            next_q = lang_strings.get("ask_crop")
+        elif not updated_yield:
+            next_q = lang_strings.get("ask_yield")
+        elif not updated_location:
+            next_q = lang_strings.get("ask_location")
+        elif not updated_harvest_status:
+            next_q = lang_strings.get("ask_harvest_status")
+        elif updated_harvest_status == 'already_harvested':
+            if not (reply_json.get("storage_type") or req.current_storage):
+                next_q = lang_strings.get("ask_storage")
+            elif (reply_json.get("health_issue") is None and req.health_issue is None):
+                next_q = lang_strings.get("ask_health")
+            elif (reply_json.get("health_issue") is True or req.health_issue is True) and not (reply_json.get("visual_audit_required") or req.visual_audit_required):
+                # User reported issue, now ask to show camera
+                next_q = lang_strings.get("ask_visual_audit")
+            
+            # If health is resolved or skipped, move to transport
+            if not next_q:
+                if not (reply_json.get("transport_type") or req.current_transport):
+                    next_q = lang_strings.get("ask_transport")
+        elif updated_harvest_status == 'not_yet_harvested':
+            if not (reply_json.get("sowing_date") or req.sowing_date):
+                next_q = lang_strings.get("ask_sowing_date")
+
+        # 3. Concatenate Acknowledgement (AI) + Question (Python)
+        if next_q:
+            ack = clean_ack(reply_json.get("ai_reply", ""))
+            # If ack already asks a question or is empty, we just append or use next_q
+            reply_json["ai_reply"] = f"{ack} {next_q}".strip()
+            
+        return reply_json
+
+    except Exception as e:
+        import traceback
+        print(f"Extraction error: {str(e)}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/tts")
+def text_to_speech(req: TTSRequest):
+    """
+    Sub-second endpoint to generate robust audio for all 7 Indic languages via gTTS.
+    """
+    try:
+        lang_map = {
+            "English": "en",
+            "Hindi": "hi",
+            "Marathi": "mr",
+            "Telugu": "te",
+            "Tamil": "ta",
+            "Gujarati": "gu",
+            "Punjabi": "pa"
+        }
+        
+        target_lang = lang_map.get(req.language, "en")
+        
+        # Removed artificial slowdown for Marathi per farmer feedback
+        tts = gTTS(text=req.text, lang=target_lang, slow=False)
+        
+        mp3_fp = io.BytesIO()
+        tts.write_to_fp(mp3_fp)
+        mp3_fp.seek(0)

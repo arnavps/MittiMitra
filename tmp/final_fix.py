@@ -1,20 +1,11 @@
+
 import os
-import io
-from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from typing import Dict, Any, List, Optional
-from groq import Groq
-from dotenv import load_dotenv
-from gtts import gTTS
-from engine.logistics import get_loading_instructions
-import json
+import re
 
-load_dotenv()
+file_path = r'c:\Users\Arnav Shirwadkar\Desktop\Mains\MittiMitra\backend\api\chat.py'
 
-router = APIRouter()
-
-ONBOARDING_STRINGS_BACKEND = {
+# I'll define the correct strings here in pure UTF-8.
+STRINGS = {
     "English": {
         "ask_consent": "Namaste! I am MittiMitra. To find you the best profit windows, I need your permission under the DPDP Act 2023 to use your GPS and crop data. Do I have your permission to proceed?",
         "ask_crop": "What crop are we working with today?",
@@ -60,7 +51,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_yield": "ఈ పంటకు మీ అంచనా దిగుబడి ఎంత (క్వింటాళ్లు లేదా క్రేట్లలో)?",
         "ask_location": "మీ పొలాన్ని మ్యాప్ చేయడానికి మరియు స్థానిక మండీలను కనుగొనడానికి, నాకు మీ GPS స్థానం అవసరం. అది సరేనా?",
         "ask_storage": "మీరు మీ పంటను ఎక్కడ ఉంచుతున్నారు? (బహిరంగ ప్రదేశంలో, షెడ్డులో లేదా కోల్డ్ స్టోరేజీలలో)",
-        "ask_health": "అవి ఆరోగ్యంగా కనిపిస్తున్నాయా, లేదా మీరు ఏవైనా మచ్చలు లేదా అక్రమాలను గమన్నించారా? (అవును/కాదు)",
+        "ask_health": "అవి ఆరోగ్యంగా కనిపిస్తున్నాయా, లేదా మీరు ఏవైనా మచ్చలు లేదా అక్రమాలను గమనించారా? (అవును/కాదు)",
         "ask_visual_audit": "అర్థమైంది. దయచేసి కెమెరా ద్వారా నాకు దగ్గరి నమూనాను చూపండి, తద్వారా నేను నష్టాలను తనిఖీ చేయగలను.",
         "ask_transport": "మీరు మీ సరుకును రవాణా చేస్తారు? ద్విచక్ర వాహనం, ట్రాక్టర్ ట్రాలీ లేదా పికప్ ట్రక్?",
         "ask_harvest_status": "ఈ పంటలు ఇప్పటికే కోయబడ్డాయా, లేదా మీరు ఇంకా కోత ప్రారంభించాలని నిర్ణయిస్తున్నారా?",
@@ -100,74 +91,24 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_location": "ਤੁਹਾਡੇ ਖੇਤ ਦਾ ਨਕਸ਼ਾ ਬਣਾਉਣ ਅਤੇ ਸਥਾਨਕ ਮੰਡੀਆਂ ਲੱਭਣ ਲਈ, ਮੈਨੂੰ ਤੁਹਾਡੀ GPS ਲੋਕੇਸ਼ਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਇਹ ਠੀਕ ਹੈ?",
         "ask_storage": "ਤੁਸੀਂ ਆਪਣੀ ਫ਼ਸਲ ਕਿੱਥੇ ਰੱਖ ਰਹੇ ਹੋ? (ਖੁੱਲ੍ਹੇ ਖੇਤ ਵਿੱਚ, ਸ਼ੈੱਡ ਵਿੱਚ ਜਾਂ ਕੋਲਡ ਸਟੋਰੇਜ ਵਿੱਚ)",
         "ask_health": "ਕੀ ਉਹ ਤੰਦਰੁਸਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ, ਜਾਂ ਕੀ ਤੁਸੀਂ ਕੋਈ ਧੱਬੇ ਜਾਂ ਅਨਿਯਮਿਤਤਾਵਾਂ ਦੇਖੀਆਂ ਹਨ? (ਹਾਂ/ਨਹੀਂ)",
-        "ask_visual_audit": "ਸਮਝ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਕੈਮਰੇ ਰਾਹੀਂ ਇੱਕ ਨਜ਼ਦੀਕੀ ਨਮੂਨਾ ਦਿਖਾਓ ਤਾਂ ਜੋ ਮੈਂ ਜੋਖਮਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਾਂ।",
+        "ask_visual_audit": "ਸਮਝ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਕੈਮਰੇ ਰਾਹੀਂ ਇੱਕ ਨਜ਼ਦੀਕੀ ਨਮੂਨਾ ਦਿਖਾਓ ਤਾਂ ਜੋ ਮੈਂ ਜੋਖਮਾਂ ਦੀ ਜਾਂચ ਕਰ ਸਕਾਂ।",
         "ask_transport": "ਤੁਸੀਂ ਆਪਣੀ ਉਪਜ ਦੀ ਢੋਆ-ਢੁਆਈ ਕਿਵੇਂ ਕਰੋਗੇ? ਦੋ ਪਹੀਆ ਵਾਹਨ, ਟ੍ਰੈਕਟਰ ਟ੍ਰਾਲੀ, ਜਾਂ ਪਿਕਅੱਪ ਟਰੱਕ?",
-        "ask_harvest_status": "ਕੀ ਇਹ ਫ਼ਸਲਾਂ ਪਹਿਲਾਂ ਹੀ ਕੱਟੀਆਂ ਜਾ ਚੁੱਕੀਆਂ ਹਨ, ਜਾਂ ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਟਾਈ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਫੈਸਲਾ ਕਰ ਰਹే ਹੋ?",
+        "ask_harvest_status": "ਕੀ ਇਹ ਫ਼ਸਲਾਂ ਪਹਿਲਾਂ ਹੀ ਕੱਟੀਆਂ ਜਾ ਚੁੱਕੀਆਂ ਹਨ, ਜਾਂ ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਟਾਈ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਫੈਸਲਾ ਕਰ ਰਹੇ ਹੋ?",
         "ask_sowing_date": "ਤੁਸੀਂ ਬੀਜ ਕਦੋਂ ਬੀਜੇ ਸਨ?",
-        "all_done": "ਕੈਲੀਬ੍ਰੇਸ਼ਨ ਪੂਰੀ ਹੋ ਗਈ ਹੈ। ਤੁਹਾਡਾ ਮੁਨਾਫ਼ਾ ਅਨੁਕੂਲਨ ਡੈਸ਼ਬੋਰਡ ਹੁਣ ਤਿਆਰ ਹੈ।"
+        "all_done": "ਕੈਲੀਬ੍ਰੇਸ਼ਨ ਪੂਰੀ ਹੋ ਗਈ ਹੈ। ਤੁਹਾਡਾ ਮੁਨਾਫ਼ਾ ਅਨੁਕੂਲਨ ਡੈਸ਼ਬੋਰਡ ਹੁਣ ਤਿਆર ਹੈ।"
     }
 }
 
-# Initialize Groq Client
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY and GROQ_API_KEY != "gsk_placeholder_key_you_need_to_change_this" else None
-
-class ChatRequest(BaseModel):
-    farmer_query: str
-    dashboard_context: Dict[str, Any]
-    language: str = "Regional"
-    context_mode: str = "expert" # expert, financial_advisor, co_pilot
-
-class TTSRequest(BaseModel):
-    text: str
-    language: str = "English"
-
-class OnboardingExtractRequest(BaseModel):
-    step: str
-    text_input: str
-    language: str = "English"
-    # Current state fields for greedy extraction
-    consent_granted: Any = None
-    current_crop: str = ""
-    current_yield: Any = None
-    harvest_status: Optional[str] = None
-    current_storage: str = ""
-    health_issue: Any = None
-    current_transport: str = ""
-    sowing_date: Optional[str] = None
-    current_name: str = "Farmer"
-    current_land_size: Any = None
-    location_provided: Optional[bool] = None
-    visual_audit_required: Optional[bool] = None
-
-def build_system_prompt(context: Dict[str, Any], language: str) -> str:
-    """
-    Injects the real-time dashboard data into the AI prompt.
-    """
-    status = context.get("status", "UNKNOWN")
-    best_mandi = context.get("best_mandi", "Unknown")
-    total_profit = context.get("total_net_profit", 0)
-    per_quintal = context.get("net_realization_inr_per_quintal", 0)
-    yield_qtl = context.get("yield_quintals", 1)
-    weather = context.get("weather", {})
-    mandi = context.get("mandi_stats", {})
-    
-    prompt = f"""You are the MittiMitra Agri-Vakeel, an expert farming advisor.
-Respond ONLY in {language}. Use Devanagari/Regional script. 
-Dashboad Data: Status {status}, Best Mandi {best_mandi}, Profit ₹{total_profit}.
-Farmer Address: Ji Kisan Bhai (Hindi) / Shetkari Mitra (Marathi) etc.
-"""
-    return prompt
-
-@router.post("/onboarding_extract")
-def onboarding_extract(req: OnboardingExtractRequest):
+new_extract_logic = '''def onboarding_extract(req: OnboardingExtractRequest):
     """
     Hardened greedy extraction logic (DPDP 2023 Compliant).
+    Ensures linear progression (Consent -> Crop -> Yield -> Location -> Harvest Status)
+    with branching logic for post-harvest.
     """
     if not client:
         return {
-            "consent_granted": True,
-            "crop": "Cotton",
+            "consent_granted": True if "yes" in req.text_input.lower() else req.consent_granted,
+            "crop": ("Cotton" if "cotton" in req.text_input.lower() else req.current_crop),
             "ai_reply": "Mock OK. What is your yield?"
         }
 
@@ -192,7 +133,8 @@ TASK:
 1. Extract DATA from USER INPUT into JSON. 
 2. Identify STILL MISSING fields using the KNOWN STATE.
 3. CRITICAL: Address 'Farmer'. No English in 'ai_reply'.
-4. DPDP CONSENT: Set 'consent_granted': true if user agrees OR provides data.
+4. DPDP CONSENT: Set 'consent_granted': true if user agrees OR provides crop/yield/location details.
+5. If Harvested: Set 'visual_audit_required': true ONLY if health issue reported and no audit done yet.
 
 PRIORITY LIST:
 1. Consent (Skip if crop/yield already known)
@@ -218,7 +160,7 @@ RESPONSE JSON SCHEMA:
   "visual_audit_required": boolean | null,
   "transport_type": string | null,
   "sowing_date": string | null,
-  "ai_reply": "string (Address 'Farmer' and Ask for NEXT missing field in {req.language})"
+  "ai_reply": "Acknowledge findings in {req.language}"
 }}
 """
 
@@ -231,6 +173,7 @@ RESPONSE JSON SCHEMA:
         
         reply_json = json.loads(completion.choices[0].message.content)
 
+        # 1. FAIL-SAFE: Consent & Field Sync
         updated_consent = reply_json.get("consent_granted") or req.consent_granted or bool(reply_json.get("crop") or reply_json.get("yield_quintals"))
         updated_crop = reply_json.get("crop") or req.current_crop
         updated_yield = reply_json.get("yield_quintals") or req.current_yield
@@ -239,6 +182,7 @@ RESPONSE JSON SCHEMA:
         
         reply_json["consent_granted"] = updated_consent
 
+        # 2. PYTHON-DRIVEN PROGRESSION
         next_q = ""
         if not updated_consent: next_q = lang_strings["ask_consent"]
         elif not updated_crop: next_q = lang_strings["ask_crop"]
@@ -259,43 +203,36 @@ RESPONSE JSON SCHEMA:
             if not (reply_json.get("sowing_date") or req.sowing_date):
                 next_q = lang_strings["ask_sowing_date"]
 
+        # Final Reply
         import re
-        ack = re.sub(r'[^.!?]+\?', '', reply_json.get("ai_reply", "")).strip()
+        reply_text = reply_json.get("ai_reply", "")
+        # Remove any sentence ending in ? (common AI loop behavior)
+        ack = re.sub(r'[^.!?]+\\?', '', reply_text).strip()
+        
         if not next_q:
             reply_json["ai_reply"] = f"{ack} {lang_strings['all_done']}".strip()
         else:
             reply_json["ai_reply"] = f"{ack} {next_q}".strip()
             
         return reply_json
+'''
 
-    except Exception as e:
-        import traceback
-        print(f"Extraction error: {str(e)}\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
+def main():
+    import json
+    with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+        content = f.read()
 
-@router.post("/tts")
-def text_to_speech(req: TTSRequest):
-    try:
-        lang_map = {"English": "en", "Hindi": "hi", "Marathi": "mr", "Telugu": "te", "Tamil": "ta", "Gujarati": "gu", "Punjabi": "pa"}
-        tts = gTTS(text=req.text, lang=lang_map.get(req.language, "en"), slow=False)
-        mp3_fp = io.BytesIO()
-        tts.write_to_fp(mp3_fp)
-        mp3_fp.seek(0)
-        return StreamingResponse(mp3_fp, media_type="audio/mpeg")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # Replace ONBOARDING_STRINGS_BACKEND
+    strings_repr = "ONBOARDING_STRINGS_BACKEND = " + json.dumps(STRINGS, ensure_ascii=False, indent=4)
+    content = re.sub(r'ONBOARDING_STRINGS_BACKEND = \{.*?\}\n\}', strings_repr, content, flags=re.DOTALL)
 
-@router.get("/tts")
-def text_to_speech_stream(text: str = Query(...), language: str = Query("English")):
-    try:
-        lang_map = {"English": "en", "Hindi": "hi", "Marathi": "mr", "Telugu": "te", "Tamil": "ta", "Gujarati": "gu", "Punjabi": "pa"}
-        tts = gTTS(text=text, lang=lang_map.get(language, "en"), slow=False)
-        mp3_fp = io.BytesIO()
-        tts.write_to_fp(mp3_fp)
-        mp3_fp.seek(0)
-        return StreamingResponse(io.BytesIO(mp3_fp.getvalue()), media_type="audio/mpeg")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # Replace onboarding_extract
+    pattern = r'def onboarding_extract\(req: OnboardingExtractRequest\):.*?return reply_json'
+    content = re.sub(pattern, new_extract_logic, content, flags=re.DOTALL)
 
-def generate_vakeel_brief(context: Dict[str, Any], language: str) -> str:
-    return "Recommendation successfully processed."
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print("DONE: chat.py fixed and hardened.")
+
+if __name__ == "__main__":
+    main()
