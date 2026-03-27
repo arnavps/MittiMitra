@@ -5,7 +5,10 @@ if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from starlette.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Dict, Any, List, Optional
 import logging 
@@ -29,7 +32,6 @@ from engine.scheme_ranker import rank_schemes
 app = FastAPI(title="AgriChain API", description="The Temporal Arbitrage Engine")
 
 # Configure CORS
-from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -55,6 +57,15 @@ app.include_router(oracle_router, prefix="/oracle", tags=["Harvest Oracle"])
 app.include_router(community_router, prefix="/community", tags=["Farmer Community"])
 
 import asyncio
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    logger.error(f"Pydantic Validation Error: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": str(exc)},
+    )
+
 @app.on_event("startup")
 async def startup_event():
     # Start the automated market data synchronization in the background
@@ -63,7 +74,7 @@ async def startup_event():
     asyncio.create_task(sync_all_commodities())
     # Start periodic loop
     asyncio.create_task(start_periodic_sync())
-    logger.info("Market Data Automator initialized.")
+    logger.info("MittiMitra API initializing...")
 
 class HarvestRequest(BaseModel):
     crop: str = ""
@@ -149,7 +160,7 @@ async def get_harvest_recommendation(data: HarvestRequest):
             "distance_km": primary_mandi["distance_km"],
             "market_price": primary_mandi["current_price"],
             "quality_loss_pct": 2.0,
-            "total_net_profit": 0
+            "total_net_profit": primary_mandi["current_price"] * data.yield_est_quintals
         }
         
         best_mandi_name = best_optimal_option["mandi_name"]

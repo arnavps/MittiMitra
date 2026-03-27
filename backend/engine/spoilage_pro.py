@@ -23,12 +23,12 @@ def calculate_dynamic_spoilage(base_q10: float, current_temp: float, target_temp
 
 def get_heat_multiplier(method: str) -> float:
     multipliers = {
-        "Open Field": 1.8,
-        "Shaded": 1.0,
-        "Open Trolley": 1.5,
-        "Covered Pickup": 0.9,
+        "open_field": 1.8,
+        "shed": 1.0,
+        "open_trolley": 1.5,
+        "covered_truck": 0.9,
     }
-    return multipliers.get(method, 1.0)
+    return multipliers.get(method.lower(), 1.0)
 
 def get_preservation_actions(crop_value: float, current_spoilage_pct: float, temp_c: float, storage_type: str, crop_type: str = "Cotton") -> Dict[str, Any]:
     """
@@ -42,7 +42,7 @@ def get_preservation_actions(crop_value: float, current_spoilage_pct: float, tem
             "time_mins": 15,
             "spoilage_reduction_pct": 2.5,
             "condition": storage_type == "open_field",
-            "description": action["description"] if "description" in action else f"Moving {crop_type} from direct sunlight to a shaded area reduces internal heat buildup.",
+            "description": f"Moving {crop_type} from direct sunlight to a shaded area reduces internal heat buildup.",
             "ai_advice": "Namaste! Since your {crop_type} is currently in {storage} at {temp_c}C, moving it to shade is a zero-cost way to save INR {saving} today. The sun is your biggest enemy right now."
         },
         {

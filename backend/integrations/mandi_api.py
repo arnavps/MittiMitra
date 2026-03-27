@@ -32,12 +32,15 @@ async def fetch_mandi_prices(crop: str, location: dict, language: str = "en") ->
     crop_input = crop.strip().lower() if crop else "tomato"
     
     # Map defaults if ambiguous
-    if crop_input in ["tomato", "pika", "pika name", "crop", "default", ""]:
+    if crop_input in ["tomato", "pika", "pika name", "crop", "default", "", "kapas", "cotton"]:
         lang_defaults = {
-            "te": "cotton", "ta": "rice", "gu": "groundnut",
-            "pa": "wheat", "mr": "soybean", "hi": "mustard", "en": "tomato"
+            "mr": "cotton", "te": "cotton", "ta": "rice", "gu": "groundnut",
+            "pa": "wheat", "hi": "mustard", "en": "cotton"
         }
-        crop_input = lang_defaults.get(language, "tomato")
+        if crop_input in ["kapas", "cotton"] or language == "mr":
+             crop_input = "cotton" # Force cotton for Kapas/Marathi context
+        else:
+             crop_input = lang_defaults.get(language, "cotton")
 
     # 1. PRIORITIZE VERIFIED LOCAL DATA (Best coordinates for MH/MP)
     try:

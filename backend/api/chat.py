@@ -123,7 +123,7 @@ class ChatRequest(BaseModel):
     farmer_query: str
     dashboard_context: Dict[str, Any]
     language: str = "Regional"
-    context_mode: str = "expert" # expert, financial_advisor, co_pilot
+    context_mode: Optional[str] = "expert" # expert, financial_advisor, co_pilot
 
 class TTSRequest(BaseModel):
     text: str
