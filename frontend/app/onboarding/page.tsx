@@ -317,6 +317,12 @@ export default function OnboardingPage() {
                 setYieldAmount(data.yield_quintals); 
                 yieldAmountRef.current = data.yield_quintals; 
                 updatedYield = data.yield_quintals;
+                
+                // NEW TRIGGER: Defer actual GPS popup until Yield is provided
+                if (!location && !locationRequestedRef.current && (data.location_provided || consentGranted)) {
+                    locationRequestedRef.current = true;
+                    requestLocation();
+                }
             }
             if (data.harvest_status) {
                 const status = data.harvest_status === 'already_harvested' ? 'Already Harvested' : 'Not Yet Harvested';
@@ -347,7 +353,8 @@ export default function OnboardingPage() {
                 if (!updatedConsent) return 'Consent';
                 if (!updatedCrop) return 'CropName';
                 if (!updatedYield) return 'YieldVolume';
-                if (!location && !gpsError && !locationPermissionGranted) return 'LocationPermission';
+                // Skip if location is already provided/consented at start
+                if (!location && !gpsError && !data.location_provided) return 'LocationPermission';
                 if (!updatedHarvest) return 'HarvestStatus';
                 
                 if (updatedHarvest === 'Already Harvested') {

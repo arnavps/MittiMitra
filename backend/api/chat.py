@@ -16,7 +16,7 @@ router = APIRouter()
 
 ONBOARDING_STRINGS_BACKEND = {
     "English": {
-        "ask_consent": "Namaste! I am MittiMitra. To find you the best profit windows, I need your permission under the DPDP Act 2023 to use your GPS and crop data. Do I have your permission to proceed?",
+        "ask_consent": "Namaste! I am MittiMitra. To help you find the best profit markets, I need your permission under the DPDP Act 2023 to use your GPS and crop data. Do I have your permission to proceed?",
         "ask_crop": "What crop are we working with today?",
         "ask_yield": "What is your estimated yield for this crop (in quintals or crates)?",
         "ask_location": "To map your field and find local mandis, I need your GPS location. Is that okay?",
@@ -30,7 +30,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "all_done": "Calibration complete. Your profit optimization dashboard is now ready."
     },
     "Hindi": {
-        "ask_consent": "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खोजने के लिए, मुझे DPDP अधिनियम 2023 के तहत आपके जीपीएस और फसल डेटा का उपयोग करने की अनुमति चाहिए। क्या मैं आगे बढ़ सकता हूँ?",
+        "ask_consent": "नमस्ते! मैं मिट्टीमित्र हूँ। आपके लिए सबसे अच्छे लाभ खोजने के लिए, मुझे DPDP अधिनियम 2023 के तहत आपके जीपीएस और फसल डेटा का उपयोग करने की अनुमति चाहिए। क्या मुझे आगे बढ़ने के लिए आपकी अनुमति है?",
         "ask_crop": "आज हम कौन सी फसल पर काम कर रहे हैं?",
         "ask_yield": "इस फसल के लिए आपका अनुमानित उत्पादन कितना है (क्विंटल या क्रेट में)?",
         "ask_location": "आपके खेत का नक्शा बनाने और स्थानीय मंडियों को खोजने के लिए, मुझे आपके जीपीएस स्थान की आवश्यकता है। क्या यह ठीक है?",
@@ -46,7 +46,7 @@ ONBOARDING_STRINGS_BACKEND = {
     "Marathi": {
         "ask_consent": "नमस्कार! मी मिट्टीमित्र आहे. तुमच्यासाठी सर्वोत्तम नफा शोधण्यासाठी, मला DPDP कायदा 2023 अंतर्गत तुमचा जीपीएस आणि पिकाचा डेटा वापरण्याची परवानगी हवी आहे. मी पुढे जाऊ शकतो का?",
         "ask_crop": "आज आपण कोणत्या पिकावर काम करत आहोत?",
-        "ask_yield": "या पिकासाठी तुमचे अंदाजे उत्पन्न किती आहे (क्विंटल किंवा क्रेटमध्ये)?",
+        "ask_yield": "या पिकासाठी तुमचे अंदाजे उत्पन्न किती आहे (क्વિंटल किंवा क्रेटमध्ये)?",
         "ask_location": "तुमच्या शेताचा नकाशा तयार करण्यासाठी आणि स्थानिक मंड्या शोधण्यासाठी, मला तुमचे जीपीएस लोकेशन हवे आहे. चालेल का?",
         "ask_storage": "तुम्ही तुमचा माल कोठे ठेवत आहात? (खुल्या शेतात, शेडमध्ये किंवा कोल्ड स्टोअरेजमध्ये)",
         "ask_health": "ते निरोगी दिसतात की तुम्हाला काही डाग किंवा अनियमितता दिसली आहे? (हो/नाही)",
@@ -55,7 +55,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_harvest_status": "या पिकांची कापणी आधीच झाली आहे, की तुम्ही अजून ती सुरू करण्याचा विचार करत आहात?",
         "ask_sowing_date": "तुम्ही बियाणे कधी पेरले होते?",
         "location_received": "स्थान प्राप्त झाले!",
-        "all_done": "कॅलिब्रेशन पूर्ण झाले. तुमचे नफा ऑप्टिमायझेशन डॅशबोर्ड आता तयार आहे."
+        "all_done": "कैलिब्रेशन पूर्ण झाले. तुमचे नफा ऑप्टिमायझेशन डॅशबोर्ड आता तयार आहे."
     },
     "Telugu": {
         "ask_consent": "నమస్కారం! నేను మిట్టిమిత్ర. మీకు ఉత్తమ లాభాలను కనుగొనడానికి, DPDP చట్టం 2023 ప్రకారం మీ GPS మరియు పంట డేటాను ఉపయోగించడానికి నాకు మీ అనుమతి అవసరం. నేను కొనసాగించవచ్చా?",
@@ -77,7 +77,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_yield": "இந்த பயிரின் மதிப்பிடப்பட்ட விளைச்சல் எவ்வளவு (குவிண்டால் அல்லது பெட்டிகளில்)?",
         "ask_location": "உங்கள் வயலை வரைபடமாக்கி உள்ளூர் மண்டிகளைக் கண்டறிய, உங்கள் ஜிபிஎஸ் இருப்பிடம் எனக்குத் தேவை. ஓகேவா?",
         "ask_storage": "உங்கள் அறுவடையை எங்கே வைத்துள்ளீர்கள்? (திறந்த வெளி, கொட்டகை அல்லது குளிர்பதன கிடங்கு)",
-        "ask_health": "அவை ஆரோக்கியமாகத் தெரிகிறதா, அல்லது ஏதேனும் புள்ளிகள் அல்லது மாற்றங்களைக் கவனித்தீர்களா? (ஆம்/இல்லை)",
+        "ask_health": "அவை ஆரோக்கியமாகத் தெரிகிறதா, அல்லது ஏதேனும் புள்ளிகள் లేదా மாற்றங்களைக் கவனித்தீர்களா? (ஆம்/இல்லை)",
         "ask_visual_audit": "புரிந்தது. தயவுசெய்து கேமரா மூலம் நெருக்கமான மாதிரியைக் காட்டுங்கள், இதனால் நான் அபாயங்களைச் சரிபார்க்க முடியும்.",
         "ask_transport": "உங்கள் விளைபொருட்களை எப்படி கொண்டு செல்வீர்கள்? டூ வீலர், டிராக்டர் டிராலி அல்லது பிக்கப் டிரக்?",
         "ask_harvest_status": "இந்தப் பயிர்கள் ஏற்கனவே அறுவடை செய்யப்பட்டுவிட்டதா, அல்லது எப்போது அறுவடை செய்ய வேண்டும் என்று முடிவு செய்கிறீர்களா?",
@@ -108,7 +108,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_health": "ਕੀ ਉਹ ਤੰਦਰੁਸਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ, ਜਾਂ ਕੀ ਤੁਸੀਂ ਕੋਈ ਧੱਬੇ ਜਾਂ ਅਨਿਯਮਿਤਤਾਵਾਂ ਦੇਖੀਆਂ ਹਨ? (ਹਾਂ/ਨਹੀਂ)",
         "ask_visual_audit": "ਸਮਝ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਕੈਮਰੇ ਰਾਹੀਂ ਇੱਕ ਨਜ਼ਦੀਕੀ ਨਮੂਨਾ ਦਿਖਾਓ ਤਾਂ ਜੋ ਮੈਂ ਜੋਖਮਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਾਂ।",
         "ask_transport": "ਤੁਸੀਂ ਆਪਣੀ ਉਪਜ ਦੀ ਢੋਆ-ਢੁਆਈ ਕਿਵੇਂ ਕਰੋਗੇ? ਦੋ ਪਹੀਆ ਵਾਹਨ, ਟ੍ਰੈਕਟਰ ਟ੍ਰਾਲੀ, ਜਾਂ ਪਿਕਅੱਪ ਟਰੱਕ?",
-        "ask_harvest_status": "ਕੀ ਇਹ ਫ਼ਸਲਾਂ ਪਹਿਲਾਂ ਹੀ ਕੱਟੀਆਂ ਜਾ ਚੁੱਕੀਆਂ ਹਨ, ਜਾਂ ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਟਾਈ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਫੈਸਲਾ ਕਰ ਰਹే ਹੋ?",
+        "ask_harvest_status": "ਕੀ ਇਹ ਫ਼ਸਲਾਂ ਪਹਿਲਾਂ ਹੀ ਕੱਟੀਆਂ ਜਾ ਚੁੱਕੀਆਂ ਹਨ, ਜਾਂ ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਟਾਈ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਫੈਸਲਾ ਕਰ ਰਹੇ ਹੋ?",
         "ask_sowing_date": "ਤੁਸੀਂ ਬੀਜ ਕਦੋਂ ਬੀਜੇ ਸਨ?",
         "location_received": "ਟਿਕਾਣਾ ਪ੍ਰਾਪਤ ਹੋ ਗਿਆ ਹੈ!",
         "all_done": "ਕੈਲੀਬ੍ਰੇਸ਼ਨ ਪੂਰੀ ਹੋ ਗਈ ਹੈ। ਤੁਹਾਡਾ ਮੁਨਾਫ਼ਾ ਅਨੁਕੂਲਨ ਡੈਸ਼ਬੋਰਡ ਹੁਣ ਤਿਆਰ ਹੈ।"
@@ -203,8 +203,8 @@ LANGUAGE: {req.language}
 
 STRICT INSTRUCTIONS:
 1. IDENTIFY: Consent, Crop, Yield, Location, Harvest Status, Storage, Health, and Transport.
-2. DPDP: If user agrees OR provides data, 'consent_granted' = true.
-3. LOCATION: If user says 'yes/ok' to location, 'location_provided' = true.
+2. DPDP: If user agrees OR provides data (yield/crop), 'consent_granted' = true AND 'location_provided' = true.
+3. PRORITY: Ask for Crop first, then Yield. Do NOT ask for Location if 'consent_granted' is true (the frontend triggers the actual GPS popup in the background later).
 4. HEALTH: If user says 'no issues/healthy', 'health_issue' = false.
 5. RESILIENCY: If user is unsure about Yield, Storage, or Transit, assign any sensible default and MOVE ON.
 6. NO ENGLISH: The 'ai_reply' must be entirely in {req.language}.
@@ -226,27 +226,31 @@ RESPONSE JSON SCHEMA:
 
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
+            messages=[{"role": "system", "content": prompt}, {"role": "user", "content": req.text_input}],
             response_format={"type": "json_object"},
-            temperature=0.0
+            temperature=0,
         )
         
         reply_json = json.loads(completion.choices[0].message.content)
-
-        updated_consent = reply_json.get("consent_granted") or req.consent_granted or bool(reply_json.get("crop") or reply_json.get("yield_quintals"))
+        
+        # Priority logic to overwrite the AI if it misses the next field
+        next_q = None
+        updated_consent = reply_json.get("consent_granted") or req.consent_granted
         updated_crop = reply_json.get("crop") or req.current_crop
         updated_yield = reply_json.get("yield_quintals") or req.current_yield
         updated_location = reply_json.get("location_provided") or req.location_provided
         updated_harvest = reply_json.get("harvest_status") or req.harvest_status
-        
-        reply_json["consent_granted"] = updated_consent
 
-        next_q = ""
-        if not updated_consent: next_q = lang_strings["ask_consent"]
-        elif not updated_crop: next_q = lang_strings["ask_crop"]
-        elif not updated_yield: next_q = lang_strings["ask_yield"]
-        elif not updated_location: next_q = lang_strings["ask_location"]
-        elif not updated_harvest: next_q = lang_strings["ask_harvest_status"]
+        if not updated_consent:
+            next_q = lang_strings["ask_consent"]
+        elif not updated_crop:
+            next_q = lang_strings["ask_crop"]
+        elif not updated_yield:
+            next_q = lang_strings["ask_yield"]
+        elif not updated_location:
+            next_q = lang_strings["ask_location"]
+        elif not updated_harvest:
+            next_q = lang_strings["ask_harvest_status"]
         elif updated_harvest == "already_harvested":
             if not (reply_json.get("storage_type") or req.current_storage):
                 next_q = lang_strings["ask_storage"]
@@ -297,9 +301,6 @@ def text_to_speech_stream(text: str = Query(...), language: str = Query("English
         mp3_fp = io.BytesIO()
         tts.write_to_fp(mp3_fp)
         mp3_fp.seek(0)
-        return StreamingResponse(io.BytesIO(mp3_fp.getvalue()), media_type="audio/mpeg")
+        return StreamingResponse(mp3_fp, media_type="audio/mpeg")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-def generate_vakeel_brief(context: Dict[str, Any], language: str) -> str:
-    return "Recommendation successfully processed."
