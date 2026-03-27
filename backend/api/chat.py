@@ -235,10 +235,10 @@ LANGUAGE: {req.language}
 STRICT INSTRUCTIONS:
 1. IDENTIFY: Consent, Crop, Yield, Location, Harvest Status, Storage, Health, and Transport.
 2. LOCATION INTENT: Only set 'location_provided' if the user explicitly mentions a city, village, coordinates, or says 'Here is my location'. Verbal agreement to share GPS (Step 1 Consent) DOES NOT set 'location_provided'.
-3. NO DEFAULTING: Do NOT assume values for Yield, Storage, or Transit if the user hasn't provided them. Leave as null. 
-4. STORAGE KEYS: Standardize storage_type to one of: 'open_field', 'shed', 'cold_storage' only.
-5. PRIORITY: Ask for Crop first, then Yield.
-6. HEALTH: If user says 'no issues/healthy', 'health_issue' = false.
+3. NO DEFAULTING: Do NOT assume values for Yield, Storage, Health, or Transit if the user hasn't provided them. Leave as null. 
+4. HEALTH SENSITIVITY: Only set 'health_issue' if the user mentions physical symptoms (spots, rotting, pests, insects) or says 'Yes' to a health inquiry. DO NOT set it if the user only provides storage or harvest info.
+5. STORAGE KEYS: Standardize storage_type to one of: 'open_field', 'shed', 'cold_storage' only.
+6. PRIORITY: Ask for Crop first, then Yield.
 7. NO ENGLISH: The 'ai_reply' must be entirely in {req.language}.
 
 RESPONSE JSON SCHEMA:
@@ -275,6 +275,13 @@ RESPONSE JSON SCHEMA:
         updated_yield = reply_json.get("yield_quintals") or req.current_yield
         updated_location = reply_json.get("location_provided") if reply_json.get("location_provided") is not None else req.location_provided
         updated_harvest = reply_json.get("harvest_status") or req.harvest_status
+        
+        # SENSITIVITY OVERRIDE: If the AI extracts health_issue at the same time as storage_type, 
+        # it is likely a hallucination from "open field" or similar. Force it back to null for verbal check.
+        just_updated_storage = reply_json.get("storage_type") and not req.current_storage
+        updated_health = reply_json.get("health_issue") if reply_json.get("health_issue") is not None else req.health_issue
+        if just_updated_storage and updated_health is not None:
+             updated_health = None
 
         # FAIL-SAFE: If crop/yield/location is already provided, they have implicitly consented.
         if updated_crop or updated_yield or updated_location:
@@ -344,7 +351,7 @@ RESPONSE JSON SCHEMA:
             "harvest_status": updated_harvest,
             "location_provided": updated_location,
             "storage_type": reply_json.get("storage_type") or req.current_storage,
-            "health_issue": reply_json.get("health_issue") if reply_json.get("health_issue") is not None else req.health_issue,
+            "health_issue": updated_health,
             "transport_type": reply_json.get("transport_type") or req.current_transport,
             "sowing_date": reply_json.get("sowing_date") or req.sowing_date,
             "ai_reply": final_reply,

@@ -106,7 +106,12 @@ export default function OnboardingPage() {
 
     // Data State
     const [langStr, setLangStr] = useState("English");
-    const [consentGranted, setConsentGranted] = useState<boolean | null>(null);
+    const [consentGranted, _setConsentGranted] = useState<boolean | null>(null);
+    const consentRef = useRef<boolean | null>(null);
+    const setConsentGranted = (val: boolean | null) => {
+        consentRef.current = val;
+        _setConsentGranted(val);
+    };
     const [crop, setCrop] = useState("");
     const cropRef = useRef("");
     const [yieldAmount, setYieldAmount] = useState("");
@@ -130,7 +135,12 @@ export default function OnboardingPage() {
     const [isThinking, setIsThinking] = useState(false);
     const [recommendation, setRecommendation] = useState<any>(null);
     const [showLanguageModal, setShowLanguageModal] = useState(true);
-    const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
+    const [locationPermissionGranted, _setLocationPermissionGranted] = useState(false);
+    const locationPermissionRef = useRef(false);
+    const setLocationPermissionGranted = (val: boolean) => {
+        locationPermissionRef.current = val;
+        _setLocationPermissionGranted(val);
+    };
     const locationRequestedRef = useRef(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -139,11 +149,13 @@ export default function OnboardingPage() {
 
     const locationRef = useRef<any>(null);
     const gpsErrorRef = useRef<any>(null);
+    const cameraRef = useRef(false);
     const ledgerScrollRef = useRef<HTMLDivElement>(null);
 
     // Sync refs for async access
     useEffect(() => { locationRef.current = location; }, [location]);
     useEffect(() => { gpsErrorRef.current = gpsError; }, [gpsError]);
+    useEffect(() => { cameraRef.current = cameraActive; }, [cameraActive]);
 
     // Auto-scroll chat
     useEffect(() => {
@@ -242,14 +254,14 @@ export default function OnboardingPage() {
                     current_name: "Farmer",
                     current_crop: cropRef.current || crop,
                     current_yield: yieldAmountRef.current || yieldAmount,
-                    consent_granted: consentGranted,
+                    consent_granted: consentRef.current,
                     current_storage: storageTypeRef.current || storageType,
                     current_transport: transportTypeRef.current || transportType,
                     harvest_status: (harvestStatusRef.current || harvestStatus) === 'Already Harvested' ? 'already_harvested' : ((harvestStatusRef.current || harvestStatus) === 'Not Yet Harvested' ? 'not_yet_harvested' : null),
-                    location_provided: !!location || locationPermissionGranted,
+                    location_provided: !!locationRef.current || locationPermissionRef.current,
                     sowing_date: sowingDateRef.current || sowingDate,
                     health_issue: (healthStatusRef.current || healthStatus) === "Issue Reported" ? true : ((healthStatusRef.current || healthStatus) === "Healthy" ? false : null),
-                    visual_audit_required: currentStepRef.current === 'HealthAudit' && cameraActive,
+                    visual_audit_required: currentStepRef.current === 'HealthAudit' && cameraRef.current,
                     dashboard_context: {
                         location: location ? { lat: location.latitude, lng: location.longitude } : null
                     }
