@@ -174,7 +174,7 @@ def explain_data(req: ChatRequest):
     Deep-dive explanation for dashboard data.
     """
     if not client:
-        return {"ai_reply": "Deep analysis requires an active Groq API connection."}
+        return {"response": "Deep analysis requires an active Groq API connection.", "ai_reply": "Deep analysis requires an active Groq API connection."}
 
     try:
         prompt = build_system_prompt(req.dashboard_context, req.language)
@@ -187,7 +187,10 @@ def explain_data(req: ChatRequest):
             temperature=0.7,
             max_tokens=500
         )
-        return {"ai_reply": completion.choices[0].message.content}
+        return {
+            "response": completion.choices[0].message.content,
+            "ai_reply": completion.choices[0].message.content
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -274,6 +277,11 @@ RESPONSE JSON SCHEMA:
         if updated_crop or updated_yield or updated_location:
             updated_consent = True
 
+        # FAIL-SAFE: If dashboard_context already has a location, skip asking for it.
+        coords = (req.dashboard_context or {}).get("location")
+        if coords and coords.get("lat") and coords.get("lng"):
+            updated_location = True
+            
         if not updated_consent:
             next_q = lang_strings["ask_consent"]
         elif not updated_crop:
@@ -315,7 +323,8 @@ RESPONSE JSON SCHEMA:
             "health_issue": reply_json.get("health_issue") if reply_json.get("health_issue") is not None else req.health_issue,
             "transport_type": reply_json.get("transport_type") or req.current_transport,
             "sowing_date": reply_json.get("sowing_date") or req.sowing_date,
-            "ai_reply": f"{prefix}{ack} {next_q if next_q else lang_strings['all_done']}".strip()
+            "ai_reply": f"{prefix}{ack} {next_q if next_q else lang_strings['all_done']}".strip(),
+            "response": f"{prefix}{ack} {next_q if next_q else lang_strings['all_done']}".strip()
         }
         
         return status_json
