@@ -202,7 +202,8 @@ TASK:
 4. DPDP CONSENT: Set 'consent_granted': true if user agrees OR provides data.
 5. LOCATION CONSENT: Set 'location_provided': true if user says 'yes', 'ok', 'theek hai', etc. to the location request.
 6. EXTRACTION: If user mentions a storage type (shed, cold storage, field), set 'storage_type' accordingly.
-7. RESILIENCY: If user says 'don't know', 'not sure', or gives ambiguous answers for non-critical fields (yield, storage, transit, sowing date), assign a sensible default (e.g., 50 quintals, 'Field', 'Today') and MOVE ON to the next question. DO NOT LOOP.
+7. HEALTH STATUS: Set 'health_issue': false if user says 'no issues', 'healthy', 'theek hai', 'sab sahi hai'. Set 'health_issue': true if user says 'spots', 'bugs', 'bimaari', 'bad'.
+8. RESILIENCY: If user says 'don't know', 'not sure', or gives ambiguous answers for non-critical fields (yield, storage, transit, sowing date), assign a sensible default (e.g., 50 quintals, 'Field', 'Today') and MOVE ON to the next question. DO NOT LOOP.
 
 PRIORITY LIST:
 1. Consent (Skip if crop/yield already known)
@@ -273,7 +274,7 @@ RESPONSE JSON SCHEMA:
         ack = re.sub(r'[^.!?]+\?', '', reply_json.get("ai_reply", "")).strip()
         
         # Immediate Location Acknowledgment logic
-        just_received_location = updated_location and not req.location_provided
+        just_received_location = updated_location and (req.location_provided is False or req.location_provided is None)
         prefix = f"{lang_strings.get('location_received', 'Location received!')} " if just_received_location else ""
 
         if not next_q:

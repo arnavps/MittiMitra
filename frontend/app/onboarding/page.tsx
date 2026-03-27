@@ -137,7 +137,13 @@ export default function OnboardingPage() {
     const recognitionRef = useRef<any>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
+    const locationRef = useRef<any>(null);
+    const gpsErrorRef = useRef<any>(null);
     const ledgerScrollRef = useRef<HTMLDivElement>(null);
+
+    // Sync refs for async access
+    useEffect(() => { locationRef.current = location; }, [location]);
+    useEffect(() => { gpsErrorRef.current = gpsError; }, [gpsError]);
 
     // Auto-scroll chat
     useEffect(() => {
@@ -348,12 +354,14 @@ export default function OnboardingPage() {
                     // Branch A: Post-Harvest
                     if (!(storageType || data.storage_type)) return 'StorageAudit';
                     
+                    // Logic Sync: If backend is still asking health questions, stay in Health/Storage phase
+                    if (data.health_issue === null && !healthStatusRef.current) return 'StorageAudit';
+
                     // Trigger Health Audit (Camera) ONLY if AI has identified a potential pathology/issue
                     if (data.health_issue === true || healthStatusRef.current === "Issue Reported") {
                         if (!cameraActive && currentStepRef.current !== 'HealthAudit') {
                             return 'HealthAudit';
                         }
-                        // If camera was already completed, stay in Transit
                     }
                     
                     if (!(transportType || data.transport_type)) return 'TransitConfig';
@@ -429,11 +437,15 @@ export default function OnboardingPage() {
     // Watch for location to advance from LocationPermission
     useEffect(() => {
         const strings = ONBOARDING_STRINGS[langStr] || ONBOARDING_STRINGS["English"];
-        if (location && currentStepRef.current === 'LocationPermission') {
-            const nextMsg = strings.location_success;
-            setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: nextMsg }]);
-            speakResponse(nextMsg, langStr, () => startListening());
-            setCurrentStep('HarvestStatus');
+        if (location) {
+            // If we're on the step, advance and speak. 
+            if (currentStepRef.current === 'LocationPermission') {
+                const nextMsg = strings.location_success;
+                setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: nextMsg }]);
+                speakResponse(nextMsg, langStr, () => startListening());
+                setCurrentStep('HarvestStatus');
+            }
+            // Even if we've advanced (via verbal consent), the ledger will automatically update because it watches 'location'
         } else if (gpsError && currentStepRef.current === 'LocationPermission') {
             const nextMsg = strings.location_error;
             setMessages(prev => [...prev, { id: Date.now(), role: 'ai', text: nextMsg }]);
@@ -444,7 +456,18 @@ export default function OnboardingPage() {
 
     const saveOnboardingData = async () => {
         try {
+            // 1. If permission was granted but location is still null, wait up to 3 seconds
+            if (locationPermissionGranted && !locationRef.current && !gpsErrorRef.current) {
+                console.log("Location permission granted but no signal yet. Waiting 3 seconds...");
+                let waited = 0;
+                while (waited < 3000 && !locationRef.current && !gpsErrorRef.current) {
+                    await new Promise(r => setTimeout(r, 500));
+                    waited += 500;
+                }
+            }
+
             const phone = auth.currentUser?.phoneNumber || localStorage.getItem('demo_phone') || "9999999999";
+            const finalLocation = locationRef.current || location;
             
             const { error } = await supabase
                 .from('profiles')
@@ -454,8 +477,8 @@ export default function OnboardingPage() {
                     crop: cropRef.current || crop,
                     yield_quintals: parseFloat(yieldAmountRef.current || yieldAmount) || 0,
                     harvest_status: harvestStatusRef.current === 'Already Harvested' || harvestStatus === 'Already Harvested',
-                    latitude: location?.latitude || 18.5204,
-                    longitude: location?.longitude || 73.8567,
+                    latitude: finalLocation?.latitude || 18.5204,
+                    longitude: finalLocation?.longitude || 73.8567,
                     storage_type: storageTypeRef.current || storageType || 'Open Field',
                     transport_type: transportTypeRef.current || transportType || 'Open Trolley',
                     last_onboarding_step: 'Success',
