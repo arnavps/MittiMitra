@@ -240,7 +240,7 @@ export default function OnboardingPage() {
                     current_storage: storageTypeRef.current || storageType,
                     current_transport: transportTypeRef.current || transportType,
                     harvest_status: (harvestStatusRef.current || harvestStatus) === 'Already Harvested' ? 'already_harvested' : ((harvestStatusRef.current || harvestStatus) === 'Not Yet Harvested' ? 'not_yet_harvested' : null),
-                    location_provided: !!location,
+                    location_provided: !!location || locationPermissionGranted,
                     sowing_date: sowingDateRef.current || sowingDate,
                     health_issue: (healthStatusRef.current || healthStatus) === "Issue Reported" ? true : ((healthStatusRef.current || healthStatus) === "Healthy" ? false : null),
                     visual_audit_required: currentStepRef.current === 'HealthAudit' && cameraActive

@@ -26,6 +26,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_transport": "How will you be transporting your produce? Two wheeler, tractor trolley, or pickup truck?",
         "ask_harvest_status": "Are these crops already harvested, or are you still deciding when to start cutting them?",
         "ask_sowing_date": "When did you sow the seeds?",
+        "location_received": "Location received!",
         "all_done": "Calibration complete. Your profit optimization dashboard is now ready."
     },
     "Hindi": {
@@ -39,6 +40,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_transport": "आप अपनी उपज का परिवहन कैसे करेंगे? दोपहिया, ट्रैक्टर ट्रॉली, या पिकअप ट्रक?",
         "ask_harvest_status": "क्या ये फसलें पहले ही काटी जा चुकी हैं, या आप अभी भी उन्हें काटना शुरू करने का निर्णय ले रहे हैं?",
         "ask_sowing_date": "आपने बीज कब बोया था?",
+        "location_received": "स्थान प्राप्त हुआ!",
         "all_done": "कैलिब्रेशन पूरा हुआ। आपका लाभ अनुकूलन डैशबोर्ड अब तैयार है।"
     },
     "Marathi": {
@@ -52,6 +54,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_transport": "तुम्ही तुमचा माल कसा नेणार आहात? दुचाकी, ट्रॅक्टर ट्रॉली किंवा पिकअप ट्रक?",
         "ask_harvest_status": "या पिकांची कापणी आधीच झाली आहे, की तुम्ही अजून ती सुरू करण्याचा विचार करत आहात?",
         "ask_sowing_date": "तुम्ही बियाणे कधी पेरले होते?",
+        "location_received": "स्थान प्राप्त झाले!",
         "all_done": "कॅलिब्रेशन पूर्ण झाले. तुमचे नफा ऑप्टिमायझेशन डॅशबोर्ड आता तयार आहे."
     },
     "Telugu": {
@@ -65,6 +68,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_transport": "మీరు మీ సరుకును రవాణా చేస్తారు? ద్విచక్ర వాహనం, ట్రాక్టర్ ట్రాలీ లేదా పికప్ ట్రక్?",
         "ask_harvest_status": "ఈ పంటలు ఇప్పటికే కోయబడ్డాయా, లేదా మీరు ఇంకా కోత ప్రారంభించాలని నిర్ణయిస్తున్నారా?",
         "ask_sowing_date": "మీరు విత్తనాలు ఎప్పుడు వేశారు?",
+        "location_received": "స్థానం స్వీకరించబడింది!",
         "all_done": "అంకగణితం పూర్తయింది. మీ లాభాల ఆప్టిమైజేషన్ డ్యాష్‌బోర్డ్ ఇప్పుడు సిద్ధంగా ఉంది."
     },
     "Tamil": {
@@ -78,6 +82,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_transport": "உங்கள் விளைபொருட்களை எப்படி கொண்டு செல்வீர்கள்? டூ வீலர், டிராக்டர் டிராலி அல்லது பிக்கப் டிரக்?",
         "ask_harvest_status": "இந்தப் பயிர்கள் ஏற்கனவே அறுவடை செய்யப்பட்டுவிட்டதா, அல்லது எப்போது அறுவடை செய்ய வேண்டும் என்று முடிவு செய்கிறீர்களா?",
         "ask_sowing_date": "நீங்கள் எப்போது விதைத்தீர்கள்?",
+        "location_received": "இடம் பெறப்பட்டது!",
         "all_done": "அளவுத்திருத்தம் முடிந்தது. உங்கள் லாப மேம்பாட்டு டேஷ்போர்டு இப்போது தயாராக உள்ளது."
     },
     "Gujarati": {
@@ -91,6 +96,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_transport": "તમે તમારો માલ કેવી રીતે લઈ જશો? ટુ વ્હીલર, ટ્રેક્ટર ટ્રોલી કે પિકઅપ ટ્રક?",
         "ask_harvest_status": "શું આ પાકની લણણી થઈ ગઈ છે, અથવા તમે હજુ પણ લણણી શરૂ કરવાનું વિચારી રહ્યા છો?",
         "ask_sowing_date": "તમે બીજ ક્યારે વાવ્યા હતા?",
+        "location_received": "સ્થાન પ્રાપ્ત થયું!",
         "all_done": "કેલિબ્રેશન પૂર્ણ થયું. તમારું પ્રોફિટ ઓપ્ટિમાઇઝેશન ડેશબોર્ડ હવે તૈયાર છે."
     },
     "Punjabi": {
@@ -104,6 +110,7 @@ ONBOARDING_STRINGS_BACKEND = {
         "ask_transport": "ਤੁਸੀਂ ਆਪਣੀ ਉਪਜ ਦੀ ਢੋਆ-ਢੁਆਈ ਕਿਵੇਂ ਕਰੋਗੇ? ਦੋ ਪਹੀਆ ਵਾਹਨ, ਟ੍ਰੈਕਟਰ ਟ੍ਰਾਲੀ, ਜਾਂ ਪਿਕਅੱਪ ਟਰੱਕ?",
         "ask_harvest_status": "ਕੀ ਇਹ ਫ਼ਸਲਾਂ ਪਹਿਲਾਂ ਹੀ ਕੱਟੀਆਂ ਜਾ ਚੁੱਕੀਆਂ ਹਨ, ਜਾਂ ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਟਾਈ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਫੈਸਲਾ ਕਰ ਰਹే ਹੋ?",
         "ask_sowing_date": "ਤੁਸੀਂ ਬੀਜ ਕਦੋਂ ਬੀਜੇ ਸਨ?",
+        "location_received": "ਟਿਕਾਣਾ ਪ੍ਰਾਪਤ ਹੋ ਗਿਆ ਹੈ!",
         "all_done": "ਕੈਲੀਬ੍ਰੇਸ਼ਨ ਪੂਰੀ ਹੋ ਗਈ ਹੈ। ਤੁਹਾਡਾ ਮੁਨਾਫ਼ਾ ਅਨੁਕੂਲਨ ਡੈਸ਼ਬੋਰਡ ਹੁਣ ਤਿਆਰ ਹੈ।"
     }
 }
@@ -195,6 +202,7 @@ TASK:
 4. DPDP CONSENT: Set 'consent_granted': true if user agrees OR provides data.
 5. LOCATION CONSENT: Set 'location_provided': true if user says 'yes', 'ok', 'theek hai', etc. to the location request.
 6. EXTRACTION: If user mentions a storage type (shed, cold storage, field), set 'storage_type' accordingly.
+7. RESILIENCY: If user says 'don't know', 'not sure', or gives ambiguous answers for non-critical fields (yield, storage, transit, sowing date), assign a sensible default (e.g., 50 quintals, 'Field', 'Today') and MOVE ON to the next question. DO NOT LOOP.
 
 PRIORITY LIST:
 1. Consent (Skip if crop/yield already known)
@@ -263,10 +271,15 @@ RESPONSE JSON SCHEMA:
 
         import re
         ack = re.sub(r'[^.!?]+\?', '', reply_json.get("ai_reply", "")).strip()
+        
+        # Immediate Location Acknowledgment logic
+        just_received_location = updated_location and not req.location_provided
+        prefix = f"{lang_strings.get('location_received', 'Location received!')} " if just_received_location else ""
+
         if not next_q:
-            reply_json["ai_reply"] = f"{ack} {lang_strings['all_done']}".strip()
+            reply_json["ai_reply"] = f"{prefix}{ack} {lang_strings['all_done']}".strip()
         else:
-            reply_json["ai_reply"] = f"{ack} {next_q}".strip()
+            reply_json["ai_reply"] = f"{prefix}{ack} {next_q}".strip()
             
         return reply_json
 
