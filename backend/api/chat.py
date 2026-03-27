@@ -193,6 +193,8 @@ TASK:
 2. Identify STILL MISSING fields using the KNOWN STATE.
 3. CRITICAL: Address 'Farmer'. No English in 'ai_reply'.
 4. DPDP CONSENT: Set 'consent_granted': true if user agrees OR provides data.
+5. LOCATION CONSENT: Set 'location_provided': true if user says 'yes', 'ok', 'theek hai', etc. to the location request.
+6. EXTRACTION: If user mentions a storage type (shed, cold storage, field), set 'storage_type' accordingly.
 
 PRIORITY LIST:
 1. Consent (Skip if crop/yield already known)

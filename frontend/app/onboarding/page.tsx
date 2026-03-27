@@ -130,6 +130,8 @@ export default function OnboardingPage() {
     const [isThinking, setIsThinking] = useState(false);
     const [recommendation, setRecommendation] = useState<any>(null);
     const [showLanguageModal, setShowLanguageModal] = useState(true);
+    const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
+    const locationRequestedRef = useRef(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const recognitionRef = useRef<any>(null);
@@ -253,6 +255,9 @@ export default function OnboardingPage() {
             if (data.consent_granted === true && !consentGranted) {
                 setConsentGranted(true);
             }
+            if (data.location_provided === true && !locationPermissionGranted) {
+                setLocationPermissionGranted(true);
+            }
             if (data.crop && !crop) { 
                 setCrop(data.crop); 
                 cropRef.current = data.crop; 
@@ -336,7 +341,7 @@ export default function OnboardingPage() {
                 if (!updatedConsent) return 'Consent';
                 if (!updatedCrop) return 'CropName';
                 if (!updatedYield) return 'YieldVolume';
-                if (!location && !gpsError) return 'LocationPermission';
+                if (!location && !gpsError && !locationPermissionGranted) return 'LocationPermission';
                 if (!updatedHarvest) return 'HarvestStatus';
                 
                 if (updatedHarvest === 'Already Harvested') {
@@ -372,10 +377,11 @@ export default function OnboardingPage() {
                     if (nextStep === 'Success') {
                         await saveOnboardingData();
                         fetchFinalRecommendation();
-                    } else if (nextStep === 'LocationPermission' && !location) {
+                    } else if (nextStep === 'LocationPermission' && !location && !locationRequestedRef.current) {
                         // AI has finished asking "Is that okay?", now trigger the popup
+                        locationRequestedRef.current = true;
                         requestLocation();
-                    } else if (nextStep !== 'HealthAudit' && nextStep !== 'LocationPermission') {
+                    } else if (nextStep !== 'HealthAudit' && (nextStep !== 'LocationPermission' || location || gpsError)) {
                         startListening();
                     }
                 });
@@ -601,8 +607,8 @@ export default function OnboardingPage() {
                                     />
                                     <LedgerItem 
                                         label="Field Location" 
-                                        value={location ? "Located ✅" : (gpsError ? "Manual 📍" : "Finding...")} 
-                                        status={location || gpsError ? 'locked' : (currentStepRef.current === 'LocationPermission' ? 'active' : 'pending')}
+                                        value={location ? "Located ✅" : (locationPermissionGranted ? "Acquiring..." : (gpsError ? "Manual 📍" : "Finding..."))} 
+                                        status={location || gpsError ? 'locked' : (locationPermissionGranted ? 'locked' : (currentStepRef.current === 'LocationPermission' ? 'active' : 'pending'))}
                                         icon={<MapPin className="w-4 h-4" />}
                                     />
                                     <LedgerItem 
